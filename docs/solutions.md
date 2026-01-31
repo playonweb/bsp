@@ -9,7 +9,7 @@
 
 #### Security Decisions
 
-1. Added [config/routes.php](config/routes.php) and [core/router.php](core/router.php) to limit the access.
+1. Added [app/config/routes.php](../app/config/routes.php) and [app/core/router.php](../app/core/router.php) to limit the access.
 1. 
 
 
