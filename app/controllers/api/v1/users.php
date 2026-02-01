@@ -5,7 +5,7 @@
  */
 
 // Initialize app
-$app = require "../../../core/app.php";
+$app = require "./core/app.php";
 
 // Set JSON header for consistent API responses
 header('Content-Type: application/json');
