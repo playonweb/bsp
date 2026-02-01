@@ -41,19 +41,42 @@ function handleCities($app)
  * GET /api/v1/users
  * GET /api/v1/users?city=Prague
  * GET /api/v1/users?filter[city]=Paris
+ * GET /api/v1/users?page=2&limit=20
  */
 function handleIndex($app)
 {
     $filterCity = $_GET['filter']['city'] ?? $_GET['city'] ?? null;
 
+    // Pagination
+    $page = max(1, (int) ($_GET['page'] ?? 1));
+    $limit = max(1, (int) ($_GET['limit'] ?? 20));
+    $offset = ($page - 1) * $limit;
+
+    // Fetch users
     if ($filterCity) {
-        $users = User::searchByCity($app->db, $filterCity);
+        $allUsers = User::searchByCity($app->db, $filterCity);
     } else {
-        $users = User::getAllUsers($app->db);
+        $allUsers = User::getAllUsers($app->db);
     }
 
+    $totalCount = count($allUsers);
+    $lastPage = (int) ceil($totalCount / $limit);
+
+    // Slice users for current page
+    $users = array_slice($allUsers, $offset, $limit);
+
+    $meta = [
+        'count' => $totalCount,
+        'page' => $page,
+        'limit' => $limit,
+        'prev_page' => $page > 1 ? $page - 1 : null,
+        'next_page' => $page < $lastPage ? $page + 1 : null,
+        'last_page' => $lastPage,
+    ];
+
     echo json_encode([
-        'data' => User::collectionToJsonApi($users)
+        'data' => User::collectionToJsonApi($users),
+        'meta' => $meta,
     ]);
 }
 
