@@ -22,8 +22,8 @@ RewriteRule ^$ index.php [L]
 RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule ^ - [L]
 
-# 6. The Main Fallback
-# Send everything else to main.php
+# 6. The Router Fallback
+# Send everything else to router.php
 # We check that it's NOT index.php to avoid internal recursion
 RewriteCond %{REQUEST_URI} !index\.php
-RewriteRule ^(.*)$ main.php?url=$1 [QSA,L]
+RewriteRule ^(.*)$ router.php?url=$1 [QSA,L]
