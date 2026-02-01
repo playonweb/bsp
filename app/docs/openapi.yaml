@@ -1,0 +1,209 @@
+openapi: 3.1.0
+info:
+  title: Registry of contacts
+  version: 1.0.0
+  description: |
+    A Better Stack's PHP Test Application.
+    A premium, production-ready user management system built for the Better Stack Senior Fullstack Engineer challenge.
+
+servers:
+  - url: 'http://{localHost}'
+    description: Local server
+    variables:
+      localHost:
+        default: 'localhost:8080'
+  - url: 'https://{prodHost}'
+    description: Production server
+    variables:
+      prodHost:
+        default: contact-registry.playonweb.org
+
+paths:
+  /api/v1/users:
+    get:
+      summary: List users
+      description: Get all users or filter by city with pagination.
+      parameters:
+        - $ref: '#/components/parameters/CityFilter'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Paginated list of users
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+
+    post:
+      summary: Create a user
+      description: Create a new user using JSON:API format.
+      requestBody:
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid JSON
+        '422':
+          description: Validation errors
+
+  /api/v1/users/{id}:
+    get:
+      summary: Get a user by ID
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: User found
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+
+  /api/v1/users/cities:
+    get:
+      summary: List all cities
+      responses:
+        '200':
+          description: List of unique cities
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: string
+                    examples:
+                      - Prague
+                      - Paris
+                      - London
+
+components:
+  parameters:
+    CityFilter:
+      name: city
+      in: query
+      description: Filter users by city
+      required: false
+      schema:
+        type: string
+
+    Page:
+      name: page
+      in: query
+      description: Page number
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    Limit:
+      name: limit
+      in: query
+      description: Number of items per page
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 20
+
+    UserId:
+      name: id
+      in: path
+      description: User ID
+      required: true
+      schema:
+        type: integer
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          examples:
+            - 42
+        type:
+          type: string
+          examples:
+            - users
+        attributes:
+          type: object
+          properties:
+            name:
+              type: string
+              examples:
+                - John Doe
+            email:
+              type: string
+              examples:
+                - john@examples.com
+            city:
+              type: string
+              examples:
+                - Prague
+
+    PaginationMeta:
+      type: object
+      properties:
+        count:
+          type: integer
+          examples:
+            - 50
+        page:
+          type: integer
+          examples:
+            - 1
+        limit:
+          type: integer
+          examples:
+            - 20
+        prev_page:
+          type: [integer, "null"]
+          examples:
+            - null
+        next_page:
+          type: [integer, "null"]
+          examples:
+            - 2
+        last_page:
+          type: integer
+          examples:
+            - 3
+
+    UserCreateRequest:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            type:
+              type: string
+              examples:
+                - users
+            attributes:
+              type: object
+              examples:
+                - name: John Doe
+                  email: john@examples.com

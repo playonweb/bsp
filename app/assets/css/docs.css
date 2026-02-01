@@ -1,0 +1,72 @@
+    body {
+      background-color: #0d1117;
+      min-height: 100vh;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(13, 17, 23, 0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #30363d;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    nav .brand {
+      color: #e6edf3;
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    nav .links {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    nav .links a {
+      color: #8b949e;
+      text-decoration: none;
+      font-size: 0.85rem;
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    nav .links a:hover {
+      color: #e6edf3;
+      background: #161b22;
+      border-color: #30363d;
+    }
+
+    nav .links a.highlight {
+      color: #388bfd;
+      border-color: #1f6feb33;
+      background: #1f6feb11;
+    }
+
+    nav .links a.highlight:hover {
+      background: #1f6feb22;
+      border-color: #1f6feb66;
+    }
+
+    .markdown-body {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem 5rem;
+    }
+
+    /* Loading state */
+    #content:empty::after {
+      content: 'Loading…';
+      color: #484f58;
+      font-size: 0.9rem;
+      font-style: italic;
+    }

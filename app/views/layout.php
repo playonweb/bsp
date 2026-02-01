@@ -47,6 +47,11 @@
         <span class="font-bold text-base sm:text-lg tracking-tight">Better Stack</span>
         <span class="text-xs text-neutral-500">PHP Test Application</span>
       </div>
+      <div class="links">
+        <a href="/docs/challenges.php" class="highlight"><i class="pi pi-file"></i> Challenges</a>
+        <a href="/docs/solutions.php"><i class="pi pi-file"></i> Solutions</a>
+        <a href="/docs/openapi.php"><i class="pi pi-file"></i> API</a>
+      </div>
     </div>
   </nav>
 
