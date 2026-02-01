@@ -1,35 +1,45 @@
 version: '3'
 
+vars:
+  COMPOSE_FILE: .setup/docker-compose.yaml
+  ENV_FILE: .env
+
 tasks:
   up:
     desc: Start the development environment
     cmds:
-      - docker-compose -f .setup/docker-compose.yaml up -d --build
-    silent: false
+      - |
+        if [ -f {{.ENV_FILE}} ]; then
+          docker compose --env-file {{.ENV_FILE}} -f {{.COMPOSE_FILE}} up -d --build
+        else
+          docker compose -f {{.COMPOSE_FILE}} up -d --build
+        fi
 
   down:
     desc: Stop and clean up the development environment
     cmds:
-      - docker-compose -f .setup/docker-compose.yaml down -v
-    silent: false
+      - |
+        if [ -f {{.ENV_FILE}} ]; then
+          docker compose --env-file {{.ENV_FILE}} -f {{.COMPOSE_FILE}} down -v
+        else
+          docker compose -f {{.COMPOSE_FILE}} down -v
+        fi
 
   logs:
     desc: View application logs
     cmds:
-      - docker logs -f setup-app-1
-    silent: false
+      - docker compose -f {{.COMPOSE_FILE}} logs -f app
 
   db:
     desc: Access the database shell
     cmds:
-      - docker exec -it setup-db-1 mysql -u root -p'root' php_test
+      - docker compose -f {{.COMPOSE_FILE}} exec db mysql -u root -p$MYSQL_ROOT_PASSWORD $MYSQL_DATABASE
 
   reset:
     desc: Reset the database and restart services
     cmds:
       - task: down
       - task: up
-    silent: false
 
   default:
     desc: Show available tasks
