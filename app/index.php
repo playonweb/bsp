@@ -1,7 +1,6 @@
 <?php
-
 // Init app instance
-$app = require "../core/app.php";
+$app = require "./core/app.php";
 
 // Get all users from DB
 $users = User::find($app->db, '*', array(), array('created_at' => 'DESC'));
