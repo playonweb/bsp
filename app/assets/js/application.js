@@ -32,8 +32,51 @@ window.initApp = function(initialData) {
         closeForm() { if (this.isMobile) this.formVisible = false; },
 
         validateField(field) {
-            // ... (Your existing validation logic remains here) ...
-        },
+			switch (field) {
+				case 'name':
+					if (!this.newUser.name || this.newUser.name.length < 2) {
+						this.errors.name = 'Name must be at least 2 characters';
+					} else if (!/^[a-zA-Z\s\-'\.]+$/.test(this.newUser.name)) {
+						this.errors.name = 'Name contains invalid characters';
+					} else {
+						delete this.errors.name;
+					}
+					break;
+
+				case 'email':
+					const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+					if (!this.newUser.email) {
+						this.errors.email = 'Email is required';
+					} else if (!emailRegex.test(this.newUser.email)) {
+						this.errors.email = 'Invalid email format';
+					} else {
+						delete this.errors.email;
+					}
+					break;
+
+				case 'city':
+					if (!this.newUser.city || this.newUser.city.length < 2) {
+						this.errors.city = 'City must be at least 2 characters';
+					} else if (!/^[a-zA-Z\s\-]+$/.test(this.newUser.city)) {
+						this.errors.city = 'City contains invalid characters';
+					} else {
+						delete this.errors.city;
+					}
+					break;
+
+				case 'phone':
+					if (this.newUser.phoneNumber) {
+						if (!/^\d{7,12}$/.test(this.newUser.phoneNumber)) {
+							this.errors.phone = 'Phone must be 7-12 digits';
+						} else {
+							delete this.errors.phone;
+						}
+					} else {
+						delete this.errors.phone;
+					}
+					break;
+			}
+		},
 
         // API Methods
         async handleSearch() {
