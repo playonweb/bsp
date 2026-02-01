@@ -5,7 +5,7 @@
  */
 
 // Initialize app
-$app = require "../core/app.php";
+$app = require "../../core/app.php";
 
 // Set JSON header for consistent API responses
 header('Content-Type: application/json');
@@ -38,9 +38,9 @@ try {
 
 /**
  * Handle GET requests
- * - GET /api/user.php → List all users
- * - GET /api/user.php?city=X → Filter by city
- * - GET /api/user.php?action=cities → Get unique cities
+ * - GET /api/v1/user.php → List all users
+ * - GET /api/v1/user.php?city=X → Filter by city
+ * - GET /api/v1/user.php?action=cities → Get unique cities
  */
 function handleGet($app)
 {
@@ -85,7 +85,7 @@ function handleGet($app)
 
 /**
  * Handle POST requests
- * - POST /api/user.php → Create new user
+ * - POST /api/v1/user.php → Create new user
  */
 function handlePost($app)
 {
