@@ -30,6 +30,11 @@ tasks:
     cmds:
       - docker compose -f {{.COMPOSE_FILE}} logs -f app
 
+  console:
+    desc: Access the application console
+    cmds:
+      - docker compose -f {{.COMPOSE_FILE}} exec app bash
+
   db:
     desc: Access the database shell
     cmds:
