@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Better Stack | Personnel Registry</title>
+  <title>Registry of contacts</title>
   <link href="/favicon.ico" rel="icon" type="image/x-icon" />
 
   <!-- Tailwind CSS -->
@@ -41,9 +41,10 @@
     <div class="max-w-6xl mx-auto flex items-center">
       <div class="flex items-center gap-3">
         <div class="w-7 h-7 bg-white rounded-lg flex items-center justify-center">
-          <i class="pi pi-bolt text-black text-[10px]"></i>
+          <img src="/favicon.ico" alt="Logo" class="w-full h-full object-contain">
         </div>
         <span class="font-bold text-base sm:text-lg tracking-tight">Better Stack</span>
+        <span class="text-xs text-neutral-500">PHP Test Application</span>
       </div>
     </div>
   </nav>
@@ -54,7 +55,7 @@
 
   <footer
     class="mt-auto py-10 text-center text-neutral-600 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em]">
-    &copy; <?= date('Y') ?> Better Stack Personnel Registry
+    &copy; <?= date('Y') ?> Registry of contacts
   </footer>
 </body>
 

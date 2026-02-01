@@ -59,8 +59,8 @@ $countryCodes = [
 		<!-- Dashboard Header -->
 		<div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 sm:gap-6">
 			<div>
-				<h1 class="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white">Personnel</h1>
-				<p class="text-neutral-500 font-medium mt-1 text-sm sm:text-base">Registry of all team members.</p>
+				<h1 class="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white">Registry</h1>
+				<p class="text-neutral-500 font-medium mt-1 text-sm sm:text-base">Contacts and locations of people.</p>
 			</div>
 
 			<div class="relative w-full sm:w-72 group">

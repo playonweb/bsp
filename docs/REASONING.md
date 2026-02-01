@@ -1,6 +1,6 @@
 # Technical Reasoning & Architecture Decisions
 
-*Better Stack Personnel Registry - Senior Fullstack Engineer Challenge*
+*Better Stack Contact Registry - Senior Fullstack Engineer Challenge*
 
 ---
 
