@@ -24,26 +24,33 @@ Open http://localhost:8080
 
 ## 🛠 Tech Stack
 
-- **Backend**: PHP 7.4 (Custom Framework)
+- **Backend**: PHP 7.4 (Custom Betterstack's Framework)
 - **Database**: MySQL 8.0
-- **Frontend**: Petite Vue (6kb Reactive Core), Tailwind CSS 4.0
+- **Frontend**: Petite Vue (6KB Reactive Core), Browser Tailwind CSS 4.0
 - **Icons**: PrimeIcons
 - **Infrastructure**: Docker / Apache
 
 ## 📐 Project Structure
 
-```text
+```sh
 app/
-├── api/            # Standalone AJAX endpoints (CREATE, SEARCH)
-├── controllers/    # Business logic (Optional use)
+├── assets/         # JS and CSS assets
+├── config/         # Configuration files
 ├── core/           # Framework core (Untouched)
-├── database/       # SQL schema and migrations
-├── views/          # Apple-themed layouts and pages
-└── index.php       # Entry point
+├── controllers/api # Standalone AJAX endpoints (CREATE, SEARCH)
+├── database/       # SQL schema and seeds
+├── models/         # Data Models
+├── views/          # Layouts and pages
+├── .htaccess       # Gateway
+├── favicon.ico     # Favicon (Untouched)
+├── router.php      # Handle API routing as per JSON API standards
+└── index.php       # Entry point (Untouched)
 .setup/             # Docker configuration
+docs/               # Documentation
+env.example         # Environment variables
 ```
-
 ## 📝 Detailed Choices
 
 For a deep dive into the technical decisions regarding Database, Security, and Frontend, please refer to:
-👉 **[REASONING.md](REASONING.md)**
+
+👉 **[docs/solutions.md](docs/solutions.md)**
