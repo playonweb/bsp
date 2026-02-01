@@ -67,7 +67,7 @@ I assume the following:
 What I would improve if I had more time:
 
 1. Integrate all betterstack services: uptime, telemetry, warehouse & error tracking etc.
-1. Tests, ci/cd, cdn etc all common stuff.
+1. Unit/integration tests, api contracts, ci/cd, cdn etc all common stuff.
 1. Pagination for better UX, SSR few rows only instead of whole user's table rest of the user's can be fetched after hydration.
 1. Compile & tree shake tailwind, primeicons & use vuejs instead of petite-vue
 1. Captcha & rate limiting for security. MyISAM engine was a bottleneck acting like a dirty rate limiter, now it's InnoDB.
