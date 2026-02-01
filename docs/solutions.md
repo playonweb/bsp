@@ -1,50 +1,70 @@
-## Identified Problems
+## Assumptions
+I assume the following:
 
-Since the given challenge is pretty vague, open and it has numerous possible solutions and I am not sure which one is expected or not expected. So I hope the examiner will also score it with open mind and not have any already fixed existing solutions in their mind they are waiting for other than the expectations which are clearly written.
-
-- The Engine: MyISAM does not support row-level locking (it locks the whole table for writes), which is a bottleneck for high-concurrency systems.
-- Must replace MyISAM with InnoDB for production ready.
-- Column Types: Using TEXT for name, email, and city prevents you from using standard B-Tree indexing effectively.
-
+- The `core` framework files should not be changed, even if there is space for improvements, otherwise it will lose the originality of the framework.
+- Low traffic
+- Single page Create & Read
+- Single table
+- No auth
 
 ## System Design
 
+### Requirements
+
+#### Functional
+- Client can create users
+- Client can read users
+- Client can filter users by city
+
+#### Non-functional
+
+### Core Entities
+
+### API Endpoints
+
+### Data Flow
 
 
-## Final Decisions
+### High Level Design
 
-### Database Decisions
 
-1. Why estimate system design for 2.1B means more than average population of a country, no duplicates, no spams.
-Given schema has int(11) means 2,147,483,647 signed int means 2.1 Billion rows max, since it's city filter not zip, country so maybe its limited to one country and 2.1B is more than enough for most of the countries.
-
-1. Why InnoDB instead of MyISAM
-MyISAM means maybe it's a private app for only one person but maybe interviewer is expecting me to fix it and make it InnoDB which is impossible for me to guess but to be on the safe side it's better to give optimal solution so I will use InnoDB.
-
-1. Why indexing city column
-column `city` text can't do B-tree indexing well for filter by city which is required.
-
-### Security Decisions
-
-1. Why added [app/config/routes.php](../app/config/routes.php) and [app/core/router.php](../app/core/router.php) to limit the access.
-1. 
+### Deep Dive
 
 
 
-### Frontend Decisions
+## Final Decisions (Trade-offs)
+
+1. No separate cities table or migration, overkill for scope.
+
+1. The Engine: MyISAM does not support row-level locking (it locks the whole table for writes), which is a bottleneck for high-concurrency systems.
+
+1. BIGINT for id to future-safe. because BIGINT can store up to 9,223,372,036,854,775,807 rows means 9.2 quintillion rows which is more than enough for any application.
+
+1. Indexing city column, because we are filtering by city.
+
+1. `KEY city_idx (city)` to speed up the query by caching the result of the query.
+
+1. VARCHAR instead of TEXT to limit the size of the column.
+
+1. JQuery and fonts are dependencies of the bootstrap, so I will not remove it because I'm using Tailwind CSS.
+
+1. As there is no restriction on using any libraries, I will use petite-vue and primeicons for better UX & DX.
 
 1. Removed jquery, bootstrap and it's fonts instead using petite-vue, tailwind and primeicons via CDN as a quick-dirty strategy in the future of course it should be compiled and tree shakened.
 
 1. Removed shortcut icon because it is outdated.
-`<link href="favicon.ico" type="image/x-icon" rel="shortcut icon" />
+`<link href="favicon.ico" type="image/x-icon" rel="shortcut icon" />`
 
-1. Why to add security maybe csrf/sql injection maybe simple auth, idempotency, simple captcha etc
-
-1. Why pagination
+1. Why not pagination?
+- Since it loads all rows at once, it keeps JS simple and avoids premature pagination.
 
 
 ## Future Scope
+What I would improve if I had more time:
 
-1. Add uptime link
-2. compile & tree shake tailwind, primeicons & use vuejs instead of petite-vue
-3. add CF tunnel auth `@betterstack.com` only logins
+1. Integrate betterstack's uptime, telemetry, warehouse & error tracking.
+1. Pagination for better UX.
+1. Compile & tree shake tailwind, primeicons & use vuejs instead of petite-vue
+1. Captcha & rate limiting for security. MyISAM engine's bottleneck is kind of rate limiting.
+1. Guard from sql injections, cross-site scripting (XSS), like basic attacks. restrict CORS.
+1. API idempotency.
