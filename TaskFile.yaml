@@ -1,6 +1,36 @@
 version: '3'
 
 tasks:
+  up:
+    desc: Start the development environment
+    cmds:
+      - docker-compose -f .setup/docker-compose.yaml up -d --build
+    silent: false
+
+  down:
+    desc: Stop and clean up the development environment
+    cmds:
+      - docker-compose -f .setup/docker-compose.yaml down -v
+    silent: false
+
+  logs:
+    desc: View application logs
+    cmds:
+      - docker logs -f setup-app-1
+    silent: false
+
+  db:
+    desc: Access the database shell
+    cmds:
+      - docker exec -it setup-db-1 mysql -u root -p'root' php_test
+
+  reset:
+    desc: Reset the database and restart services
+    cmds:
+      - task: down
+      - task: up
+    silent: false
+
   default:
     desc: Show available tasks
     cmds:

@@ -1,1 +1,31 @@
-# todo
+services:
+  app:
+    build:
+      context: ../
+      dockerfile: .setup/Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - ../app:/var/www/html
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_NAME=php_test
+      - DB_USER=root
+      - DB_PASS=root
+
+  db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=php_test
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ../app/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    command: --default-authentication-plugin=mysql_native_password
+
+volumes:
+  db_data:
