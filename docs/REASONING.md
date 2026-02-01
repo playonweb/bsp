@@ -192,14 +192,14 @@ echo json_encode(['errors' => ['email' => 'Invalid email format']]);
 
 **Original**: Multiple scattered endpoints (`/api/create.php`, `/api/search.php`).
 
-**Decision**: Consolidate into a **single endpoint** (`/api/user.php`).
+**Decision**: Consolidate into a **single endpoint** (`/api/v1/user.php`).
 
 **Reasoning**:
 - **HTTP Semantics**:
-  - `GET /api/user.php` → List all users
-  - `GET /api/user.php?city=X` → Filter by city
-  - `POST /api/user.php` → Create user
-  - `GET /api/user.php?action=cities` → Get unique cities
+  - `GET /api/v1/user.php` → List all users
+  - `GET /api/v1/user.php?city=X` → Filter by city
+  - `POST /api/v1/user.php` → Create user
+  - `GET /api/v1/user.php?action=cities` → Get unique cities
 - **Maintainability**: Single entry point simplifies debugging and versioning.
 - **Scalability**: Easier to add middleware (auth, rate limiting) in the future.
 
@@ -231,7 +231,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
 ### 5.1 Lazy Loading Cities
 
-**Decision**: Fetch the cities list on-demand via `GET /api/user.php?action=cities`.
+**Decision**: Fetch the cities list on-demand via `GET /api/v1/user.php?action=cities`.
 
 **Reasoning**:
 - **Initial Load**: Reduces payload size on page load.
@@ -265,7 +265,7 @@ const debounce = (fn, delay) => {
 **Constraint**: Cannot modify `app/core/*.php`.
 
 **Solution**:
-- All business logic resides in `app/api/user.php`.
+- All business logic resides in `app/api/v1/user.php`.
 - Leveraged existing `BaseModel` and `Database` classes.
 
 ---

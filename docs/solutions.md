@@ -6,6 +6,7 @@ I assume the following:
 - Single page Create & Read
 - Single table
 - No auth
+- No duplicates entries of email and phone.
 
 ## System Design
 
@@ -68,3 +69,7 @@ What I would improve if I had more time:
 1. Captcha & rate limiting for security. MyISAM engine's bottleneck is kind of rate limiting.
 1. Guard from sql injections, cross-site scripting (XSS), like basic attacks. restrict CORS.
 1. API idempotency.
+1. Create `GET /api/v1/users/cities` Endpoint. Convert filter by city search box into a dropdown with internal search of all the available cities.
+
+1. throwing connection error on bad servers side validation
+1. let [ENTER] button submit the form
