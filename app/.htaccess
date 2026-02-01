@@ -24,6 +24,4 @@ RewriteRule ^ - [L]
 
 # 6. The Router Fallback
 # Send everything else to router.php
-# We check that it's NOT index.php to avoid internal recursion
-RewriteCond %{REQUEST_URI} !index\.php
 RewriteRule ^(.*)$ router.php?url=$1 [QSA,L]
