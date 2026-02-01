@@ -13,9 +13,9 @@ I assume the following:
 ### Requirements
 
 #### Functional
-- Client can create users
+- Client can create users with AJAX
 - Client can read users
-- Client can filter users by city
+- Client can filter users by city with AJAX
 
 #### Non-functional
 
@@ -59,6 +59,9 @@ I assume the following:
 1. Why not pagination?
 - Since it loads all rows at once, it keeps JS simple and avoids premature pagination.
 
+1. Why Docker & docker-compose?
+- To save time in setting up the environment and easily host it over my own home lab.
+
 
 ## Future Scope
 What I would improve if I had more time:
@@ -70,6 +73,8 @@ What I would improve if I had more time:
 1. Guard from sql injections, cross-site scripting (XSS), like basic attacks. restrict CORS.
 1. API idempotency.
 1. Create `GET /api/v1/users/cities` Endpoint as per [JSON API](https://jsonapi.org/format/). Convert filter by city search box into a dropdown with internal search of all the available cities.
-
+1. Separate production stage in Dockerfile from development & testing stage.
+1. Find a rhobust strategy to migrate database changes.
+1. Anti web scraper strategies. Obfuscate the email and phone number from bots.
 1. fix: throwing connection error on bad servers side validation
 1. let [ENTER] button submit the form
