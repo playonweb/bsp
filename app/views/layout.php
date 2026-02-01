@@ -20,7 +20,8 @@
   <script type="importmap">
   {
     "imports": {
-      "petite-vue": "https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js"
+      "petite-vue": "https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js",
+      "sdk": "/assets/js/sdk.js"
     }
   }
   </script>
