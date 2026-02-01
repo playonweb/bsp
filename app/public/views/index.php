@@ -56,7 +56,7 @@ sort($uniqueCities);
 
 	async loadCities() {
 		try {
-			const res = await fetch('/api/v1/user.php?action=cities');
+			const res = await fetch('/api/v1/users?action=cities');
 			if (res.ok) {
 				this.allCities = await res.json();
 			}
@@ -69,8 +69,8 @@ sort($uniqueCities);
 		this.loading = true;
 		try {
 			const url = this.searchQuery 
-				? `/api/v1/user.php?city=${encodeURIComponent(this.searchQuery)}`
-				: '/api/v1/user.php';
+				? `/api/v1/users?city=${encodeURIComponent(this.searchQuery)}`
+				: '/api/v1/users';
 			const res = await fetch(url);
 			if (res.ok) {
 				this.users = await res.json();
@@ -88,7 +88,7 @@ sort($uniqueCities);
 		this.errors = {};
 		
 		try {
-			const res = await fetch('/api/v1/user.php', {
+			const res = await fetch('/api/v1/users', {
 				method: 'POST',
 				headers: { 
 					'Content-Type': 'application/json',

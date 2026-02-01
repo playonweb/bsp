@@ -1,4 +1,39 @@
+# 1. Initialization
+Options -Indexes +FollowSymLinks
 RewriteEngine On
+RewriteBase /
+
+# Prevent access to sensitive files
+<FilesMatch "^\.|\.(json|log|yml|yaml|sql)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# 2. Prevent loops & protect system folders
+RewriteRule ^(public|controllers)/ - [L]
+
+# 3. API Routing: /api/v1/users -> /controllers/api/v1/users.php
+# We use %{REQUEST_URI} but strip the /api/ prefix for the file check
+RewriteCond %{REQUEST_URI} ^/api/(.+)$
+RewriteCond %{DOCUMENT_ROOT}/controllers/api/%1.php -f
+RewriteRule ^api/(.+)$ controllers/api/$1.php [L,QSA]
+
+# 4. Fallback for API (if the .php extension is already there or it's a dir)
+RewriteCond %{REQUEST_URI} ^/api/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^api/(.+)$ controllers/api/$1 [L,QSA]
+
+# 5. Public Assets & SEO Friendly URLs
+# Check if file exists in /public/
+RewriteCond %{DOCUMENT_ROOT}/public/$1 -f
+RewriteRule ^(.+)$ public/$1 [L]
+
+# Check if adding .php to /public/path works
+RewriteCond %{DOCUMENT_ROOT}/public/$1.php -f
+RewriteRule ^(.+)$ public/$1.php [L,QSA]
+
+# 6. Final Fallback
+RewriteRule ^$ public/ [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php [L,QSA]
+RewriteRule ^(.+)$ public/index.php [L,QSA]
