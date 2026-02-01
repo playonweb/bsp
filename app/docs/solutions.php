@@ -7,22 +7,27 @@
   <title>Markdown Docs</title>
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-dark.min.css">
-  <link rel="stylesheet" href="/assets/css/docs.css">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 
-<body>
+<body class="bg-[#0d1117] min-h-screen m-0 font-sans text-white">
 
-  <nav>
-    <a href="#" class="brand">📄 Docs</a>
-    <div class="links">
-      <a href="/">Home</a>
-      <a href="/docs/challenges.php">Challenges</a>
-      <a href="/docs/solutions.php" class="highlight">Solutions</a>
-      <a href="/docs/openapi.php">API</a>
+  <nav
+    class="flex items-center justify-between px-8 py-4 bg-[#0d1117]/80 backdrop-blur-md border-b border-[#30363d] sticky top-0 z-50">
+    <a href="#" class="text-[#e6edf3] text-lg font-semibold no-underline">📄 Docs</a>
+    <div class="flex gap-2">
+      <a href="/"
+        class="text-[#8b949e] text-sm px-3 py-1.5 rounded-md hover:text-[#e6edf3] hover:bg-[#161b22] hover:border-[#30363d] transition-all border border-transparent">Home</a>
+      <a href="/docs/challenges.php"
+        class="text-[#8b949e] text-sm px-3 py-1.5 rounded-md hover:text-[#e6edf3] hover:bg-[#161b22] hover:border-[#30363d] transition-all border border-transparent">Challenges</a>
+      <a href="/docs/solutions.php"
+        class="text-[#388bfd] bg-[#1f6feb11] border-[#1f6feb33] text-sm px-3 py-1.5 rounded-md transition-all border">Solutions</a>
+      <a href="/docs/openapi.php"
+        class="text-[#8b949e] text-sm px-3 py-1.5 rounded-md hover:text-[#e6edf3] hover:bg-[#161b22] hover:border-[#30363d] transition-all border border-transparent">API</a>
     </div>
   </nav>
 
-  <article class="markdown-body" id="content"></article>
+  <article class="markdown-body max-w-3xl mx-auto px-8 py-10 pb-20" id="content"></article>
 
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>

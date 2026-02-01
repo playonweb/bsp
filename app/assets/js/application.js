@@ -13,23 +13,74 @@ window.initApp = function(initialData) {
         errors: {},
         showCityDropdown: false,
         cityFilter: '',
-        formVisible: window.innerWidth >= 768,
-        isMobile: window.innerWidth < 768,
+        formVisible: window.innerWidth >= 1024,
+        isMobile: window.innerWidth < 1024,
+        
+        // Pagination & UI State
+        page: 1,
+        hasMore: true,
+        loadingMore: false,
+        globalError: null,
+        
+        // Visiting Card State
+        selectedUser: null,
+        cardLoading: false,
+        cardVisible: false,
 
-        get filteredCitiesList() {
+        // Getters
+        get filteredCities() {
             if (!this.cityFilter) return this.allCities;
-            return this.allCities.filter(c => c.toLowerCase().includes(this.cityFilter.toLowerCase()));
+            const lower = this.cityFilter.toLowerCase();
+            return this.allCities.filter(c => c.toLowerCase().includes(lower));
         },
 
-        // Logic Helpers
-        getInitials: (name) => name.split(' ').map(n => n[0]).join('').toUpperCase(),
+        getInitials: (name) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2),
+        
         selectCity(city) {
             this.newUser.city = city;
             this.showCityDropdown = false;
             this.cityFilter = '';
         },
-        toggleForm() { this.formVisible = !this.formVisible; },
-        closeForm() { if (this.isMobile) this.formVisible = false; },
+        
+        toggleForm() { 
+            this.formVisible = !this.formVisible; 
+        },
+        
+        closeForm() { 
+            if (this.isMobile) this.formVisible = false; 
+        },
+
+        closeDropdowns() {
+            this.showCityDropdown = false;
+        },
+
+        // Visiting Card Logic
+        async openCard(user) {
+            this.selectedUser = { ...user }; // Show what we have initially (Name, City)
+            this.cardVisible = true;
+            this.cardLoading = true;
+            try {
+                // Fetch full details
+                const fullUser = await UserSDK.fetchUser(user.id);
+                this.selectedUser = fullUser;
+            } catch (e) {
+                console.error("Failed to fetch user details", e);
+                this.globalError = "Could not fetch contact details.";
+            } finally {
+                this.cardLoading = false;
+            }
+        },
+
+        closeCard() {
+            this.cardVisible = false;
+            setTimeout(() => this.selectedUser = null, 300); // Wait for animation
+        },
+
+        copyToClipboard(text) {
+            if (!text) return;
+            navigator.clipboard.writeText(text);
+            // Optional: toast
+        },
 
         validateField(field) {
 			switch (field) {
@@ -81,12 +132,36 @@ window.initApp = function(initialData) {
         // API Methods
         async handleSearch() {
             this.loading = true;
+            this.page = 1;
             try {
-                this.users = await UserSDK.fetchUsers(this.searchQuery);
+                const res = await UserSDK.fetchUsers({ city: this.searchQuery, page: 1, limit: 20 });
+                this.users = res.users;
+                this.hasMore = !!(res.meta && res.meta.next_page);
             } catch (e) {
                 console.error('Search error:', e);
+                this.globalError = 'Failed to search. Please check your connection.';
             } finally {
                 this.loading = false;
+            }
+        },
+
+        async loadMore() {
+            if (this.loadingMore || !this.hasMore) return;
+            this.loadingMore = true;
+            try {
+                const res = await UserSDK.fetchUsers({ 
+                    city: this.searchQuery, 
+                    page: this.page + 1,
+                    limit: 20
+                });
+                this.users = [...this.users, ...res.users];
+                this.page = res.meta.page;
+                this.hasMore = !!res.meta.next_page;
+            } catch (e) {
+                console.error('Load more error:', e);
+                this.globalError = 'Failed to load more. Please try again.';
+            } finally {
+                this.loadingMore = false;
             }
         },
 
@@ -122,20 +197,56 @@ window.initApp = function(initialData) {
                 this.closeForm();
 
             } catch (err) {
-                if (err.errors) {
+                console.error("Submit Error", err);
+                if (err && err.errors) {
                     this.errors = {};
                     err.errors.forEach(e => {
                         const field = e.source?.pointer?.split('/').pop();
                         if (field) this.errors[field] = e.detail;
                     });
+                } else if (err && (err.detail || err.title)) {
+                    const msg = err.detail || err.title;
+                    this.globalError = msg;
+                    setTimeout(() => this.globalError = null, 5000);
                 } else {
-                    alert('An unexpected error occurred.');
+                    this.globalError = 'Connection Error: Unable to reach server.';
+                    setTimeout(() => this.globalError = null, 5000);
                 }
             } finally {
                 this.submitting = false;
             }
+        },
+
+        initInfiniteScroll() {
+            const sentinel = document.getElementById('scroll-sentinel');
+            if (!sentinel) return;
+
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && this.hasMore && !this.loadingMore) {
+                    this.loadMore();
+                }
+            }, { rootMargin: '200px' });
+
+            observer.observe(sentinel);
         }
     };
 
-    createApp({ appState }).mount();
+    // Responsive listener
+    window.addEventListener('resize', () => {
+        const wasMobile = appState.isMobile;
+        appState.isMobile = window.innerWidth < 1024;
+        
+        if (appState.isMobile && !wasMobile) {
+            appState.formVisible = false; 
+        } else if (!appState.isMobile && wasMobile) {
+            appState.formVisible = true;
+        }
+    });
+
+    createApp({ 
+        appState,
+        mounted() {
+            this.appState.initInfiniteScroll();
+        }
+    }).mount();
 };

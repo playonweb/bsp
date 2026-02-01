@@ -18,6 +18,32 @@ $routes = [
     ]
 ];
 
+// Rate Limiting
+function checkRateLimit($limit = 60, $seconds = 60)
+{
+    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $file = sys_get_temp_dir() . '/rate_limit_' . md5($ip);
+
+    $data = file_exists($file) ? json_decode(file_get_contents($file), true) : ['count' => 0, 'start_time' => time()];
+
+    if (time() - $data['start_time'] > $seconds) {
+        $data = ['count' => 1, 'start_time' => time()];
+    } else {
+        $data['count']++;
+    }
+
+    if ($data['count'] > $limit) {
+        sendJsonApiError(429, 'Too Many Requests');
+    }
+
+    file_put_contents($file, json_encode($data));
+}
+
+// Apply rate limiting only to API routes
+if (isApiRequest($segments)) {
+    checkRateLimit();
+}
+
 if (isApiRequest($segments)) {
     // 1. Find a match
     $controller = null;
@@ -46,8 +72,7 @@ if (isApiRequest($segments)) {
     } else {
         sendJsonApiError(404, "$url route not found");
     }
-} 
-else {
+} else {
     header("Location: /", true, 302);
     exit;
 }
