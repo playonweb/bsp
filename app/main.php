@@ -3,7 +3,7 @@ $url = $_GET['url'] ?? '';
 $url = rtrim($url, '/');
 $segments = explode('/', $url);
 
-// --- 1. API ROUTING ---
+// --- API ROUTING ---
 if (isApiRequest($segments)) {
     header('Content-Type: application/json');
 
@@ -28,6 +28,7 @@ if (isApiRequest($segments)) {
     }
     exit;
 } else {
+    // --- FALLBACK ---
     header("Location: /", true, 302);
     exit;
 }

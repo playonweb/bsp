@@ -1,11 +1,29 @@
+# 1. Basic Security Settings
+Options -Indexes +FollowSymLinks -MultiViews
 RewriteEngine On
+RewriteBase /
 
-# 1. if / then call index.php
+# 2. Block sensitive folders (Security)
+# This returns a 403 Forbidden for any direct access to your framework logic
+RewriteRule ^(views|models|database|core|controllers|config|logs)\b - [F,L]
+
+# 3. Block sensitive files
+<FilesMatch "^\.|\.(json|log|yml|yaml|sql|ini)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# 4. Handle the Root
+# If the URL is empty, just serve index.php
 RewriteRule ^$ index.php [L]
 
-# 2. If it's a real file (like image.jpg or index.php), stop and serve it
+# 5. Serve Real Files (Images, JS, CSS)
+# If the file exists on the disk, stop here and show it
 RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule ^ - [L]
 
-# 3. Otherwise, send it to the router
-RewriteRule ^(.*)$ router.php?url=$1 [QSA,L]
+# 6. The Main Fallback
+# Send everything else to main.php
+# We check that it's NOT index.php to avoid internal recursion
+RewriteCond %{REQUEST_URI} !index\.php
+RewriteRule ^(.*)$ main.php?url=$1 [QSA,L]
