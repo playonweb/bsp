@@ -28,23 +28,25 @@ SET time_zone = "+00:00";
 
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` text NOT NULL,
-  `email` text NOT NULL,
-  `city` text NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `city` varchar(255) NOT NULL,
+  `phone` varchar(20) DEFAULT NULL,
   `created_at` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+  PRIMARY KEY (`id`),
+  KEY `city_idx` (`city`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `city`, `created_at`) VALUES
-(1, 'Andrej', 'andrej@mail.test', 'Glasgow', '2013-09-19 22:20:19'),
-(2, 'Juraj', 'juraj@mail.test', 'Praha', '2013-09-19 22:20:34'),
-(3, 'Jožko', 'jozko@mail.test', 'Bratislava', '2013-09-19 22:21:04'),
-(4, 'Peter', 'peter@mail.test', 'Brno', '2013-09-19 22:21:17'),
-(5, 'Jon', 'jon@mail.test', 'New York', '2013-09-19 22:21:41');
+INSERT INTO `users` (`id`, `name`, `email`, `city`, `phone`, `created_at`) VALUES
+(1, 'Andrej', 'andrej@mail.test', 'Glasgow', '1234567890', '2013-09-19 22:20:19'),
+(2, 'Juraj', 'juraj@mail.test', 'Praha', '0987654321', '2013-09-19 22:20:34'),
+(3, 'Jožko', 'jozko@mail.test', 'Bratislava', NULL, '2013-09-19 22:21:04'),
+(4, 'Peter', 'peter@mail.test', 'Brno', NULL, '2013-09-19 22:21:17'),
+(5, 'Jon', 'jon@mail.test', 'New York', NULL, '2013-09-19 22:21:41');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
