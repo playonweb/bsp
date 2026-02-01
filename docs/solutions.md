@@ -66,17 +66,14 @@ I assume the following:
 ## Future Scope
 What I would improve if I had more time:
 
-1. Tests, ci/cd, cdn etc all common stuff.
 1. Integrate all betterstack services: uptime, telemetry, warehouse & error tracking etc.
-1. Pagination for better UX.
+1. Tests, ci/cd, cdn etc all common stuff.
+1. Pagination for better UX, SSR few rows only instead of whole user's table rest of the user's can be fetched after hydration.
 1. Compile & tree shake tailwind, primeicons & use vuejs instead of petite-vue
-1. Captcha & rate limiting for security. MyISAM engine's bottleneck is kind of rate limiting.
-1. Guard from sql injections, cross-site scripting (XSS), like basic attacks. restrict CORS.
+1. Captcha & rate limiting for security. MyISAM engine was a bottleneck acting like a dirty rate limiter, now it's InnoDB.
+1. More guards against basic attacks CORS, XSS, SQL injections etc.
 1. API idempotency.
-1. Create `GET /api/v1/users/cities` Endpoint as per [JSON API](https://jsonapi.org/format/). Convert filter by city search box into a dropdown with internal search of all the available cities.
 1. Separate production stage in Dockerfile from development & testing stage.
 1. Find a rhobust strategy to migrate database changes.
 1. Anti web scraper strategies. Obfuscate the email and phone number from bots.
 1. fix: throwing connection error on bad servers side validation
-1. let [ENTER] button submit the form
-1. fix api response error handling on the frontend
