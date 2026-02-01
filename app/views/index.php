@@ -6,126 +6,47 @@ if (!empty($users)) {
 	foreach ($users as $user) {
 		$initialUsers[] = [
 			'id' => $user->getId(),
-			'name' => (string) $user->getName(),
-			'email' => (string) $user->getEmail(),
-			'city' => (string) $user->getCity(),
-			'phone' => (string) $user->getPhone()
+			'name' => htmlspecialchars($user->getName(), ENT_QUOTES, 'UTF-8'),
+			'email' => htmlspecialchars($user->getEmail(), ENT_QUOTES, 'UTF-8'),
+			'city' => htmlspecialchars($user->getCity(), ENT_QUOTES, 'UTF-8'),
+			'phone' => $user->getPhone() ? htmlspecialchars($user->getPhone(), ENT_QUOTES, 'UTF-8') : ''
 		];
 		if ($user->getCity()) {
-			$cities[] = (string) $user->getCity();
+			$cities[] = htmlspecialchars($user->getCity(), ENT_QUOTES, 'UTF-8');
 		}
 	}
 }
 $uniqueCities = array_unique($cities);
 sort($uniqueCities);
+
+// Country codes for phone validation
+$countryCodes = [
+	'+1' => 'US/Canada',
+	'+44' => 'UK',
+	'+49' => 'Germany',
+	'+33' => 'France',
+	'+420' => 'Czech Republic',
+	'+421' => 'Slovakia',
+	'+91' => 'India',
+	'+86' => 'China',
+	'+81' => 'Japan'
+];
 ?>
 
-<div v-scope="{
-	users: <?= htmlspecialchars(json_encode($initialUsers)) ?>,
-	allCities: <?= htmlspecialchars(json_encode($uniqueCities)) ?>,
-	newUser: { name: '', email: '', city: '', phone: '' },
-	searchQuery: '',
-	loading: false,
-	submitting: false,
-	errors: {},
-	showCityDropdown: false,
-	cityFilter: '',
-	formVisible: window.innerWidth >= 768,
-	isMobile: window.innerWidth < 768,
-
-	get filteredCitiesList() {
-		if (!this.cityFilter) return this.allCities;
-		return this.allCities.filter(c => c.toLowerCase().includes(this.cityFilter.toLowerCase()));
-	},
-
-	selectCity(city) {
-		this.newUser.city = city;
-		this.showCityDropdown = false;
-		this.cityFilter = '';
-	},
-
-	toggleForm() {
-		this.formVisible = !this.formVisible;
-	},
-
-	closeForm() {
-		if (this.isMobile) {
-			this.formVisible = false;
-		}
-	},
-
-	async loadCities() {
-		try {
-			const res = await fetch('/api/v1/users?action=cities');
-			if (res.ok) {
-				this.allCities = await res.json();
-			}
-		} catch (e) {
-			console.error('Failed to load cities:', e);
-		}
-	},
-
-	async handleSearch() {
-		this.loading = true;
-		try {
-			const url = this.searchQuery 
-				? `/api/v1/users?city=${encodeURIComponent(this.searchQuery)}`
-				: '/api/v1/users';
-			const res = await fetch(url);
-			if (res.ok) {
-				this.users = await res.json();
-			}
-		} catch (e) {
-			console.error('Search error:', e);
-		} finally {
-			this.loading = false;
-		}
-	},
-
-	async handleSubmit() {
-		if (this.submitting) return;
-		this.submitting = true;
-		this.errors = {};
-		
-		try {
-			const res = await fetch('/api/v1/users', {
-				method: 'POST',
-				headers: { 
-					'Content-Type': 'application/json',
-					'Accept': 'application/json'
-				},
-				body: JSON.stringify(this.newUser)
+<!-- Initialize app with data -->
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		if (window.initApp) {
+			window.initApp({
+				users: <?= json_encode($initialUsers) ?>,
+				cities: <?= json_encode($uniqueCities) ?>,
+				countryCodes: <?= json_encode($countryCodes) ?>
 			});
-			
-			const data = await res.json();
-			
-			if (res.status === 201) {
-				this.users.unshift({
-					id: data.id,
-					...this.newUser
-				});
-				
-				if (this.newUser.city && !this.allCities.includes(this.newUser.city)) {
-					this.allCities.push(this.newUser.city);
-					this.allCities.sort();
-				}
-				
-				this.newUser = { name: '', email: '', city: '', phone: '' };
-				this.closeForm();
-			} else if (res.status === 422) {
-				this.errors = data.errors;
-			} else {
-				alert(data.message || data.error || 'Error occurred during registration.');
-			}
-		} catch (e) {
-			console.error('Submission error:', e);
-			alert('Connection failure. Is the database running?');
-		} finally {
-			this.submitting = false;
 		}
-	}
-}" @click="showCityDropdown = false" v-cloak>
+	});
+</script>
 
+<div v-scope="appState" @click="showCityDropdown = false" v-cloak>
 	<!-- Mobile Overlay -->
 	<div class="mobile-overlay mobile-only" :class="{'active': formVisible}" @click="closeForm()"></div>
 
@@ -162,7 +83,7 @@ sort($uniqueCities);
 						Add Member
 					</h2>
 
-					<div class="space-y-5">
+					<form @submit.prevent="handleSubmit" class="space-y-5">
 						<!-- Name Input -->
 						<div class="space-y-1.5">
 							<label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest ml-1">Full
@@ -170,9 +91,9 @@ sort($uniqueCities);
 							<div class="relative">
 								<i
 									class="pi pi-user absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600 text-xs"></i>
-								<input v-model="newUser.name" type="text" placeholder="John Appleseed"
-									class="input-apple w-full pl-11 pr-4 py-3 text-sm"
-									:class="{'border-red-500/40': errors.name}">
+								<input v-model="newUser.name" @blur="validateField('name')" type="text"
+									placeholder="John Appleseed" class="input-apple w-full pl-11 pr-4 py-3 text-sm"
+									:class="{'error': errors.name}" required>
 							</div>
 							<p v-if="errors.name" class="text-red-400 text-[10px] font-medium ml-1 mt-1">{{ errors.name
 								}}</p>
@@ -185,9 +106,9 @@ sort($uniqueCities);
 							<div class="relative">
 								<i
 									class="pi pi-envelope absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600 text-xs"></i>
-								<input v-model="newUser.email" type="email" placeholder="john@example.com"
-									class="input-apple w-full pl-11 pr-4 py-3 text-sm"
-									:class="{'border-red-500/40': errors.email}">
+								<input v-model="newUser.email" @blur="validateField('email')" type="email"
+									placeholder="john@example.com" class="input-apple w-full pl-11 pr-4 py-3 text-sm"
+									:class="{'error': errors.email}" required>
 							</div>
 							<p v-if="errors.email" class="text-red-400 text-[10px] font-medium ml-1 mt-1">{{
 								errors.email }}</p>
@@ -200,9 +121,10 @@ sort($uniqueCities);
 							<div class="relative" @click.stop="showCityDropdown = !showCityDropdown">
 								<i
 									class="pi pi-map-marker absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600 text-xs"></i>
-								<input v-model="newUser.city" type="text" placeholder="Select or type..."
+								<input v-model="newUser.city" @blur="validateField('city')" type="text"
+									placeholder="Select or type..."
 									class="input-apple w-full pl-11 pr-10 py-3 text-sm cursor-pointer"
-									:class="{'border-red-500/40': errors.city}">
+									:class="{'error': errors.city}" required>
 								<i class="pi pi-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-neutral-600 text-[10px] transition-transform"
 									:class="{'rotate-180': showCityDropdown}"></i>
 							</div>
@@ -235,25 +157,39 @@ sort($uniqueCities);
 								}}</p>
 						</div>
 
-						<!-- Phone Input -->
+						<!-- Phone Input with Country Code -->
 						<div class="space-y-1.5">
-							<label
-								class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest ml-1">Phone</label>
-							<div class="relative">
-								<i
-									class="pi pi-phone absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600 text-xs"></i>
-								<input v-model="newUser.phone" type="text" placeholder="+1 (408) 555-0123"
-									class="input-apple w-full pl-11 pr-4 py-3 text-sm">
+							<label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest ml-1">Phone
+								(Optional)</label>
+							<div class="flex gap-2">
+								<div class="relative w-32">
+									<select v-model="newUser.countryCode"
+										class="input-apple w-full pl-3 pr-8 py-3 text-sm appearance-none cursor-pointer">
+										<option v-for="(name, code) in countryCodes" :value="code">{{ code }}</option>
+									</select>
+									<i
+										class="pi pi-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-neutral-600 text-[10px] pointer-events-none"></i>
+								</div>
+								<div class="relative flex-1">
+									<i
+										class="pi pi-phone absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600 text-xs"></i>
+									<input v-model="newUser.phoneNumber" @blur="validateField('phone')" type="tel"
+										placeholder="1234567890" class="input-apple w-full pl-11 pr-4 py-3 text-sm"
+										:class="{'error': errors.phone}" pattern="[0-9]{7,12}">
+								</div>
 							</div>
+							<p v-if="errors.phone" class="text-red-400 text-[10px] font-medium ml-1 mt-1">{{
+								errors.phone }}</p>
+							<p class="text-neutral-600 text-[9px] ml-1 mt-1">Format: Country code + 7-12 digits</p>
 						</div>
 
-						<button @click="handleSubmit" :disabled="submitting"
-							class="btn-apple w-full py-4 mt-4 flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 active:scale-95 disabled:opacity-50">
+						<button type="submit" :disabled="submitting"
+							class="btn-apple w-full py-4 mt-4 flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed">
 							<i v-if="submitting" class="pi pi-spin pi-spinner text-sm"></i>
 							<i v-else class="pi pi-plus text-sm"></i>
 							<span>Register</span>
 						</button>
-					</div>
+					</form>
 				</div>
 			</div>
 
@@ -265,13 +201,13 @@ sort($uniqueCities);
 							<i class="pi pi-user-plus text-blue-500"></i>
 							Add Member
 						</h2>
-						<button @click="closeForm()"
+						<button @click="closeForm()" type="button"
 							class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
 							<i class="pi pi-times text-neutral-400"></i>
 						</button>
 					</div>
 
-					<div class="space-y-4">
+					<form @submit.prevent="handleSubmit" class="space-y-4">
 						<!-- Name Input -->
 						<div class="space-y-1.5">
 							<label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest ml-1">Full
@@ -279,9 +215,9 @@ sort($uniqueCities);
 							<div class="relative">
 								<i
 									class="pi pi-user absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600 text-xs"></i>
-								<input v-model="newUser.name" type="text" placeholder="John Appleseed"
-									class="input-apple w-full pl-11 pr-4 py-3 text-sm"
-									:class="{'border-red-500/40': errors.name}">
+								<input v-model="newUser.name" @blur="validateField('name')" type="text"
+									placeholder="John Appleseed" class="input-apple w-full pl-11 pr-4 py-3 text-sm"
+									:class="{'error': errors.name}" required>
 							</div>
 							<p v-if="errors.name" class="text-red-400 text-[10px] font-medium ml-1">{{ errors.name }}
 							</p>
@@ -294,24 +230,24 @@ sort($uniqueCities);
 							<div class="relative">
 								<i
 									class="pi pi-envelope absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600 text-xs"></i>
-								<input v-model="newUser.email" type="email" placeholder="john@example.com"
-									class="input-apple w-full pl-11 pr-4 py-3 text-sm"
-									:class="{'border-red-500/40': errors.email}">
+								<input v-model="newUser.email" @blur="validateField('email')" type="email"
+									placeholder="john@example.com" class="input-apple w-full pl-11 pr-4 py-3 text-sm"
+									:class="{'error': errors.email}" required>
 							</div>
 							<p v-if="errors.email" class="text-red-400 text-[10px] font-medium ml-1">{{ errors.email }}
 							</p>
 						</div>
 
-						<!-- City Input (Simplified for mobile) -->
+						<!-- City Input -->
 						<div class="space-y-1.5">
 							<label
 								class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest ml-1">City</label>
 							<div class="relative">
 								<i
 									class="pi pi-map-marker absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600 text-xs"></i>
-								<input v-model="newUser.city" type="text" placeholder="Enter city..."
-									class="input-apple w-full pl-11 pr-4 py-3 text-sm"
-									:class="{'border-red-500/40': errors.city}">
+								<input v-model="newUser.city" @blur="validateField('city')" type="text"
+									placeholder="Enter city..." class="input-apple w-full pl-11 pr-4 py-3 text-sm"
+									:class="{'error': errors.city}" required>
 							</div>
 							<p v-if="errors.city" class="text-red-400 text-[10px] font-medium ml-1">{{ errors.city }}
 							</p>
@@ -321,22 +257,27 @@ sort($uniqueCities);
 						<div class="space-y-1.5">
 							<label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest ml-1">Phone
 								(Optional)</label>
-							<div class="relative">
-								<i
-									class="pi pi-phone absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600 text-xs"></i>
-								<input v-model="newUser.phone" type="text" placeholder="+1 (408) 555-0123"
-									class="input-apple w-full pl-11 pr-4 py-3 text-sm">
+							<div class="flex gap-2">
+								<select v-model="newUser.countryCode"
+									class="input-apple w-24 px-2 py-3 text-sm appearance-none">
+									<option v-for="(name, code) in countryCodes" :value="code">{{ code }}</option>
+								</select>
+								<input v-model="newUser.phoneNumber" @blur="validateField('phone')" type="tel"
+									placeholder="1234567890" class="input-apple flex-1 px-4 py-3 text-sm"
+									:class="{'error': errors.phone}">
 							</div>
+							<p v-if="errors.phone" class="text-red-400 text-[10px] font-medium ml-1">{{ errors.phone }}
+							</p>
 						</div>
 
-						<button @click="handleSubmit" :disabled="submitting"
-							class="btn-apple w-full py-4 mt-4 flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 text-base font-bold active:scale-95 disabled:opacity-50"
+						<button type="submit" :disabled="submitting"
+							class="btn-apple w-full py-4 mt-4 flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 text-base font-bold disabled:opacity-50"
 							style="min-height: 44px;">
 							<i v-if="submitting" class="pi pi-spin pi-spinner"></i>
 							<i v-else class="pi pi-check"></i>
 							<span>Add Member</span>
 						</button>
-					</div>
+					</form>
 				</div>
 			</div>
 
@@ -360,7 +301,7 @@ sort($uniqueCities);
 										<div class="flex items-center gap-3 sm:gap-4">
 											<div
 												class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-neutral-800 border border-white/10 flex items-center justify-center text-[10px] sm:text-xs font-bold text-neutral-400 group-hover:text-blue-400 group-hover:border-blue-500/50 transition-all flex-shrink-0">
-												{{ user.name.split(' ').map(n=>n[0]).join('') }}
+												{{ getInitials(user.name) }}
 											</div>
 											<div class="min-w-0">
 												<div

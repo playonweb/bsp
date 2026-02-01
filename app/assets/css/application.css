@@ -1,0 +1,101 @@
+/* Application Styles */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --apple-blue: #0A84FF;
+    --apple-bg: #000000;
+}
+
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--apple-bg);
+    color: #FFFFFF;
+    overflow-x: hidden;
+}
+
+/* Apple-inspired components */
+.apple-card {
+    @apply bg-neutral-900/80 backdrop-blur-[40px] border border-white/10 rounded-2xl;
+}
+
+.input-apple {
+    @apply bg-white/5 border border-transparent rounded-xl text-white transition-all duration-200;
+}
+
+.input-apple:focus {
+    @apply bg-white/10 border-blue-500 outline-none ring-4 ring-blue-500/15;
+}
+
+.input-apple.error {
+    @apply border-red-500/40;
+}
+
+.btn-apple {
+    @apply bg-blue-600 text-white rounded-xl font-semibold transition-all duration-200 hover:bg-blue-700 hover:scale-[1.01] active:scale-[0.98];
+}
+
+/* FAB - Floating Action Button */
+.fab {
+    @apply fixed bottom-6 right-6 w-14 h-14 rounded-full bg-gradient-to-br from-blue-600 to-blue-800 shadow-lg shadow-blue-500/40 flex items-center justify-center cursor-pointer transition-all duration-300 z-[100] hover:scale-110 hover:shadow-2xl hover:shadow-blue-500/60 active:scale-95;
+}
+
+/* Mobile Form Drawer */
+.mobile-drawer {
+    @apply fixed bottom-0 left-0 right-0 bg-neutral-900/98 backdrop-blur-[40px] rounded-t-3xl max-h-[85vh] overflow-y-auto translate-y-full transition-transform duration-300 z-[200] border-t border-white/10;
+}
+
+.mobile-drawer.active {
+    @apply translate-y-0;
+}
+
+.mobile-overlay {
+    @apply fixed inset-0 bg-black/50 opacity-0 invisible transition-all duration-300 z-[150];
+}
+
+.mobile-overlay.active {
+    @apply opacity-100 visible;
+}
+
+/* Responsive utilities */
+@media (max-width: 767px) {
+    .desktop-only {
+        display: none !important;
+    }
+
+    .mobile-compact-table td {
+        @apply px-2 py-3 text-xs;
+    }
+
+    .mobile-compact-table th {
+        @apply px-2 py-2.5 text-[10px];
+    }
+}
+
+@media (min-width: 768px) {
+    .mobile-only {
+        display: none !important;
+    }
+}
+
+/* Vue cloak */
+[v-cloak] {
+    display: none;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}

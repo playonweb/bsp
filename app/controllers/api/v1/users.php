@@ -1,138 +1,102 @@
 <?php
-/**
- * RESTful User API Endpoint
- * Handles all user-related operations via HTTP method routing
- */
-
-// Initialize app
 $app = require "./core/app.php";
+header('Content-Type: application/vnd.api+json');
 
-// Set JSON header for consistent API responses
-header('Content-Type: application/json');
+// Get ID from the router match (e.g., api/v1/users/42 -> 42)
+$id = ROUTE_PARAMS[1] ?? null;
 
 try {
     $method = $_SERVER['REQUEST_METHOD'];
 
-    switch ($method) {
-        case 'GET':
-            handleGet($app);
-            break;
+    if ($method === 'GET') {
+        // Check for special routes
+        $url = $_GET['url'] ?? '';
+        if (strpos($url, 'cities') !== false) {
+            handleCities($app);
+        } elseif ($id) {
+            handleShow($app, $id);
+        } else {
+            handleIndex($app);
+        }
+    } elseif ($method === 'POST') {
+        handleCreate($app);
+    } else {
+        sendJsonApiError(405, 'Method not allowed');
+    }
+} catch (Exception $e) {
+    error_log($e->getMessage());
+    sendJsonApiError(500, 'Internal server error');
+}
 
-        case 'POST':
-            handlePost($app);
-            break;
+/**
+ * GET /api/v1/users/cities
+ */
+function handleCities($app)
+{
+    $cities = User::getCities($app->db);
+    echo json_encode(['data' => $cities]);
+}
 
-        default:
-            http_response_code(405);
-            echo json_encode(['error' => 'Method not allowed']);
-            break;
+/**
+ * GET /api/v1/users
+ * GET /api/v1/users?city=Prague
+ * GET /api/v1/users?filter[city]=Paris
+ */
+function handleIndex($app)
+{
+    $filterCity = $_GET['filter']['city'] ?? $_GET['city'] ?? null;
+
+    if ($filterCity) {
+        $users = User::searchByCity($app->db, $filterCity);
+    } else {
+        $users = User::getAllUsers($app->db);
     }
 
-} catch (Exception $e) {
-    http_response_code(500);
     echo json_encode([
-        'error' => true,
-        'message' => 'Internal Server Error'
+        'data' => User::collectionToJsonApi($users)
     ]);
 }
 
 /**
- * Handle GET requests
- * - GET /api/v1/users → List all users
- * - GET /api/v1/users?city=X → Filter by city
- * - GET /api/v1/users?action=cities → Get unique cities
+ * GET /api/v1/users/:id
  */
-function handleGet($app)
+function handleShow($app, $id)
 {
-    // Special action: return cities list
-    if (isset($_GET['action']) && $_GET['action'] === 'cities') {
-        // Use raw SQL to get distinct cities efficiently
-        $sql = "SELECT DISTINCT city FROM users WHERE city IS NOT NULL AND city != '' ORDER BY city ASC";
-        $result = $app->db->query($sql);
-        $cities = [];
-        foreach ($result as $row) {
-            $cities[] = $row['city'];
-        }
-        echo json_encode($cities);
-        return;
+    $user = User::getUserById($app->db, $id);
+
+    if (!$user) {
+        sendJsonApiError(404, 'User not found');
     }
 
-    // Filter by city
-    if (isset($_GET['city']) && !empty($_GET['city'])) {
-        $cityQuery = trim($_GET['city']);
-        $escaped = $app->db->mysqli->real_escape_string($cityQuery);
-        $sql = "SELECT * FROM users WHERE city LIKE '%$escaped%' ORDER BY created_at DESC";
-        $users = User::sql($app->db, $sql);
-    } else {
-        // Return all users
-        $users = User::find($app->db, '*', [], ['created_at' => 'DESC']);
-    }
-
-    // Format response
-    $data = [];
-    foreach ($users as $user) {
-        $data[] = [
-            'id' => $user->getId(),
-            'name' => (string) $user->getName(),
-            'email' => (string) $user->getEmail(),
-            'city' => (string) $user->getCity(),
-            'phone' => (string) $user->getPhone(),
-        ];
-    }
-
-    echo json_encode($data);
+    echo json_encode([
+        'data' => $user->toJsonApi()
+    ]);
 }
 
 /**
- * Handle POST requests
- * - POST /api/v1/users → Create new user
+ * POST /api/v1/users
  */
-function handlePost($app)
+function handleCreate($app)
 {
     // Parse JSON input
     $input = json_decode(file_get_contents('php://input'), true);
 
-    if (!$input) {
-        http_response_code(400);
-        echo json_encode(['error' => 'Invalid JSON input']);
-        return;
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        sendJsonApiError(400, 'Invalid JSON');
     }
 
-    // Validation
-    $errors = [];
+    // Extract attributes from JSON:API format
+    $attributes = $input['data']['attributes'] ?? $input ?? [];
 
-    if (empty($input['name'])) {
-        $errors['name'] = 'Name is required';
+    // Create user using model
+    $result = User::createUser($app->db, $attributes);
+
+    if (!$result['success']) {
+        sendJsonApiValidationError($result['errors']);
     }
-
-    if (empty($input['email'])) {
-        $errors['email'] = 'Email is required';
-    } elseif (!filter_var($input['email'], FILTER_VALIDATE_EMAIL)) {
-        $errors['email'] = 'Enter a valid email address';
-    }
-
-    if (empty($input['city'])) {
-        $errors['city'] = 'City is required';
-    }
-
-    if (!empty($errors)) {
-        http_response_code(422);
-        echo json_encode(['errors' => $errors]);
-        return;
-    }
-
-    // Create user
-    $user = new User($app->db);
-    $user->insert([
-        'name' => $input['name'],
-        'email' => $input['email'],
-        'city' => $input['city'],
-        'phone' => isset($input['phone']) ? $input['phone'] : null
-    ]);
 
     http_response_code(201);
     echo json_encode([
-        'message' => 'User created successfully',
-        'id' => $user->getId()
+        'data' => $result['user']->toJsonApi()
     ]);
 }
