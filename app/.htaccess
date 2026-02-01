@@ -8,7 +8,7 @@ RewriteBase /
 RewriteRule ^(views|models|database|core|controllers|config|logs)\b - [F,L]
 
 # 3. Block sensitive files
-<FilesMatch "^\.|\.(json|log|yml|yaml|sql|ini)$">
+<FilesMatch "^\.|\.(log|sql|ini)$">
     Order allow,deny
     Deny from all
 </FilesMatch>
