@@ -41,3 +41,10 @@ column `city` text can't do B-tree indexing well for filter by city which is req
 1. Why to add security maybe csrf/sql injection maybe simple auth, idempotency, simple captcha etc
 
 1. Why pagination
+
+
+## Future Scope
+
+1. Add uptime link
+2. compile & tree shake tailwind, primeicons & use vuejs instead of petite-vue
+3. add CF tunnel auth `@betterstack.com` only logins
