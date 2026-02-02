@@ -5,7 +5,7 @@ RewriteBase /
 
 # 2. Block sensitive folders (Security)
 # This returns a 403 Forbidden for any direct access to your framework logic
-RewriteRule ^(views|models|database|core|controllers|config|logs)\b - [F,L]
+RewriteRule ^(views|models|database|core|controllers|config|logs|vendor|src)\b - [F,L]
 
 # 3. Block sensitive files
 <FilesMatch "^\.|\.(log|sql|ini)$">

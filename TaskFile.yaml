@@ -35,6 +35,11 @@ tasks:
     cmds:
       - docker compose -f {{.COMPOSE_FILE}} exec app bash
 
+  seed:
+    desc: Access the application console
+    cmds:
+      - docker compose -f {{.COMPOSE_FILE}} exec app php database/seed.php
+
   db:
     desc: Access the database shell
     cmds:

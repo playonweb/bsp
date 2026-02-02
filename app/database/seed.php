@@ -1,1 +1,26 @@
-<!-- seed 1000 faker records in userINSERT INTO `users` (`id`, `name`, `email`, `city`, `phone`, `created_at`) -->
+<?php
+
+require dirname(__DIR__) . '/vendor/autoload.php';
+
+use Rahuldhole\Betterstack\Seeders\UserSeeder;
+
+$database = array(
+	'address' => getenv('DB_HOST') ?: 'db',
+	'username' => getenv('DB_USER') ?: 'root',
+	'password' => getenv('DB_PASS') ?: 'root',
+	'database' => getenv('DB_NAME') ?: 'php_test'
+);
+
+
+$pdo = new PDO(
+    "mysql:host={$database['address']};dbname={$database['database']};charset=utf8mb4",
+    $database['username'],
+    $database['password'],
+    [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    ]
+);
+
+$seeder = new UserSeeder();
+$seeder->run($pdo);

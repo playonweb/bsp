@@ -1,0 +1,17 @@
+{
+    "name": "rahuldhole/betterstack",
+    "type": "project",
+    "require": {
+        "fakerphp/faker": "^1.24"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rahuldhole\\Betterstack\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Rahul Dhole"
+        }
+    ]
+}
