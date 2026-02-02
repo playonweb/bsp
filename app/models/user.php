@@ -36,18 +36,44 @@ class User extends BaseModel
 	/**
 	 * Get all users ordered by creation date
 	 */
-	public static function getAllUsers($db)
+	public static function getAllUsers($db, $limit = null, $offset = 0)
 	{
-		return self::find($db, '*', [], ['created_at' => 'DESC']);
+		$limitArr = $limit ? [$offset, $limit] : null;
+		return self::find($db, '*', [], ['created_at' => 'DESC'], $limitArr);
+	}
+
+	/**
+	 * Count all users
+	 */
+	public static function countAll($db)
+	{
+		$result = $db->query("SELECT COUNT(*) as count FROM users");
+		return $result[0]['count'] ?? 0;
 	}
 
 	/**
 	 * Search users by city
 	 */
-	public static function searchByCity($db, $city)
+	public static function searchByCity($db, $city, $limit = null, $offset = 0)
 	{
 		$escaped = $db->mysqli->real_escape_string(trim($city));
-		return self::sql($db, "SELECT * FROM users WHERE city LIKE '%$escaped%' ORDER BY created_at DESC");
+		$query = "SELECT * FROM users WHERE city LIKE '%$escaped%' ORDER BY created_at DESC";
+
+		if ($limit) {
+			$query .= " LIMIT $offset, $limit";
+		}
+
+		return self::sql($db, $query);
+	}
+
+	/**
+	 * Count users by city
+	 */
+	public static function countByCity($db, $city)
+	{
+		$escaped = $db->mysqli->real_escape_string(trim($city));
+		$result = $db->query("SELECT COUNT(*) as count FROM users WHERE city LIKE '%$escaped%'");
+		return $result[0]['count'] ?? 0;
 	}
 
 	/**

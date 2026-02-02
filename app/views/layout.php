@@ -38,20 +38,43 @@
   </div>
 
   <!-- Header -->
-  <nav class="sticky top-0 z-50 bg-black/50 backdrop-blur-xl border-b border-white/5 px-4 sm:px-6 py-4">
-    <div class="max-w-6xl mx-auto flex items-center">
-      <div class="flex items-center gap-3">
-        <div class="w-7 h-7 bg-white rounded-lg flex items-center justify-center">
-          <img src="/favicon.ico" alt="Logo" class="w-full h-full object-contain">
+  <nav class="sticky top-0 z-50 bg-black/60 backdrop-blur-2xl border-b border-white/10 px-4 sm:px-8 py-4">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-4 group cursor-pointer">
+        <div
+          class="w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform duration-300">
+          <img src="/favicon.ico" alt="Logo" class="w-6 h-6 object-contain invert">
         </div>
-        <span class="font-bold text-base sm:text-lg tracking-tight">Better Stack</span>
-        <span class="text-xs text-neutral-500">PHP Test Application</span>
+        <div class="flex flex-col">
+          <span class="font-extrabold text-lg sm:text-xl tracking-tight text-white leading-none">Better Stack</span>
+          <span class="text-[10px] text-neutral-500 font-bold uppercase tracking-widest mt-1">Registry Platform</span>
+        </div>
       </div>
-      <div class="links">
-        <a href="/docs/challenges.php" class="highlight"><i class="pi pi-file"></i> Challenges</a>
-        <a href="/docs/solutions.php"><i class="pi pi-file"></i> Solutions</a>
-        <a href="/docs/openapi.php"><i class="pi pi-file"></i> API</a>
+
+      <div class="hidden md:flex items-center gap-1 transition-all">
+        <a href="/index.php"
+          class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
+          <i class="pi pi-home text-xs"></i> Directory
+        </a>
+        <a href="/docs/openapi.php"
+          class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
+          <i class="pi pi-box text-xs"></i> API Reference
+        </a>
+        <a href="/docs/solutions.php"
+          class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
+          <i class="pi pi-check-circle text-xs"></i> Solutions
+        </a>
+        <div class="h-4 w-px bg-white/10 mx-2"></div>
+        <a href="/docs/challenges.php"
+          class="ml-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-500 hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+          <i class="pi pi-code"></i> Challenges
+        </a>
       </div>
+
+      <!-- Mobile Menu Button -->
+      <button class="md:hidden w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white">
+        <i class="pi pi-bars text-xl"></i>
+      </button>
     </div>
   </nav>
 

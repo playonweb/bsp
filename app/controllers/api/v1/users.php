@@ -54,16 +54,14 @@ function handleIndex($app)
 
     // Fetch users
     if ($filterCity) {
-        $allUsers = User::searchByCity($app->db, $filterCity);
+        $totalCount = User::countByCity($app->db, $filterCity);
+        $users = User::searchByCity($app->db, $filterCity, $limit, $offset);
     } else {
-        $allUsers = User::getAllUsers($app->db);
+        $totalCount = User::countAll($app->db);
+        $users = User::getAllUsers($app->db, $limit, $offset);
     }
 
-    $totalCount = count($allUsers);
     $lastPage = (int) ceil($totalCount / $limit);
-
-    // Slice users for current page
-    $users = array_slice($allUsers, $offset, $limit);
 
     $meta = [
         'count' => $totalCount,

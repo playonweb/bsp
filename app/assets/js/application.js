@@ -5,8 +5,7 @@ window.initApp = function(initialData) {
     const appState = {
         users: initialData.users || [],
         allCities: initialData.cities || [],
-        countryCodes: initialData.countryCodes || {},
-        newUser: { name: '', email: '', city: '', countryCode: '+1', phoneNumber: '' },
+        newUser: { name: '', email: '', city: '', phone: '' },
         searchQuery: '',
         loading: false,
         submitting: false,
@@ -16,16 +15,15 @@ window.initApp = function(initialData) {
         formVisible: window.innerWidth >= 1024,
         isMobile: window.innerWidth < 1024,
         
-        // Pagination & UI State
+        // Pagination
         page: 1,
         hasMore: true,
         loadingMore: false,
         globalError: null,
         
-        // Visiting Card State
-        selectedUser: null,
-        cardLoading: false,
-        cardVisible: false,
+        // Contact View State
+        selectedContact: null,
+        contactModalOpen: false,
 
         // Getters
         get filteredCities() {
@@ -34,7 +32,9 @@ window.initApp = function(initialData) {
             return this.allCities.filter(c => c.toLowerCase().includes(lower));
         },
 
-        getInitials: (name) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2),
+        getInitials(name) {
+            return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        },
         
         selectCity(city) {
             this.newUser.city = city;
@@ -54,32 +54,25 @@ window.initApp = function(initialData) {
             this.showCityDropdown = false;
         },
 
-        // Visiting Card Logic
-        async openCard(user) {
-            this.selectedUser = { ...user }; // Show what we have initially (Name, City)
-            this.cardVisible = true;
-            this.cardLoading = true;
-            try {
-                // Fetch full details
-                const fullUser = await UserSDK.fetchUser(user.id);
-                this.selectedUser = fullUser;
-            } catch (e) {
-                console.error("Failed to fetch user details", e);
-                this.globalError = "Could not fetch contact details.";
-            } finally {
-                this.cardLoading = false;
-            }
+        // Contact Modal Logic
+        viewContact(user) {
+            this.selectedContact = user;
+            this.contactModalOpen = true;
         },
 
-        closeCard() {
-            this.cardVisible = false;
-            setTimeout(() => this.selectedUser = null, 300); // Wait for animation
+        closeContact() {
+            this.contactModalOpen = false;
+            this.selectedContact = null;
         },
 
-        copyToClipboard(text) {
+        async copyToClipboard(text) {
             if (!text) return;
-            navigator.clipboard.writeText(text);
-            // Optional: toast
+            try {
+                await navigator.clipboard.writeText(text);
+                // Could add a toast here
+            } catch (err) {
+                console.error('Failed to copy match', err);
+            }
         },
 
         validateField(field) {
@@ -116,9 +109,10 @@ window.initApp = function(initialData) {
 					break;
 
 				case 'phone':
-					if (this.newUser.phoneNumber) {
-						if (!/^\d{7,12}$/.test(this.newUser.phoneNumber)) {
-							this.errors.phone = 'Phone must be 7-12 digits';
+					if (this.newUser.phone) {
+                        // Allow digits, spaces, plus, dashes, parens
+						if (!/^[\d\s\+\-\(\)]{7,20}$/.test(this.newUser.phone)) {
+							this.errors.phone = 'Invalid phone format';
 						} else {
 							delete this.errors.phone;
 						}
@@ -151,12 +145,12 @@ window.initApp = function(initialData) {
             try {
                 const res = await UserSDK.fetchUsers({ 
                     city: this.searchQuery, 
-                    page: this.page + 1,
+                    page: parseInt(this.page) + 1,
                     limit: 20
                 });
                 this.users = [...this.users, ...res.users];
-                this.page = res.meta.page;
-                this.hasMore = !!res.meta.next_page;
+                this.page = parseInt(res.meta.page);
+                this.hasMore = !!(res.meta && res.meta.next_page);
             } catch (e) {
                 console.error('Load more error:', e);
                 this.globalError = 'Failed to load more. Please try again.';
@@ -173,15 +167,11 @@ window.initApp = function(initialData) {
 
             this.submitting = true;
             try {
-                const phone = this.newUser.phoneNumber 
-                    ? `${this.newUser.countryCode}${this.newUser.phoneNumber}` 
-                    : null;
-
                 const newUserRecord = await UserSDK.createUser({
                     name: this.newUser.name,
                     email: this.newUser.email,
                     city: this.newUser.city,
-                    phone: phone
+                    phone: this.newUser.phone || null
                 });
 
                 // UI Updates
@@ -192,7 +182,7 @@ window.initApp = function(initialData) {
                 }
 
                 // Reset
-                this.newUser = { name: '', email: '', city: '', countryCode: '+1', phoneNumber: '' };
+                this.newUser = { name: '', email: '', city: '', phone: '' };
                 this.errors = {};
                 this.closeForm();
 
@@ -216,20 +206,24 @@ window.initApp = function(initialData) {
                 this.submitting = false;
             }
         },
-
+        
         initInfiniteScroll() {
-            const sentinel = document.getElementById('scroll-sentinel');
-            if (!sentinel) return;
-
-            const observer = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting && this.hasMore && !this.loadingMore) {
-                    this.loadMore();
-                }
-            }, { rootMargin: '200px' });
-
-            observer.observe(sentinel);
+             const sentinel = document.getElementById('scroll-sentinel');
+             if (!sentinel) return;
+ 
+             const observer = new IntersectionObserver((entries) => {
+                 if (entries[0].isIntersecting && this.hasMore && !this.loadingMore) {
+                     this.loadMore();
+                 }
+             }, { rootMargin: '200px' });
+ 
+             observer.observe(sentinel);
         }
     };
+
+    const app = createApp(appState);
+    
+    app.mount();
 
     // Responsive listener
     window.addEventListener('resize', () => {
@@ -243,10 +237,6 @@ window.initApp = function(initialData) {
         }
     });
 
-    createApp({ 
-        appState,
-        mounted() {
-            this.appState.initInfiniteScroll();
-        }
-    }).mount();
+    // Handle infinite scroll after mount
+    setTimeout(() => appState.initInfiniteScroll(), 100);
 };
