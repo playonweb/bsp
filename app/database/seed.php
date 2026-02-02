@@ -4,6 +4,7 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 use Rahuldhole\Betterstack\Seeders\UserSeeder;
 
+// TODO: import it from config/database.php for a single source of truth
 $database = array(
 	'address' => getenv('DB_HOST') ?: 'db',
 	'username' => getenv('DB_USER') ?: 'root',
