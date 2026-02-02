@@ -6,7 +6,7 @@ window.initApp = function(initialData) {
         users: initialData.users || [],
         allCities: initialData.cities || [],
         countryCodes: initialData.countryCodes || {},
-        newUser: { name: '', email: '', city: '', countryCode: '+1', phoneNumber: '' },
+        newUser: { name: '', email: '', city: '', countryCode: '', phoneNumber: '' },
         searchQuery: '',
         loading: false,
         submitting: false,
@@ -17,6 +17,7 @@ window.initApp = function(initialData) {
         isMobile: window.innerWidth < 1024,
         
         // Pagination & UI State
+        viewMode: 'grid', // 'list' or 'grid'
         page: 1,
         hasMore: true,
         loadingMore: false,
@@ -173,8 +174,12 @@ window.initApp = function(initialData) {
 
             this.submitting = true;
             try {
+                const countryCode = this.newUser.countryCode.startsWith('+') 
+                    ? this.newUser.countryCode 
+                    : `+${this.newUser.countryCode}`;
+
                 const phone = this.newUser.phoneNumber 
-                    ? `${this.newUser.countryCode}${this.newUser.phoneNumber}` 
+                    ? `${countryCode}${this.newUser.phoneNumber}` 
                     : null;
 
                 const newUserRecord = await UserSDK.createUser({
@@ -192,7 +197,7 @@ window.initApp = function(initialData) {
                 }
 
                 // Reset
-                this.newUser = { name: '', email: '', city: '', countryCode: '+1', phoneNumber: '' };
+                this.newUser = { name: '', email: '', city: '', countryCode: '', phoneNumber: '' };
                 this.errors = {};
                 this.closeForm();
 
@@ -218,16 +223,26 @@ window.initApp = function(initialData) {
         },
 
         initInfiniteScroll() {
-            const sentinel = document.getElementById('scroll-sentinel');
-            if (!sentinel) return;
-
-            const observer = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting && this.hasMore && !this.loadingMore) {
-                    this.loadMore();
+            setTimeout(() => {
+                const sentinel = document.getElementById('scroll-sentinel');
+                if (!sentinel) {
+                    console.warn('Scroll sentinel not found, retrying...');
+                    this.initInfiniteScroll();
+                    return;
                 }
-            }, { rootMargin: '200px' });
 
-            observer.observe(sentinel);
+                const observer = new IntersectionObserver((entries) => {
+                    if (entries[0].isIntersecting && this.hasMore && !this.loadingMore && !this.loading) {
+                        this.loadMore();
+                    }
+                }, { 
+                    root: null,
+                    rootMargin: '400px',
+                    threshold: 0.1
+                });
+
+                observer.observe(sentinel);
+            }, 500);
         }
     };
 

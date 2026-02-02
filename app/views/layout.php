@@ -39,18 +39,32 @@
 
   <!-- Header -->
   <nav class="sticky top-0 z-50 bg-black/50 backdrop-blur-xl border-b border-white/5 px-4 sm:px-6 py-4">
-    <div class="max-w-6xl mx-auto flex items-center">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-7 h-7 bg-white rounded-lg flex items-center justify-center">
-          <img src="/favicon.ico" alt="Logo" class="w-full h-full object-contain">
+        <div class="w-7 h-7 bg-white rounded-lg flex items-center justify-center overflow-hidden">
+          <img src="/favicon.ico" alt="Logo" class="w-full h-full object-contain p-1">
         </div>
-        <span class="font-bold text-base sm:text-lg tracking-tight">Better Stack</span>
-        <span class="text-xs text-neutral-500">PHP Test Application</span>
+        <div class="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
+          <span class="font-bold text-base sm:text-lg tracking-tight text-white line-height-1">Better Stack</span>
+          <span class="text-[10px] text-neutral-500 font-medium uppercase tracking-wider">PHP Test Application</span>
+        </div>
       </div>
-      <div class="links">
-        <a href="/docs/challenges.php" class="highlight"><i class="pi pi-file"></i> Challenges</a>
-        <a href="/docs/solutions.php"><i class="pi pi-file"></i> Solutions</a>
-        <a href="/docs/openapi.php"><i class="pi pi-file"></i> API</a>
+      <div class="flex items-center gap-6">
+        <a href="/docs/challenges.php"
+          class="text-sm font-medium text-slate-400 hover:text-white transition-colors flex items-center gap-2">
+          <i class="pi pi-file-edit text-xs"></i>
+          <span class="hidden sm:inline">Challenges</span>
+        </a>
+        <a href="/docs/solutions.php"
+          class="text-sm font-medium text-slate-400 hover:text-white transition-colors flex items-center gap-2">
+          <i class="pi pi-check-circle text-xs"></i>
+          <span class="hidden sm:inline">Solutions</span>
+        </a>
+        <a href="/docs/openapi.php"
+          class="text-sm font-medium text-slate-400 hover:text-white transition-colors flex items-center gap-2">
+          <i class="pi pi-code text-xs"></i>
+          <span class="hidden sm:inline">API</span>
+        </a>
       </div>
     </div>
   </nav>
