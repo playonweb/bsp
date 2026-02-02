@@ -163,6 +163,10 @@ components:
               type: string
               examples:
                 - Prague
+            phone:
+              type: string
+              examples:
+                - +1 (555) 000-0000
 
     PaginationMeta:
       type: object
