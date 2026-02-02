@@ -67,99 +67,6 @@ $countryCodes = [
 		</div>
 	</Transition>
 
-	<!-- Visiting Card Modal -->
-	<Transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0 scale-95"
-		enter-to-class="opacity-100 scale-100" leave-active-class="transition ease-in duration-150"
-		leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
-		<div v-if="selectedUser && cardVisible"
-			class="fixed inset-0 z-[60] flex items-center justify-center p-4 text-left">
-			<div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeCard"></div>
-			<div
-				class="relative w-full max-w-md bg-[#1c1c1e] border border-white/10 rounded-3xl shadow-2xl overflow-hidden transform transition-all">
-
-				<!-- Card Header -->
-				<div class="relative h-32 bg-gradient-to-br from-blue-600/20 to-purple-600/20">
-					<button @click="closeCard"
-						class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors bg-black/20 hover:bg-black/40 rounded-full w-8 h-8 flex items-center justify-center backdrop-blur-md z-10">
-						<i class="pi pi-times"></i>
-					</button>
-					<div class="absolute -bottom-10 left-8">
-						<div class="w-20 h-20 rounded-full bg-[#1c1c1e] p-1.5">
-							<div
-								class="w-full h-full rounded-full bg-slate-700 flex items-center justify-center text-2xl font-bold text-slate-300 border border-white/10">
-								{{ getInitials(selectedUser.name) }}
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<!-- Card Body -->
-				<div class="pt-12 px-8 pb-8 space-y-6">
-					<div>
-						<h3 class="text-2xl font-bold text-white">{{ selectedUser.name }}</h3>
-						<p class="text-slate-400 text-sm flex items-center gap-2 mt-1">
-							<i class="pi pi-map-marker text-xs"></i>
-							{{ selectedUser.city }}
-						</p>
-					</div>
-
-					<div class="space-y-4">
-						<!-- Content Loader -->
-						<div v-if="cardLoading" class="space-y-4 animate-pulse">
-							<div class="h-12 bg-white/5 rounded-xl"></div>
-							<div class="h-12 bg-white/5 rounded-xl"></div>
-						</div>
-
-						<template v-else>
-							<!-- Email -->
-							<div
-								class="bg-white/5 rounded-xl p-4 border border-white/5 group hover:border-blue-500/30 transition-colors">
-								<div class="flex items-center justify-between mb-1">
-									<span
-										class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Email</span>
-									<div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-										<button @click="copyToClipboard(selectedUser.email)"
-											class="text-slate-400 hover:text-white" title="Copy">
-											<i class="pi pi-copy"></i>
-										</button>
-									</div>
-								</div>
-								<a :href="'mailto:' + selectedUser.email"
-									class="text-blue-400 hover:text-blue-300 transition-colors text-sm break-all font-medium flex items-center gap-2">
-									<i class="pi pi-envelope text-xs"></i>
-									{{ selectedUser.email }}
-								</a>
-							</div>
-
-							<!-- Phone -->
-							<div
-								class="bg-white/5 rounded-xl p-4 border border-white/5 group hover:border-green-500/30 transition-colors">
-								<div class="flex items-center justify-between mb-1">
-									<span
-										class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Phone</span>
-									<div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-										<button @click="copyToClipboard(selectedUser.phone)"
-											class="text-slate-400 hover:text-white" title="Copy">
-											<i class="pi pi-copy"></i>
-										</button>
-									</div>
-								</div>
-								<div v-if="selectedUser.phone">
-									<a :href="'tel:' + selectedUser.phone"
-										class="text-green-400 hover:text-green-300 transition-colors text-sm font-mono font-medium flex items-center gap-2">
-										<i class="pi pi-phone text-xs"></i>
-										{{ selectedUser.phone }}
-									</a>
-								</div>
-								<div v-else class="text-slate-600 text-sm italic">Not provided</div>
-							</div>
-						</template>
-					</div>
-				</div>
-			</div>
-		</div>
-	</Transition>
-
 	<!-- Mobile Overlay -->
 	<Transition enter-active-class="transition-opacity duration-300 ease-linear" enter-from-class="opacity-0"
 		enter-to-class="opacity-100" leave-active-class="transition-opacity duration-300 ease-linear"
@@ -326,14 +233,16 @@ $countryCodes = [
 
 			<!-- Main Table -->
 			<div class="lg:col-span-8 w-full">
-				<div class="bg-slate-800/30 border border-white/10 rounded-3xl overflow-hidden backdrop-blur-xl shadow-2xl">
+				<div
+					class="bg-slate-800/30 border border-white/10 rounded-3xl overflow-hidden backdrop-blur-xl shadow-2xl">
 					<div class="overflow-x-auto">
 						<table class="w-full text-left border-collapse">
 							<thead>
-								<tr class="text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-white/5 bg-white/[0.02]">
+								<tr
+									class="text-[10px] font-bold text-slate-500 uppercase tracking-wider border-b border-white/5 bg-white/[0.02]">
 									<th class="px-8 py-5">Member</th>
 									<th class="px-8 py-5">Location</th>
-									<th class="px-8 py-5 text-right">Action</th>
+									<th class="px-8 py-5 hidden sm:table-cell">Contact</th>
 								</tr>
 							</thead>
 							<tbody class="divide-y divide-white/5">
@@ -342,29 +251,82 @@ $countryCodes = [
 									<!-- Member Column -->
 									<td class="px-8 py-5">
 										<div class="flex items-center gap-5">
-											<div class="w-11 h-11 rounded-full bg-slate-700/50 border border-white/10 flex items-center justify-center text-sm font-bold text-slate-300 shadow-inner group-hover:scale-110 group-hover:border-blue-500/30 group-hover:bg-blue-500/20 group-hover:text-blue-400 transition-all duration-300">
+											<div
+												class="w-11 h-11 rounded-full bg-slate-700/50 border border-white/10 flex items-center justify-center text-sm font-bold text-slate-300 shadow-inner group-hover:scale-110 group-hover:border-blue-500/30 group-hover:bg-blue-500/20 group-hover:text-blue-400 transition-all duration-300">
 												{{ getInitials(user.name) }}
 											</div>
 											<div class="min-w-0">
-												<div class="text-sm font-semibold text-white tracking-tight group-hover:text-blue-200 transition-colors">{{ user.name }}</div>
+												<div
+													class="text-sm font-semibold text-white tracking-tight group-hover:text-blue-200 transition-colors">
+													{{ user.name }}</div>
+
+												<!-- Anti-Scraping Email -->
+												<div class="mt-1 relative" @mouseenter="hoverReveal(user.id, 'email')"
+													@mouseleave="unveil(user.id, 'email', false)">
+													<div v-if="isRevealed(user.id, 'email')"
+														class="flex items-center gap-3 animate-fade-in bg-white/5 px-2 py-1 rounded-md -ml-2 w-max border border-white/10">
+														<a :href="'mailto:' + user.email"
+															class="text-xs text-blue-300 hover:text-white transition-colors truncate max-w-[150px]">{{
+															user.email }}</a>
+														<div class="h-3 w-px bg-white/10"></div>
+														<button @click="copyToClipboard(user.email)" title="Copy Email"
+															class="text-slate-400 hover:text-white transition-colors">
+															<i class="pi pi-copy text-[10px]"></i>
+														</button>
+													</div>
+													<div v-else @click="reveal(user.id, 'email')"
+														class="flex items-center gap-2 cursor-pointer group/reveal w-max">
+														<span
+															class="text-[10px] text-slate-600 blur-[3px] group-hover/reveal:blur-[2px] transition-all select-none">**************</span>
+														<div
+															class="bg-white/5 rounded-full p-1 opacity-0 group-hover/reveal:opacity-100 transition-opacity">
+															<i class="pi pi-lock text-[8px] text-slate-500"></i>
+														</div>
+													</div>
+												</div>
+
 											</div>
 										</div>
 									</td>
 
 									<!-- Location Column -->
 									<td class="px-8 py-5">
-										<span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-white/5 text-slate-300 border border-white/5 shadow-sm group-hover:border-blue-500/20 group-hover:bg-blue-500/10 group-hover:text-blue-300 transition-all">
+										<span
+											class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-white/5 text-slate-300 border border-white/5 shadow-sm group-hover:border-blue-500/20 group-hover:bg-blue-500/10 group-hover:text-blue-300 transition-all">
 											<i class="pi pi-map-marker text-[10px] opacity-70"></i>
 											{{ user.city }}
 										</span>
 									</td>
 
-									<!-- Action Column -->
-									<td class="px-8 py-5 text-right">
-										<button @click="openCard(user)" 
-											class="text-xs font-medium text-blue-400 hover:text-white transition-colors bg-blue-500/10 hover:bg-blue-500 px-4 py-2 rounded-full">
-											View Contact
-										</button>
+									<!-- Contact Column (Phone) -->
+									<td class="px-8 py-5 hidden sm:table-cell">
+										<div v-if="user.phone">
+											<!-- Anti-Scraping Phone -->
+											<div class="relative" @mouseenter="hoverReveal(user.id, 'phone')"
+												@mouseleave="unveil(user.id, 'phone', false)">
+												<div v-if="isRevealed(user.id, 'phone')"
+													class="flex items-center gap-3 animate-fade-in bg-white/5 px-2 py-1 rounded-md -ml-2 w-max border border-white/10">
+													<a :href="'tel:' + user.phone"
+														class="text-xs font-mono text-emerald-400 hover:text-emerald-300 transition-colors">{{
+														user.phone }}</a>
+													<div class="h-3 w-px bg-white/10"></div>
+													<button @click="copyToClipboard(user.phone)" title="Copy Phone"
+														class="text-slate-400 hover:text-white transition-colors">
+														<i class="pi pi-copy text-[10px]"></i>
+													</button>
+												</div>
+												<div v-else @click="reveal(user.id, 'phone')"
+													class="flex items-center gap-2 cursor-pointer group/reveal w-max">
+													<span
+														class="text-[10px] text-slate-600 blur-[3px] group-hover/reveal:blur-[2px] transition-all select-none">•••••••••••</span>
+													<div
+														class="bg-white/5 rounded-full p-1 opacity-0 group-hover/reveal:opacity-100 transition-opacity">
+														<i class="pi pi-lock text-[8px] text-slate-500"></i>
+													</div>
+												</div>
+											</div>
+										</div>
+										<span v-else class="text-slate-700 text-xs pl-2">—</span>
 									</td>
 								</tr>
 
@@ -372,11 +334,14 @@ $countryCodes = [
 								<tr v-if="users.length === 0 && !loading">
 									<td colspan="3" class="px-6 py-24 text-center">
 										<div class="flex flex-col items-center gap-4">
-											<div class="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center">
+											<div
+												class="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center">
 												<i class="pi pi-search text-3xl text-slate-600"></i>
 											</div>
-											<p class="text-sm font-bold text-slate-500 uppercase tracking-widest">No members found</p>
-											<button @click="searchQuery = ''; handleSearch()" class="text-blue-500 hover:text-blue-400 text-xs font-medium transition-colors">
+											<p class="text-sm font-bold text-slate-500 uppercase tracking-widest">No
+												members found</p>
+											<button @click="searchQuery = ''; handleSearch()"
+												class="text-blue-500 hover:text-blue-400 text-xs font-medium transition-colors">
 												Clear search
 											</button>
 										</div>
@@ -386,14 +351,23 @@ $countryCodes = [
 						</table>
 					</div>
 
-					<!-- Infinite Scroll Sentinel -->
-					<div id="scroll-sentinel" class="p-6 flex justify-center items-center min-h-[80px]">
-						<div v-if="loadingMore" class="flex flex-col items-center gap-2 animate-fade-in">
-							<i class="pi pi-spin pi-spinner text-blue-500"></i>
-							<span class="text-[10px] text-slate-500 uppercase tracking-widest">Loading...</span>
-						</div>
-						<div v-else-if="!hasMore && users.length > 0" class="text-[10px] text-slate-600 uppercase tracking-widest px-4 py-2 rounded-full bg-white/[0.02] border border-white/5">
-							All members loaded
+					<!-- Pagination / Load More -->
+					<div class="p-6 border-t border-white/5 bg-white/[0.01] flex flex-col items-center gap-4"
+						v-if="hasMore || loadingMore">
+						<button @click="loadMore()" :disabled="loadingMore"
+							class="px-8 py-3 rounded-full border border-white/10 bg-white/5 text-xs font-bold text-slate-300 uppercase tracking-wider hover:bg-white/10 hover:scale-105 active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:scale-100 flex items-center gap-2 shadow-lg group">
+							<i v-if="loadingMore" class="pi pi-spin pi-spinner"></i>
+							<span v-else>Load More Results</span>
+							<i v-if="!loadingMore"
+								class="pi pi-arrow-down text-[10px] group-hover:translate-y-0.5 transition-transform"></i>
+						</button>
+						<p class="text-[10px] text-slate-600">Showing top results from global registry</p>
+					</div>
+					<div class="p-8 text-center" v-else-if="users.length > 0">
+						<div
+							class="inline-flex items-center gap-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest px-4 py-2 rounded-full bg-white/[0.02] border border-white/5">
+							<span>All members loaded</span>
+							<i class="pi pi-check text-emerald-500/50"></i>
 						</div>
 					</div>
 				</div>
