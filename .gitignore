@@ -4,4 +4,6 @@
 vendor
 node_modules
 dist
-runbhumi
+*.js.map
+*.ts
+!*.d.ts
