@@ -10,6 +10,7 @@ services:
     depends_on:
       - db
     environment:
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost:8080}
       DB_HOST: ${DB_HOST:-db}
       DB_NAME: ${DB_NAME:-php_test}
       DB_USER: ${DB_USER:-root}

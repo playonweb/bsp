@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+<?php
+// require_once __DIR__ . '/../config/csp.php';
+require_once __DIR__ . '/../config/cors.php';
+?>
 <html lang="en" class="dark">
 
 <head>
