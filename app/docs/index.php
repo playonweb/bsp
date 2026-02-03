@@ -330,6 +330,11 @@ Usage:
                     title: "Solutions",
                     id: "solutions",
                     link: "solutions.md"
+                },
+                {
+                    title: "System Design",
+                    id: "system-design",
+                    link: "system-design.md"
                 }
             ],
 
