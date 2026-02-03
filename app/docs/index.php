@@ -2,9 +2,19 @@
 require_once __DIR__ . '/../config/cors.php';
 require_once __DIR__ . '/../config/csp.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
 
+<!DOCTYPE html>
+<!--
+DocsViewer
+Source: https://gist.github.com/rahuldhole/78c425c1b44302cdfad40865a85b74b4
+This file a readymade template to quick & dirty host markdown files.
+
+Usage:
+- add your markdown files in some public folder.
+- add links of your markdown files in the `sidebarMenu` array.
+- add links of your markdown files in the `topBar` array.
+-->
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
