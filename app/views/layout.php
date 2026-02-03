@@ -2,6 +2,7 @@
 // require_once __DIR__ . '/../config/csp.php';
 require_once __DIR__ . '/../config/cors.php';
 ?>
+<!DOCTYPE html>
 <html lang="en" class="dark">
 
 <head>
@@ -59,16 +60,16 @@ require_once __DIR__ . '/../config/cors.php';
           class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
           <i class="pi pi-home text-xs"></i> Directory
         </a>
-        <a href="/openapi/viewer.html"
+        <a href="/docs/openapi.php"
           class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
           <i class="pi pi-box text-xs"></i> API Reference
         </a>
-        <a href="/docs/index.html#solutions"
+        <a href="/docs/index.php#solutions"
           class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
           <i class="pi pi-check-circle text-xs"></i> Solutions
         </a>
         <div class="h-4 w-px bg-white/10 mx-2"></div>
-        <a href="/docs/index.html#challenges"
+        <a href="/docs/index.php#challenges"
           class="ml-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-500 hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
           <i class="pi pi-code"></i> Challenges
         </a>

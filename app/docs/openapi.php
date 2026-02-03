@@ -1,3 +1,7 @@
+<?php
+// require_once __DIR__ . '/../config/csp.php';
+require_once __DIR__ . '/../config/cors.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -32,7 +36,7 @@
                             }),
                             React.createElement("div", { style: { display: "flex", gap: "15px" } },
                                 React.createElement("a", { href: "/", style: { color: "#fff", textDecoration: "none", fontSize: "14px", fontWeight: "600" } }, "Home"),
-                                React.createElement("a", { href: "/docs/index.html", style: { color: "#fff", textDecoration: "none", fontSize: "14px", fontWeight: "600" } }, "Docs")
+                                React.createElement("a", { href: "/docs/index.php", style: { color: "#fff", textDecoration: "none", fontSize: "14px", fontWeight: "600" } }, "Docs")
                             )
                         );
                     }

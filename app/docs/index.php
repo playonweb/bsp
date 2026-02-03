@@ -1,3 +1,7 @@
+<?php
+// require_once __DIR__ . '/../config/csp.php';
+require_once __DIR__ . '/../config/cors.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -299,7 +303,7 @@
             topBar: [
                 { text: "Home", icon: "pi pi-home", link: "/" },
                 { text: "Repository", icon: "pi pi-github", link: "#" },
-                { text: "OpenAPI", icon: "pi pi-file", link: "/docs/openapi.html" },
+                { text: "OpenAPI", icon: "pi pi-file", link: "/docs/openapi.php" },
                 { text: "v1.0", icon: "📦", link: "#" }
             ],
 
