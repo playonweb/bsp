@@ -1,7 +1,7 @@
 module.exports = {
     "sdk": {
         input: {
-            target: "../app/docs/openapi.yaml",
+            target: "../../app/docs/openapi.yaml",
         },
         output: {
             baseUrl: '/',

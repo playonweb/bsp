@@ -5,11 +5,12 @@
   "scripts": {
     "orval": "orval",
     "tsc": "tsc",
-    "build": "rm -rf dist && orval && tsc"
+    "prebuild": "rm -rf dist",
+    "build": "orval && tsc",
+    "postbuild": "cp -r dist/* ../../app/assets/js"
   },
   "devDependencies": {
     "orval": "^7.9.0",
-    "rimraf": "^6.1.2",
     "typescript": "^5.8.3"
   },
   "keywords": [],

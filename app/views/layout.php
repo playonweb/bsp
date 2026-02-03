@@ -21,7 +21,7 @@
   {
     "imports": {
       "petite-vue": "https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js",
-      "sdk": "/assets/js/sdk.js"
+      "sdk": "/assets/js/sdk-legacy.js"
     }
   }
   </script>
@@ -56,16 +56,16 @@
           class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
           <i class="pi pi-home text-xs"></i> Directory
         </a>
-        <a href="/docs/openapi.php"
+        <a href="/openapi/viewer.html"
           class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
           <i class="pi pi-box text-xs"></i> API Reference
         </a>
-        <a href="/docs/solutions.php"
+        <a href="/docs/index.html#solutions"
           class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
           <i class="pi pi-check-circle text-xs"></i> Solutions
         </a>
         <div class="h-4 w-px bg-white/10 mx-2"></div>
-        <a href="/docs/challenges.php"
+        <a href="/docs/index.html#challenges"
           class="ml-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-500 hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
           <i class="pi pi-code"></i> Challenges
         </a>

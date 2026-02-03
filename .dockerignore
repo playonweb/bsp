@@ -1,4 +1,7 @@
 *.d.ts
 .project
 .settings
-sdk
+*node_modules
+.git
+.gitignore
+.DS_Store
