@@ -1,10 +1,9 @@
 openapi: 3.1.0
 info:
-  title: Registry of contacts
+  title: Alink
   version: 1.0.0
   description: |
-    A Better Stack's PHP Test Application.
-    A premium, production-ready user management system built for the Better Stack Senior Fullstack Engineer challenge.
+    Alink is a minimalist digital visiting card platform that lets you share your name, city, email, and phone through a single link or QR code. No apps, no bulky profiles—just clean, instant connections. Perfect for professionals, creatives, and anyone who wants their contact info always at hand.
 
 servers:
   - url: 'http://{localHost}'
@@ -16,7 +15,7 @@ servers:
     description: Production server
     variables:
       prodHost:
-        default: contact-registry.playonweb.org
+        default: alink.playonweb.org
 
 paths:
   /api/v1/users:

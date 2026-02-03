@@ -139,8 +139,8 @@ $allCities = User::getCities($this->db);
 					<i class="pi pi-users text-xl text-white"></i>
 				</div>
 				<div>
-					<h2 class="text-lg font-bold text-white leading-tight">Registry</h2>
-					<p class="text-xs text-slate-400 font-medium">Global contacts directory</p>
+					<h2 class="text-lg font-bold text-white leading-tight">Alink</h2>
+					<p class="text-xs text-slate-400 font-medium">Your Digital Contact, One Tap Away</p>
 				</div>
 			</div>
 
