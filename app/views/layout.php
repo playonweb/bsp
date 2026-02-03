@@ -1,6 +1,6 @@
 <?php
-// require_once __DIR__ . '/../config/csp.php';
 require_once __DIR__ . '/../config/cors.php';
+require_once __DIR__ . '/../config/csp.php';
 ?>
 <!DOCTYPE html>
 <html lang="en" class="dark">
