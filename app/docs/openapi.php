@@ -36,15 +36,27 @@ Usage:
                 wrapComponents: {
                     Logo: (Original, system) => (props) => {
                         const React = system.React;
-                        return React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "20px" } },
-                            React.createElement("img", {
-                                src: "/favicon.ico",
-                                style: { height: "40px", width: "auto" },
-                                alt: "Logo"
-                            }),
-                            React.createElement("div", { style: { display: "flex", gap: "15px" } },
-                                React.createElement("a", { href: "/", style: { color: "#fff", textDecoration: "none", fontSize: "14px", fontWeight: "600" } }, "Home"),
-                                React.createElement("a", { href: "/docs/index.php", style: { color: "#fff", textDecoration: "none", fontSize: "14px", fontWeight: "600" } }, "Docs")
+                        return React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "0px" } },
+                            React.createElement(
+                                "div",
+                                { style: { display: "flex", alignItems: "center", gap: "20px" } },
+                                React.createElement(
+                                    "a",
+                                    { href: "/", style: { display: "flex", alignItems: "center", textDecoration: "none" } },
+                                    React.createElement("img", {
+                                        src: "/favicon.ico",
+                                        style: { height: "36px", width: "36px", marginRight: "10px" },
+                                        alt: "Logo"
+                                    }),
+                                    React.createElement("span", {
+                                        style: { color: "#fff", fontSize: "18px", fontWeight: "600" }
+                                    }, "Link")
+                                ),
+                                React.createElement(
+                                    "div",
+                                    { style: { display: "flex", gap: "25px", marginLeft: "auto" } },
+                                    React.createElement("a", { href: "/docs/index.php", style: { color: "#fff", textDecoration: "none", fontSize: "14px", fontWeight: "600" } }, "📄 Docs")
+                                )
                             )
                         );
                     }
