@@ -56,22 +56,17 @@ require_once __DIR__ . '/../config/csp.php';
       </div>
 
       <div class="hidden md:flex items-center gap-1 transition-all">
-        <a href="/index.php"
+        <a href="https://github.com/rahuldhole"
           class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
-          <i class="pi pi-home text-xs"></i> Directory
+          <i class="pi pi-github text-xs"></i> Github
+        </a>
+        <a href="/docs/index.php"
+          class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
+          <i class="pi pi-file text-xs"></i> Documentation
         </a>
         <a href="/docs/openapi.php"
           class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
           <i class="pi pi-box text-xs"></i> API Reference
-        </a>
-        <a href="/docs/index.php#solutions"
-          class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
-          <i class="pi pi-check-circle text-xs"></i> Solutions
-        </a>
-        <div class="h-4 w-px bg-white/10 mx-2"></div>
-        <a href="/docs/index.php#challenges"
-          class="ml-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-500 hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
-          <i class="pi pi-code"></i> Challenges
         </a>
       </div>
 
