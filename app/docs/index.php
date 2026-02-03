@@ -174,9 +174,8 @@ Usage:
                 <div class="w-7 h-7 bg-blue-500/10 rounded-lg flex items-center justify-center text-blue-400">
                     <img src="/favicon.ico" alt="Logo" class="w-5 h-5">
                 </div>
-                <span class="font-bold text-white tracking-tight text-sm sm:text-base">Better Stack</span>
-                <span class="text-[10px] text-neutral-500 font-bold uppercase tracking-widest mt-1">Registry
-                    Platform</span>
+                <span class="font-bold text-white tracking-tight text-sm sm:text-base">link</span>
+                <span class="text-[10px] text-neutral-500 font-bold uppercase tracking-widest mt-1">Your Digital Contact</span>
             </div>
         </div>
 
@@ -335,6 +334,11 @@ Usage:
                     title: "System Design",
                     id: "system-design",
                     link: "system-design.md"
+                },
+                {
+                    title: "Branding",
+                    id: "branding",
+                    link: "branding.md"
                 }
             ],
 

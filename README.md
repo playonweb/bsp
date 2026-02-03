@@ -1,4 +1,4 @@
-# Registry of contacts
+# Alink
 A Better Stack's PHP Test Application.
 A premium, production-ready user management system built for the Better Stack Senior Fullstack Engineer challenge.
 

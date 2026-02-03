@@ -8,7 +8,7 @@ require_once __DIR__ . '/../config/csp.php';
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Registry of contacts</title>
+  <title>Alink</title>
   <link href="/favicon.ico" rel="icon" type="image/x-icon" />
 
   <!-- Tailwind CSS -->
@@ -50,8 +50,8 @@ require_once __DIR__ . '/../config/csp.php';
           <img src="/favicon.ico" alt="Logo" class="w-6 h-6 object-contain invert">
         </div>
         <div class="flex flex-col">
-          <span class="font-extrabold text-lg sm:text-xl tracking-tight text-white leading-none">Better Stack</span>
-          <span class="text-[10px] text-neutral-500 font-bold uppercase tracking-widest mt-1">Registry Platform</span>
+          <span class="font-extrabold text-lg sm:text-xl tracking-tight text-white leading-none">link</span>
+          <span class="text-[10px] text-neutral-500 font-bold uppercase tracking-widest mt-1">Digital Contact</span>
         </div>
       </div>
 
@@ -83,7 +83,7 @@ require_once __DIR__ . '/../config/csp.php';
 
   <footer
     class="mt-auto py-10 text-center text-neutral-600 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em]">
-    &copy; <?= date('Y') ?> Registry of contacts
+    &copy; <?= date('Y') ?> Alink
   </footer>
 </body>
 
