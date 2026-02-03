@@ -1,7 +1,7 @@
 version: '3'
 
 vars:
-  COMPOSE_FILE: .setup/docker-compose.yaml
+  COMPOSE_FILE: .setup/docker/docker-compose.yaml
   ENV_FILE: .env
 
 tasks:
