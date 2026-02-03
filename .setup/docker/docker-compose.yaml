@@ -1,12 +1,12 @@
 services:
   app:
     build:
-      context: ../
-      dockerfile: .setup/Dockerfile
+      context: ../../
+      dockerfile: .setup/docker/Dockerfile
     ports:
       - "8080:80"
     volumes:
-      - ../app:/var/www/html
+      - ../../app:/var/www/html
     depends_on:
       - db
     environment:
@@ -25,7 +25,7 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
-      - ../app/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ../../app/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
     command: --default-authentication-plugin=mysql_native_password
 
 volumes:
