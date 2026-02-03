@@ -1,37 +1,4 @@
-## Assumptions
-I assume the following:
-
-- The `core` framework files should not be changed, even if there is space for improvements, otherwise it will lose the originality of the framework.
-- Low traffic
-- Single page Create & Read
-- Single table
-- No auth
-- No duplicates entries of email and phone.
-
-## System Design
-
-### Requirements
-
-#### Functional
-- Client can create users with AJAX
-- Client can read users
-- Client can filter users by city with AJAX
-
-#### Non-functional
-
-### Core Entities
-
-### API Endpoints
-
-### Data Flow
-
-
-### High Level Design
-
-
-### Deep Dive
-
-
+# Solutions
 
 ## Final Decisions (Trade-offs)
 
@@ -68,7 +35,7 @@ What I would improve if I had more time:
 
 1. Integrate all betterstack services: uptime, telemetry, warehouse & error tracking etc.
 1. Unit/integration tests, api contracts, ci/cd, cdn etc all common stuff.
-1. Pagination for better UX, SSR few rows only instead of whole user's table rest of the user's can be fetched after hydration.
+1. advanced search, sort & filter options
 1. Compile & tree shake tailwind, primeicons & use vuejs instead of petite-vue
 1. Captcha & rate limiting for security. MyISAM engine was a bottleneck acting like a dirty rate limiter, now it's InnoDB.
 1. More guards against basic attacks CORS, XSS, SQL injections etc.

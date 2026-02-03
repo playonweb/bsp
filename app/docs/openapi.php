@@ -2,7 +2,15 @@
 require_once __DIR__ . '/../config/cors.php';
 require_once __DIR__ . '/../config/csp.php';
 ?>
+
 <!DOCTYPE html>
+<!--
+OpenAPIViewer
+Source: https://gist.github.com/rahuldhole/3b943093745455f569e9656601a2b672
+Usage:
+    - add link to your openapi file in `SwaggerUIBundle` url
+    - Update topbar links (Link1, Link2) if needed
+-->
 <html lang="en">
 
 <head>
