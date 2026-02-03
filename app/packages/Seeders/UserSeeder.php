@@ -15,6 +15,7 @@ class UserSeeder
              VALUES (?, ?, ?, ?, NOW())"
         );
 
+        $count = 0;
         for ($i = 0; $i < 1000; $i++) {
             $stmt->execute([
                 $faker->name(),
@@ -22,6 +23,8 @@ class UserSeeder
                 $faker->city(),
                 $faker->phoneNumber()
             ]);
+            $count++;
         }
+        return $count;
     }
 }
