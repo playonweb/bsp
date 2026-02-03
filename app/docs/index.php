@@ -339,6 +339,16 @@ Usage:
                     title: "Branding",
                     id: "branding",
                     link: "branding.md"
+                },
+                {
+                    title: "Terms & Conditions",
+                    id: "terms",
+                    link: "terms.md"
+                },
+                {
+                    title: "Privacy Policy",
+                    id: "privacy",
+                    link: "privacy.md"
                 }
             ],
 
