@@ -62,11 +62,7 @@ require_once __DIR__ . '/../config/csp.php';
         </a>
         <a href="/docs/index.php"
           class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
-          <i class="pi pi-file text-xs"></i> Documentation
-        </a>
-        <a href="/docs/openapi.php"
-          class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
-          <i class="pi pi-box text-xs"></i> API Reference
+          <i class="pi pi-file text-xs"></i> Docs
         </a>
       </div>
 
