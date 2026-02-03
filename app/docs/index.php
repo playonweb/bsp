@@ -1,6 +1,6 @@
 <?php
-// require_once __DIR__ . '/../config/csp.php';
 require_once __DIR__ . '/../config/cors.php';
+require_once __DIR__ . '/../config/csp.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -10,7 +10,7 @@ require_once __DIR__ . '/../config/cors.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DocsViewer</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/primeicons@7.0.0/primeicons.min.css">
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-dark.min.css" />
@@ -32,6 +32,9 @@ require_once __DIR__ . '/../config/cors.php';
         body {
             background-color: #0d1117;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            /* Hides the page until Petite Vue & Tailwind are ready to prevent flashing */
+            opacity: 0;
+            transition: opacity 0.2s;
         }
 
         .markdown-body {
@@ -356,6 +359,7 @@ require_once __DIR__ . '/../config/cors.php';
 
                 // Optional: Listen for manual hash changes
                 window.addEventListener('hashchange', () => this.checkHashAndLoad());
+                document.body.style.opacity = '1';
             },
 
             findPathToId(items, id, path = []) {
