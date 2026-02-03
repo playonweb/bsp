@@ -1,4 +1,4 @@
-# System Design for [Challenges](challenges.md)
+# System Design
 
 ## Assumption
 
