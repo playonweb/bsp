@@ -1,7 +1,12 @@
+// @ts-check
+
+// @ts-ignore
 import { createApp } from 'petite-vue';
+// @ts-ignore
 import { UserSDK } from 'sdk';
 
-window.initApp = function(initialData) {
+// @ts-ignore
+window.initApp = function (initialData) {
     const appState = {
         users: initialData.users || [],
         allCities: initialData.cities || [],
@@ -14,13 +19,13 @@ window.initApp = function(initialData) {
         cityFilter: '',
         formVisible: window.innerWidth >= 1024,
         isMobile: window.innerWidth < 1024,
-        
+
         // Pagination
         page: 1,
         hasMore: true,
         loadingMore: false,
         globalError: null,
-        
+
         // Contact View State
         selectedContact: null,
         contactModalOpen: false,
@@ -35,19 +40,19 @@ window.initApp = function(initialData) {
         getInitials(name) {
             return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
         },
-        
+
         selectCity(city) {
             this.newUser.city = city;
             this.showCityDropdown = false;
             this.cityFilter = '';
         },
-        
-        toggleForm() { 
-            this.formVisible = !this.formVisible; 
+
+        toggleForm() {
+            this.formVisible = !this.formVisible;
         },
-        
-        closeForm() { 
-            if (this.isMobile) this.formVisible = false; 
+
+        closeForm() {
+            if (this.isMobile) this.formVisible = false;
         },
 
         closeDropdowns() {
@@ -76,52 +81,52 @@ window.initApp = function(initialData) {
         },
 
         validateField(field) {
-			switch (field) {
-				case 'name':
-					if (!this.newUser.name || this.newUser.name.length < 2) {
-						this.errors.name = 'Name must be at least 2 characters';
-					} else if (!/^[a-zA-Z\s\-'\.]+$/.test(this.newUser.name)) {
-						this.errors.name = 'Name contains invalid characters';
-					} else {
-						delete this.errors.name;
-					}
-					break;
+            switch (field) {
+                case 'name':
+                    if (!this.newUser.name || this.newUser.name.length < 2) {
+                        this.errors.name = 'Name must be at least 2 characters';
+                    } else if (!/^[a-zA-Z\s\-'\.]+$/.test(this.newUser.name)) {
+                        this.errors.name = 'Name contains invalid characters';
+                    } else {
+                        delete this.errors.name;
+                    }
+                    break;
 
-				case 'email':
-					const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-					if (!this.newUser.email) {
-						this.errors.email = 'Email is required';
-					} else if (!emailRegex.test(this.newUser.email)) {
-						this.errors.email = 'Invalid email format';
-					} else {
-						delete this.errors.email;
-					}
-					break;
+                case 'email':
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!this.newUser.email) {
+                        this.errors.email = 'Email is required';
+                    } else if (!emailRegex.test(this.newUser.email)) {
+                        this.errors.email = 'Invalid email format';
+                    } else {
+                        delete this.errors.email;
+                    }
+                    break;
 
-				case 'city':
-					if (!this.newUser.city || this.newUser.city.length < 2) {
-						this.errors.city = 'City must be at least 2 characters';
-					} else if (!/^[a-zA-Z\s\-]+$/.test(this.newUser.city)) {
-						this.errors.city = 'City contains invalid characters';
-					} else {
-						delete this.errors.city;
-					}
-					break;
+                case 'city':
+                    if (!this.newUser.city || this.newUser.city.length < 2) {
+                        this.errors.city = 'City must be at least 2 characters';
+                    } else if (!/^[a-zA-Z\s\-]+$/.test(this.newUser.city)) {
+                        this.errors.city = 'City contains invalid characters';
+                    } else {
+                        delete this.errors.city;
+                    }
+                    break;
 
-				case 'phone':
-					if (this.newUser.phone) {
+                case 'phone':
+                    if (this.newUser.phone) {
                         // Allow digits, spaces, plus, dashes, parens
-						if (!/^[\d\s\+\-\(\)]{7,20}$/.test(this.newUser.phone)) {
-							this.errors.phone = 'Invalid phone format';
-						} else {
-							delete this.errors.phone;
-						}
-					} else {
-						delete this.errors.phone;
-					}
-					break;
-			}
-		},
+                        if (!/^[\d\s\+\-\(\)]{7,20}$/.test(this.newUser.phone)) {
+                            this.errors.phone = 'Invalid phone format';
+                        } else {
+                            delete this.errors.phone;
+                        }
+                    } else {
+                        delete this.errors.phone;
+                    }
+                    break;
+            }
+        },
 
         // API Methods
         async handleSearch() {
@@ -143,8 +148,8 @@ window.initApp = function(initialData) {
             if (this.loadingMore || !this.hasMore) return;
             this.loadingMore = true;
             try {
-                const res = await UserSDK.fetchUsers({ 
-                    city: this.searchQuery, 
+                const res = await UserSDK.fetchUsers({
+                    city: this.searchQuery,
                     page: parseInt(this.page) + 1,
                     limit: 20
                 });
@@ -206,32 +211,32 @@ window.initApp = function(initialData) {
                 this.submitting = false;
             }
         },
-        
+
         initInfiniteScroll() {
-             const sentinel = document.getElementById('scroll-sentinel');
-             if (!sentinel) return;
- 
-             const observer = new IntersectionObserver((entries) => {
-                 if (entries[0].isIntersecting && this.hasMore && !this.loadingMore) {
-                     this.loadMore();
-                 }
-             }, { rootMargin: '200px' });
- 
-             observer.observe(sentinel);
+            const sentinel = document.getElementById('scroll-sentinel');
+            if (!sentinel) return;
+
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && this.hasMore && !this.loadingMore) {
+                    this.loadMore();
+                }
+            }, { rootMargin: '200px' });
+
+            observer.observe(sentinel);
         }
     };
 
     const app = createApp(appState);
-    
+
     app.mount();
 
     // Responsive listener
     window.addEventListener('resize', () => {
         const wasMobile = appState.isMobile;
         appState.isMobile = window.innerWidth < 1024;
-        
+
         if (appState.isMobile && !wasMobile) {
-            appState.formVisible = false; 
+            appState.formVisible = false;
         } else if (!appState.isMobile && wasMobile) {
             appState.formVisible = true;
         }

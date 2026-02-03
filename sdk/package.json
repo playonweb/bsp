@@ -1,0 +1,19 @@
+{
+  "name": "sdk",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "orval": "orval",
+    "tsc": "tsc",
+    "build": "rm -rf dist && orval && tsc"
+  },
+  "devDependencies": {
+    "orval": "^7.9.0",
+    "rimraf": "^6.1.2",
+    "typescript": "^5.8.3"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "",
+  "packageManager": "pnpm@10.26.2"
+}
