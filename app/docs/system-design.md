@@ -197,7 +197,7 @@ To move toward a "production-ready" product, the API is divided into the existin
 * **Purpose:** Minimizes initial data exposure in the DOM to comply with "Privacy by Design" principles.
 
 
-## Data Flow
+## High-Level Design
 
 ### 1. Initial Data Orchestration
 
@@ -241,7 +241,7 @@ graph TD
     end
 
     subgraph Backend
-        Create[create.php]
+        Create[users.php]
         U_Model[User Entity]
     end
 
@@ -260,7 +260,7 @@ graph TD
 ### 3. Privacy-Preserving Data Access (GDPR)
 
 This flow encapsulates your specific GDPR requirement: keeping sensitive data out of the initial DOM and fetching it only on "human demand."
-
+<a id="privacy-flow"></a>
 ```mermaid
 graph LR
     subgraph UI_Layer
@@ -283,12 +283,31 @@ graph LR
     Card -- "Replace Obfuscated Text" --> Card
 ```
 
----
+### 4. User's card share
 
-### Summary of Component Roles
+This feature, optimized to show how the system handles public profile requests while maintaining "Privacy by Design" through data masking.
 
-* **index.php**: Acts as the initial entry point, coordinating the `App` instance and fetching user lists for the `renderView` method.
-* **BaseModel**: Provides the abstract database interaction layer, handling the building of `WHERE` clauses and `INSERT` strings.
-* **create.php**: Serves as the endpoint for data persistence, utilizing the `User` model to save incoming POST data.
 
-Would you like me to provide the specific **JavaScript AJAX templates** to implement these flows?
+This diagram illustrates how the system delivers the contact card while keeping sensitive data masked during the first request to prevent automated scraping. And then reveal phone and email on user click as shown in <a href="#privacy-flow">Privacy-Preserving Data Access (GDPR)</a>
+
+```mermaid
+graph LR
+    subgraph Client ["Client (Browser)"]
+        UI["Contact Card (Masked)"]
+    end
+
+    subgraph App ["Application Layer"]
+        R["Router (router.php)"]
+        M["User Model (user.php)"]
+    end
+
+    subgraph Storage ["Data Layer"]
+        DB[(MySQL)]
+    end
+
+    UI -- "GET /{id}" --> R
+    R -- "User::find(id)" --> M
+    M -- "SELECT name, city" --> DB
+    DB -- "Non-sensitive Data" --> M
+    M -- "Masked Data Response" --> UI
+```
