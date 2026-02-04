@@ -7,12 +7,12 @@ The `core` framework files should not be changed, even when there is some scope 
 ## Functional Requirements
 
 ### User Management
-- The system must display a list of existing users in a tabular format, including their **Name**, **E-mail**, **City**, and **Phone Number**.
+- The system must display a list of existing users in a tabular or creative format so I will choose a grid of user cards, including their **Name**, **E-mail**, **City**, and **Phone Number**.
 - The system must provide a form to create new user records.
 - New records must include a phone number column in the database and the UI.
 
 ### Search and Filtering
-- The system must include client-side JavaScript functionality to filter table rows by **city**.
+- The system must include client-side JavaScript functionality to filter grid rows by **city**.
 
 ### Data Submission
 - Form submission must be handled using **AJAX** to prevent page reloads.
@@ -29,7 +29,7 @@ The `core` framework files should not be changed, even when there is some scope 
 ### Usability and User Experience (UX)
 - The application must be styled using **Bootstrap** or **Tailwind CSS** to ensure a presentable interface.
 - The user interface should be designed as a real-world product that people enjoy using, moving beyond a simple task list.
-- The table must use visual cues for readability, such as **highlighting every other row**.
+- The grid must use visual cues for readability, such as **highlighting every other row**.
 - The form must use standard layouts (like Bootstrap's `form-horizontal`) for better accessibility and aesthetics.
 
 ### Performance and Efficiency
@@ -46,3 +46,249 @@ The `core` framework files should not be changed, even when there is some scope 
 
 ### Security (Implicit)
 - Though the provided framework uses basic escaping, **"production-ready" standards** suggest implementing robust protection against **SQL injection** and ensuring data integrity.
+
+### GDPR Cimpliance
+- We can't directly show user's personal info for bots to scrap easily so it should be either obfuscated or revealed on human user's demand.
+- Right to delete personal info. for the moment in privacy policy say "email to delete/"
+
+
+
+
+
+## Core Entities
+
+The application revolves around a central **User** entity, which interacts with the provided `BaseModel` framework.
+
+#### 1. User Entity
+
+* **Properties:**
+* `id` (Integer): Primary key.
+* `name` (String): The user's full name.
+* `email` (String): Validated email address (Sensitive Data).
+* `city` (String): The user's location, used for filtering.
+* `phone` (String): The newly added contact number (Sensitive Data).
+* `created_at` (DateTime): Automatically generated timestamp of record creation.
+
+
+* **Logic:** Managed via `models/user.php`, inheriting CRUD capabilities from `BaseModel`.
+
+#### 2. Configuration & Database Entity
+
+* **Database:** A wrapper around `mysqli` that handles connection persistence and raw query execution.
+* **App Instance:** The singleton-style core that initializes configuration and provides the view-rendering engine.
+
+---
+
+### API Structure
+
+To move toward a "production-ready" product, the API is divided into the existing submission logic and the recommended "Privacy-First" endpoints for handling sensitive data.
+
+#### 1. User Creation API
+```json
+// POST /api/v1/users
+{
+  "name": "string",
+  "email": "string",
+  "city": "string",
+  "phone": "string"
+}
+```
+* **Description:** Processes new user submissions via AJAX.
+* **Payload:**
+
+
+* **Validation:** Must verify email format and non-empty strings before persistence.
+* **Response:** JSON success/error message (recommended for AJAX) instead of a standard header redirect.
+
+#### 2. User Collection API
+
+```json
+// GET /api/v1/users
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "string",
+      "email": "string", // obfuscated
+      "city": "string",
+      "phone": "string", // obfuscated
+      "created_at": "datetime"
+    }
+  ]
+}
+```
+* **Description:** Though used for initial page rendering, it acts as the data provider for the table.
+* **Logic:** Fetches all users via `User::find()`.
+
+#### 3. Sensitive Data Discovery (Recommended for GDPR)
+
+```json
+// GET /api/v1/users/{id}
+{
+  "data": {
+    "id": 1,
+    "email": "string",
+    "phone": "string"
+  }
+}
+```
+* **Description:** Fetches the `email` and `phone` for a specific user only when requested by the UI.
+* **Purpose:** Minimizes initial data exposure in the DOM to comply with "Privacy by Design" principles.
+
+#### 4. Search & Filter (Client-Side API)
+```json
+// GET /api/v1/users?filter[city]=cityName
+// GET /api/v1/users?city=cityName
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "string",
+      "email": "string", // obfuscated
+      "city": "string",
+      "phone": "string", // obfuscated
+      "created_at": "datetime"
+    }
+  ]
+}
+```
+* **Description:** A JavaScript service that intercepts the `keyup` event on the search input to filter the rendered user entities by the `city` property.
+
+#### 5. Pagination or infinite scrolling
+```json
+// GET /api/v1/users?page=2&limit=20
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "string",
+      "email": "string", // obfuscated
+      "city": "string",
+      "phone": "string", // obfuscated
+      "created_at": "datetime"
+    }
+  ],
+  "meta": {
+    "count": 1,
+    "page": 1,
+    "limit": 20,
+    "prev_page": null,
+    "next_page": null,
+    "last_page": 1
+  }
+}
+```
+* **Description:** A JavaScript service that intercepts the `scroll` event on the window to load more users when the user reaches the bottom of the page.
+* **Purpose:** To reduce the amount of data loaded at once and improve performance.
+
+#### 6. Share user's contact card
+```json
+// GET /{id}
+{
+  "data": {
+    "id": 1,
+    "name": "string",
+    "phone": "string", // obfuscated
+    "email": "string" // obfuscated
+  }
+}
+```
+* **Description:** Fetches the `email` and `phone` for a specific user only when requested by the UI.
+* **Purpose:** Minimizes initial data exposure in the DOM to comply with "Privacy by Design" principles.
+
+
+## Data Flow
+
+### 1. Initial Data Orchestration
+
+This flow covers the server-side rendering and initial data delivery. It highlights how the `App` core interacts with the `User` model to provide the base grid data.
+
+```mermaid
+graph LR
+    subgraph Browser
+        UI[Grid View]
+    end
+
+    subgraph Server
+        Index[index.php]
+        Model[User Model]
+    end
+
+    subgraph Data
+        DB[(MySQL)]
+    end
+
+    UI -- "GET /" --> Index
+    Index -- "User::find()" --> Model
+    Model -- "SELECT id, name, city" --> DB
+    DB -- "Non-sensitive Data" --> Model
+    Model -- "Render View" --> UI
+
+```
+
+---
+
+### 2. Interactive User Lifecycle (Creation & UX)
+
+This diagram focuses on the **AJAX** submission and client-side filtering. It demonstrates the "Product Engineer" approach where the UI stays responsive without page reloads.
+
+```mermaid
+graph TD
+    subgraph Client
+        Form[User Form]
+        JS_Filter[Search Logic]
+        AJAX[AJAX Handler]
+    end
+
+    subgraph Backend
+        Create[create.php]
+        U_Model[User Entity]
+    end
+
+    Form -- "Submit Event" --> AJAX
+    AJAX -- "POST /api/v1/users" --> Create
+    Create -- "Validate & insert()" --> U_Model
+    U_Model -- "JSON Response" --> AJAX
+    AJAX -- "Optimistic Grid Update" --> Form
+    
+    JS_Filter -- "Local Filter (City)" --> Form
+
+```
+
+---
+
+### 3. Privacy-Preserving Data Access (GDPR)
+
+This flow encapsulates your specific GDPR requirement: keeping sensitive data out of the initial DOM and fetching it only on "human demand."
+
+```mermaid
+graph LR
+    subgraph UI_Layer
+        Card[User Card]
+        Reveal[Reveal Button]
+    end
+
+    subgraph API_Layer
+        Details_API["/api/v1/users/:id"]
+    end
+
+    subgraph Secure_Storage
+        DB[(MySQL)]
+    end
+
+    Reveal -- "Click Event" --> Details_API
+    Details_API -- "Secure Query" --> DB
+    DB -- "Plaintext Email/Phone" --> Details_API
+    Details_API -- "JSON Payload" --> Card
+    Card -- "Replace Obfuscated Text" --> Card
+```
+
+---
+
+### Summary of Component Roles
+
+* **index.php**: Acts as the initial entry point, coordinating the `App` instance and fetching user lists for the `renderView` method.
+* **BaseModel**: Provides the abstract database interaction layer, handling the building of `WHERE` clauses and `INSERT` strings.
+* **create.php**: Serves as the endpoint for data persistence, utilizing the `User` model to save incoming POST data.
+
+Would you like me to provide the specific **JavaScript AJAX templates** to implement these flows?
