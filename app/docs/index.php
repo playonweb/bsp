@@ -343,6 +343,11 @@ Usage:
                     link: "branding.md"
                 },
                 {
+                    title: "Security Audit",
+                    id: "security-audit",
+                    link: "security-audit.md"
+                },
+                {
                     title: "Terms & Conditions",
                     id: "terms",
                     link: "terms.md"
