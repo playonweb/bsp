@@ -3,7 +3,7 @@
 $app = require "./core/app.php";
 
 // Get first 20 users from DB for SSR
-$users = User::getAllUsers($app->db, 20);
+$users = User::getUsersData($app->db, 20);
 
 // Render view 'views/index.php' and pass users variable there
 $app->renderView('index', array(

@@ -1,14 +1,6 @@
 <?php
-// Prepare initial data safely
-$initialUsers = [];
-if (!empty($users)) {
-	foreach ($users as $user) {
-		// Use toJsonApi() to ensure we get the standard (obfuscated) representation + ID
-		$json = $user->toJsonApi(false);
-		// Flatten structure for the frontend: { id: ..., name: ..., ... }
-		$initialUsers[] = array_merge(['id' => $json['id']], $json['attributes']);
-	}
-}
+// Initial users are already pre-formatted from the model
+$initialUsers = $users ?? [];
 ?>
 
 <!-- Initialize app with data -->

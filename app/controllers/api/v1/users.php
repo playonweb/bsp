@@ -55,10 +55,10 @@ function handleIndex($app)
     // Fetch users
     if ($filterCity) {
         $totalCount = User::countByCity($app->db, $filterCity);
-        $users = User::searchByCity($app->db, $filterCity, $limit, $offset);
+        $usersData = User::searchByCityData($app->db, $filterCity, $limit, $offset);
     } else {
         $totalCount = User::countAll($app->db);
-        $users = User::getAllUsers($app->db, $limit, $offset);
+        $usersData = User::getUsersData($app->db, $limit, $offset);
     }
 
     $lastPage = (int) ceil($totalCount / $limit);
@@ -72,8 +72,26 @@ function handleIndex($app)
         'last_page' => $lastPage,
     ];
 
+    // Prepare response in JSON:API format
+    $data = array_map(function ($u) {
+        return [
+            'type' => 'users',
+            'id' => $u['id'],
+            'attributes' => [
+                'name' => $u['name'],
+                'email' => $u['email'],
+                'city' => $u['city'],
+                'phone' => $u['phone'],
+                'created_at' => $u['created_at']
+            ],
+            'links' => [
+                'self' => '/api/v1/users/' . $u['id']
+            ]
+        ];
+    }, $usersData);
+
     echo json_encode([
-        'data' => User::collectionToJsonApi($users),
+        'data' => $data,
         'meta' => $meta,
     ]);
 }
