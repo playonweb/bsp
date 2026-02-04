@@ -5,14 +5,51 @@ import { createApp } from 'petite-vue';
 // @ts-ignore
 import { getUsers, createUser, getUser } from 'sdk';
 
+/**
+ * @typedef {Object} UserAttributes
+ * @property {string} name
+ * @property {string} email
+ * @property {string} city
+ * @property {string} [phone]
+ * @property {string} [created_at]
+ */
+
+/**
+ * @typedef {Object} UserResource
+ * @property {string} id
+ * @property {UserAttributes} attributes
+ */
+
+/**
+ * @typedef {Object} AppUser - Flat user object used in the UI
+ * @property {string} id
+ * @property {string} name
+ * @property {string} email
+ * @property {string} city
+ * @property {string} [phone]
+ * @property {string} [created_at]
+ */
+
+/**
+ * @typedef {Object} SDKResponse
+ * @property {any} data
+ * @property {number} status
+ */
+
+/**
+ * @param {Object} initialData
+ * @param {AppUser[]} initialData.users
+ */
 // @ts-ignore
 window.initApp = function (initialData) {
     const appState = {
+        /** @type {AppUser[]} */
         users: initialData.users || [],
         newUser: { name: '', email: '', city: '', phone: '' },
         searchQuery: '',
         loading: false,
         submitting: false,
+        /** @type {Record<string, string>} */
         errors: {},
         formVisible: false,
         isMobile: window.innerWidth < 1024,
@@ -21,13 +58,19 @@ window.initApp = function (initialData) {
         page: 1,
         hasMore: true,
         loadingMore: false,
+        /** @type {string|null} */
         globalError: null,
 
         // Contact View State
+        /** @type {AppUser|null} */
         selectedContact: null,
         contactModalOpen: false,
 
+        /**
+         * @param {string} name 
+         */
         getInitials(name) {
+            if (!name) return '?';
             return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
         },
 
@@ -35,30 +78,59 @@ window.initApp = function (initialData) {
             this.formVisible = !this.formVisible;
         },
 
-        closeForm() {
-            this.formVisible = false;
+        closeDropdowns() {
+            // Only close if not clicking inside a modal or button that should open one
+            // Handled via @click.stop in the template mostly
         },
 
-        // Contact Modal Logic
+        closeForm() {
+            this.formVisible = false;
+            this.newUser = { name: '', email: '', city: '', phone: '' };
+            this.errors = {};
+        },
+
+        /**
+         * @param {string} url
+         */
+        generateQRCode(url) {
+            const container = document.getElementById('qrcode');
+            if (!container) return;
+            container.innerHTML = '';
+            // @ts-ignore
+            new QRCode(container, {
+                text: url,
+                width: 180,
+                height: 180,
+                colorDark: "#ffffff",
+                colorLight: "transparent",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        },
+
+        /**
+         * @param {AppUser} user
+         */
         async viewContact(user) {
-            // Optimistic UI: show what we have (obfuscated) first
             this.selectedContact = user;
             this.contactModalOpen = true;
 
-            // Fetch clear text details
+            // Generate share link
+            const shareUrl = `${window.location.protocol}//${window.location.host}/${user.id}`;
+            setTimeout(() => this.generateQRCode(shareUrl), 100);
+
             try {
+                /** @type {SDKResponse} */
                 // @ts-ignore
                 const res = await getUser(user.id, { reveal: true });
                 if (res.status === 200 && res.data && res.data.data) {
-                    // Update the selected contact with revealed info
+                    const u = /** @type {UserResource} */ (res.data.data);
                     this.selectedContact = {
-                        id: res.data.data.id,
-                        ...res.data.data.attributes
+                        id: u.id,
+                        ...u.attributes
                     };
                 }
             } catch (err) {
                 console.error("Failed to reveal contact", err);
-                // Graceful degradation: keep showing obfuscated
             }
         },
 
@@ -67,16 +139,45 @@ window.initApp = function (initialData) {
             this.selectedContact = null;
         },
 
+        /**
+         * @param {AppUser|null} user
+         */
+        async shareContact(user) {
+            if (!user) return;
+            const shareUrl = `${window.location.protocol}//${window.location.host}/${user.id}`;
+            const shareData = {
+                title: user.name + ' - Alink',
+                text: `Contact details for ${user.name}`,
+                url: shareUrl
+            };
+
+            try {
+                if (navigator.share) {
+                    await navigator.share(shareData);
+                } else {
+                    await this.copyToClipboard(shareUrl);
+                    alert('Share link copied to clipboard!');
+                }
+            } catch (err) {
+                console.error('Error sharing', err);
+            }
+        },
+
+        /**
+         * @param {string} text 
+         */
         async copyToClipboard(text) {
             if (!text) return;
             try {
                 await navigator.clipboard.writeText(text);
-                // Could add a toast here
             } catch (err) {
-                console.error('Failed to copy match', err);
+                console.error('Failed to copy', err);
             }
         },
 
+        /**
+         * @param {string} field 
+         */
         validateField(field) {
             switch (field) {
                 case 'name':
@@ -112,7 +213,6 @@ window.initApp = function (initialData) {
 
                 case 'phone':
                     if (this.newUser.phone) {
-                        // Allow digits, spaces, plus, dashes, parens
                         if (!/^[\d\s\+\-\(\)]{7,20}$/.test(this.newUser.phone)) {
                             this.errors.phone = 'Invalid phone format';
                         } else {
@@ -130,11 +230,12 @@ window.initApp = function (initialData) {
             this.loading = true;
             this.page = 1;
             try {
+                /** @type {SDKResponse} */
                 // @ts-ignore
                 const res = await getUsers({ city: this.searchQuery || undefined, page: 1, limit: 20 });
                 if (res.status === 200 && res.data) {
-                    // map attributes to flat object for UI
-                    this.users = (res.data.data || []).map(u => ({ id: u.id, ...u.attributes }));
+                    const data = /** @type {UserResource[]} */ (res.data.data || []);
+                    this.users = data.map(u => ({ id: u.id, ...u.attributes }));
                     this.hasMore = !!(res.data.meta && res.data.meta.next_page);
                 } else {
                     this.users = [];
@@ -151,6 +252,7 @@ window.initApp = function (initialData) {
             if (this.loadingMore || !this.hasMore) return;
             this.loadingMore = true;
             try {
+                /** @type {SDKResponse} */
                 // @ts-ignore
                 const res = await getUsers({
                     city: this.searchQuery || undefined,
@@ -158,7 +260,8 @@ window.initApp = function (initialData) {
                     limit: 20
                 });
                 if (res.status === 200 && res.data) {
-                    const newUsers = (res.data.data || []).map(u => ({ id: u.id, ...u.attributes }));
+                    const data = /** @type {UserResource[]} */ (res.data.data || []);
+                    const newUsers = data.map(u => ({ id: u.id, ...u.attributes }));
                     this.users = [...this.users, ...newUsers];
                     this.page = res.data.meta.page;
                     this.hasMore = !!(res.data.meta && res.data.meta.next_page);
@@ -179,7 +282,6 @@ window.initApp = function (initialData) {
 
             this.submitting = true;
             try {
-                // Construct JSON:API payload
                 const payload = {
                     data: {
                         type: 'users',
@@ -192,25 +294,31 @@ window.initApp = function (initialData) {
                     }
                 };
 
+                /** @type {SDKResponse} */
                 // @ts-ignore
                 const res = await createUser(payload);
 
                 if (res.status === 201 && res.data && res.data.data) {
-                    const newUserRecord = { id: res.data.data.id, ...res.data.data.attributes };
+                    const u = /** @type {UserResource} */ (res.data.data);
+                    const newUserRecord = { id: u.id, ...u.attributes };
 
-                    // UI Updates
                     this.users.unshift(newUserRecord);
+                    this.selectedContact = newUserRecord;
+                    this.contactModalOpen = true; // Open newly created contact view
 
                     // Reset
                     this.newUser = { name: '', email: '', city: '', phone: '' };
                     this.errors = {};
                     this.closeForm();
+
+                    // Generate share QR for new contact
+                    const shareUrl = `${window.location.protocol}//${window.location.host}/api/v1/users/${u.id}`;
+                    setTimeout(() => this.generateQRCode(shareUrl), 100);
+
                 } else if (res.status === 422) {
-                    // Handle validation errors from server
                     if (res.data && res.data.errors) {
                         this.errors = {};
-                        res.data.errors.forEach(e => {
-                            // simplistic mapping, might need adjustment based on exact error structure
+                        /** @type {any[]} */ (res.data.errors).forEach(e => {
                             const field = e.source?.pointer?.split('/').pop() || 'general';
                             this.errors[field] = e.detail || e.title;
                         });
@@ -243,14 +351,11 @@ window.initApp = function (initialData) {
     };
 
     const app = createApp(appState);
-
     app.mount();
 
-    // Responsive listener
     window.addEventListener('resize', () => {
         appState.isMobile = window.innerWidth < 1024;
     });
 
-    // Handle infinite scroll after mount
     setTimeout(() => appState.initInfiniteScroll(), 100);
 };

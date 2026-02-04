@@ -32,6 +32,9 @@ require_once __DIR__ . '/../config/csp.php';
 
   <!-- Application JavaScript -->
   <script type="module" src="/assets/js/application.js"></script>
+
+  <!-- QRCode Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 
 <body class="antialiased min-h-screen">
