@@ -125,12 +125,12 @@ To move toward a "production-ready" product, the API is divided into the existin
 #### 3. Sensitive Data Discovery (Recommended for GDPR)
 
 ```json
-// GET /api/v1/users/{id}
+// POST /api/v1/users/{id}?reveal=true
 {
   "data": {
     "id": 1,
-    "email": "string",
-    "phone": "string"
+    "email": "string", // non-obfuscated
+    "phone": "string" // non-obfuscated
   }
 }
 ```
