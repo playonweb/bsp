@@ -46,6 +46,7 @@ window.initApp = function (initialData) {
         /** @type {AppUser[]} */
         users: initialData.users || [],
         newUser: { name: '', email: '', city: '', phone: '' },
+        terms: false,
         searchQuery: '',
         loading: false,
         submitting: false,
@@ -222,6 +223,13 @@ window.initApp = function (initialData) {
                         delete this.errors.phone;
                     }
                     break;
+                case 'terms':
+                    if (!this.terms) {
+                        this.errors.terms = 'You must agree to the terms and conditions';
+                    } else {
+                        delete this.errors.terms;
+                    }
+                    break;
             }
         },
 
@@ -277,7 +285,7 @@ window.initApp = function (initialData) {
         async handleSubmit() {
             if (this.submitting) return;
 
-            ['name', 'email', 'city', 'phone'].forEach(f => this.validateField(f));
+            ['name', 'email', 'city', 'phone', 'terms'].forEach(f => this.validateField(f));
             if (Object.keys(this.errors).length > 0) return;
 
             this.submitting = true;
@@ -308,6 +316,7 @@ window.initApp = function (initialData) {
 
                     // Reset
                     this.newUser = { name: '', email: '', city: '', phone: '' };
+                    this.terms = false;
                     this.errors = {};
                     this.closeForm();
 
