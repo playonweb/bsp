@@ -1,5 +1,8 @@
 <?php
+if (!ob_start("ob_gzhandler"))
+    ob_start(); // Enable Gzip
 $url = rtrim($_GET['url'] ?? '', '/');
+
 $method = $_SERVER['REQUEST_METHOD'];
 $segments = explode('/', $url);
 

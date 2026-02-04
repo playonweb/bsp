@@ -40,7 +40,8 @@ function handleIndex($app)
 
     // Pagination
     $page = max(1, (int) ($_GET['page'] ?? 1));
-    $limit = max(1, (int) ($_GET['limit'] ?? 20));
+    $limitInput = (int) ($_GET['limit'] ?? 20);
+    $limit = max(1, min(100, $limitInput)); // Enforce hard limit of 100
     $offset = ($page - 1) * $limit;
 
     // Fetch users

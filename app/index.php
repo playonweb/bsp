@@ -1,4 +1,6 @@
 <?php
+if (!ob_start("ob_gzhandler"))
+    ob_start(); // Enable Gzip
 // Init app instance
 $app = require "./core/app.php";
 
