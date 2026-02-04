@@ -42,7 +42,7 @@ require_once __DIR__ . '/../config/csp.php';
   </div>
 
   <!-- Header -->
-  <nav class="sticky top-0 z-50 bg-black/60 backdrop-blur-2xl border-b border-white/10 px-4 sm:px-8 py-4">
+  <nav class="sticky top-0 z-30 bg-black/60 backdrop-blur-2xl border-b border-white/10 px-4 sm:px-8 py-4">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-4 group cursor-pointer">
         <a href="/">
@@ -75,7 +75,7 @@ require_once __DIR__ . '/../config/csp.php';
     </div>
   </nav>
 
-  <main class="relative z-10 max-w-6xl mx-auto px-4 py-6 sm:py-12">
+  <main class="relative max-w-6xl mx-auto px-4 py-6 sm:py-12">
     <?= $content ?>
   </main>
 
