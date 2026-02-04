@@ -73,6 +73,18 @@ if (isApiRequest($segments)) {
         sendJsonApiError(404, "$url route not found");
     }
 } else {
+    // if its a number then find user by id and render card.php
+    if (is_numeric($url)) {
+        $app = require "./core/app.php";
+        $user = User::getUserById($app->db, $url);
+        if ($user) {
+            $app->renderView('card', array(
+                'user' => $user
+            ));
+            exit;
+        }
+    }
+
     header("Location: /", true, 302);
     exit;
 }
