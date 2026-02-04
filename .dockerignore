@@ -1,7 +1,6 @@
 *.d.ts
 .project
 .settings
-*node_modules
 .git
 .gitignore
 .DS_Store
