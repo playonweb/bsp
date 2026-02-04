@@ -42,8 +42,8 @@ CREATE TABLE IF NOT EXISTS `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `city`, `phone`, `created_at`) VALUES
-(1, 'Andrej', 'andrej@mail.test', 'Glasgow', '1234567890', '2013-09-19 22:20:19'),
-(2, 'Juraj', 'juraj@mail.test', 'Praha', '0987654321', '2013-09-19 22:20:34'),
+(1, 'Andrej', 'andrej@mail.test', 'Glasgow', NULL, '2013-09-19 22:20:19'),
+(2, 'Juraj', 'juraj@mail.test', 'Praha', NULL, '2013-09-19 22:20:34'),
 (3, 'Jožko', 'jozko@mail.test', 'Bratislava', NULL, '2013-09-19 22:21:04'),
 (4, 'Peter', 'peter@mail.test', 'Brno', NULL, '2013-09-19 22:21:17'),
 (5, 'Jon', 'jon@mail.test', 'New York', NULL, '2013-09-19 22:21:41');
