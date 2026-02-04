@@ -7,7 +7,7 @@
 ## Quick start
 
 ```sh
-docker compose -f .setup/docker-compose.yaml up
+docker compose -f .setup/docker/docker-compose.yaml up
 ```
 
 Visit [http://localhost:8080](http://localhost:8080)
