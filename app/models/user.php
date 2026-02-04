@@ -143,19 +143,6 @@ class User extends BaseModel
 	}
 
 	/**
-	 * Get all unique cities
-	 */
-	public static function getCities($db)
-	{
-		$result = $db->query("SELECT DISTINCT city FROM users WHERE city IS NOT NULL AND city != '' ORDER BY city ASC");
-		$cities = [];
-		foreach ($result as $row) {
-			$cities[] = $row['city'];
-		}
-		return $cities;
-	}
-
-	/**
 	 * Create a new user with validation
 	 */
 	public static function createUser($db, $data)
