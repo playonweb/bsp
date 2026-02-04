@@ -1,59 +1,61 @@
 # System Design
 
-## Assumption
+## Requirements
+
+### Assumption
 
 The `core` framework files should not be changed, even when there is some scope for improvements, to avoid losing the originality of the framework.
 
-## Functional Requirements
+### Functional Requirements
 
-### User Management
+#### User Management
 - The system must display a list of existing users in a tabular or creative format so I will choose a grid of user cards, including their **Name**, **E-mail**, **City**, and **Phone Number**.
 - The system must provide a form to create new user records.
 - New records must include a phone number column in the database and the UI.
 
-### Search and Filtering
+#### Search and Filtering
 - The system must include client-side JavaScript functionality to filter grid rows by **city**.
 
-### Data Submission
+#### Data Submission
 - Form submission must be handled using **AJAX** to prevent page reloads.
 - The system must validate new records before they are saved to the database.
 
-### Data Persistence
+#### Data Persistence
 - The system must store user data in a **MySQL** database.
 - The system must record the **creation timestamp** (`created_at`) for every new record.
 
----
 
-## Non-Functional Requirements
+### Non-Functional Requirements
 
-### Usability and User Experience (UX)
+#### Usability and User Experience (UX)
 - The application must be styled using **Bootstrap** or **Tailwind CSS** to ensure a presentable interface.
 - The user interface should be designed as a real-world product that people enjoy using, moving beyond a simple task list.
 - The grid must use visual cues for readability, such as **highlighting every other row**.
 - The form must use standard layouts (like Bootstrap's `form-horizontal`) for better accessibility and aesthetics.
 
-### Performance and Efficiency
+#### Performance and Efficiency
 - The project should be completed within a **4-hour time limit**, requiring the developer to prioritize high-impact features.
 - The developer must demonstrate the **"Two Sides" philosophy**, balancing rapid development with polished, production-ready code where it matters most.
 
-### Scalability and Maintenance
+#### Scalability and Maintenance
 - The code must be **"production-ready"**, implying it should be clean, modular, and follow the provided 'framework' structure.
 - The system must utilize a **Model-View-Controller (MVC)** style pattern as established by the `App` and `BaseModel` classes.
 
-### Deployment and Distribution
+#### Deployment and Distribution
 - The application must be deployable to a **free hosting service** with a publicly accessible production link.
 - Source code must be managed in a **private GitHub repository** with specified collaborators invited.
 
-### Security (Implicit)
+#### Security (Implicit)
 - Though the provided framework uses basic escaping, **"production-ready" standards** suggest implementing robust protection against **SQL injection** and ensuring data integrity.
 
-### GDPR Cimpliance
+#### GDPR Cimpliance
 - We can't directly show user's personal info for bots to scrap easily so it should be either obfuscated or revealed on human user's demand.
 - Right to delete personal info. for the moment in privacy policy say "email to delete/"
 
 
 
 
+---
 
 ## Core Entities
 
@@ -196,6 +198,7 @@ To move toward a "production-ready" product, the API is divided into the existin
 * **Description:** Fetches the `email` and `phone` for a specific user only when requested by the UI.
 * **Purpose:** Minimizes initial data exposure in the DOM to comply with "Privacy by Design" principles.
 
+---
 
 ## High-Level Design
 
@@ -311,6 +314,7 @@ graph LR
     DB -- "Non-sensitive Data" --> M
     M -- "Masked Data Response" --> UI
 ```
+---
 
 ## Deep Dive
 ### 1. Data Privacy & Bot Protection (GDPR Compliance)
@@ -348,3 +352,77 @@ Transitioning from `die()` to production-level monitoring.
 
 * **Structured Logging**: The current framework uses `die()` for database errors. In a real-world product, these should be caught and sent to a structured logging service (like Better Stack Logs) to allow for real-time alerting without exposing system internals to the end-user.
 * **User Feedback Loops**: Evaluate how the API distinguishes between **Validation Errors** (422) and **System Errors** (500) to ensure the user receives actionable feedback rather than a generic "Something went wrong" message.
+
+---
+
+## Capacity Planning & Estimations
+
+This section demonstrates how the system would scale beyond a simple test environment to handle a real-world production load.
+
+### 1. Traffic Estimates (Throughput)
+
+We will assume a mid-scale production environment to guide our infrastructure requirements.
+
+* **Daily Active Users (DAU):** 10,000.
+* **Write Volume (Creation):** * Assumption: 1% of users create a new record daily.
+* 10,000 * 0.01 = 100 new users per day.
+* **Writes Per Second (WPS):** 100 / 86,400 seconds ≈ **0.001 WPS** (negligible load).
+
+
+* **Read Volume (Grid Loading & Reveal):**
+* Assumption: Each user loads the grid 5 times a day and reveals 2 sets of sensitive data.
+* (10,000 * 5) + (10,000 * 2) = 70,000 read requests per day.
+* **Queries Per Second (QPS):** 70,000 / 86,400 seconds ≈ **0.8 QPS**.
+* **Peak QPS:** (Assumed 5x average) ≈ **4 QPS**.
+
+
+
+### 2. Storage Estimates (Database)
+
+We estimate the storage required for the `users` table over a 5-year period.
+
+* **Data Per User Record:**
+* `id` (Integer): 4 bytes.
+* `name` (VARCHAR/Text): ~50 bytes.
+* `email` (VARCHAR/Text): ~50 bytes.
+* `city` (VARCHAR/Text): ~30 bytes.
+* `phone` (VARCHAR/Text): ~20 bytes.
+* `created_at` (DateTime): 8 bytes.
+* **Total per row:** ~162 bytes.
+
+
+* **5-Year Growth:**
+* Current users (from `schema.sql`) + 100 new users/day * 365 days * 5 years ≈ 182,500 users.
+* 182,500 * 162 bytes ≈ 29,565,000 bytes.
+* **Total Storage:** ≈ **30 MB**.
+
+
+* **Conclusion:** Even at 10x this growth, a single MySQL instance can easily handle the storage requirements for many years.
+
+### 3. Bandwidth Estimates
+
+This measures the data moving between the client and server.
+
+* **Ingress (Writes):**
+* 100 writes/day * 162 bytes ≈ 16.2 KB/day (negligible).
+
+
+* **Egress (Reads):**
+* Initial Grid Load (50 users/page): 50 * 162 bytes ≈ 8.1 KB per load.
+* 70,000 reads/day * 8.1 KB ≈ 567,000 KB/day.
+* **Total Egress:** ≈ **567 MB per day**.
+
+
+
+### 4. Cache Estimates (Redis)
+
+If we implement caching for the "Reveal on Demand" feature to reduce database load.
+
+* **Caching Strategy:** Cache only the sensitive data (Email/Phone) for the most active 20% of users.
+* **Cache Item Size:** Email (50b) + Phone (20b) + ID (4b) ≈ 74 bytes.
+* **Memory Needed:** 182,500 users * 0.20 * 74 bytes ≈ 2.7 MB.
+* **Conclusion:** A tiny **Redis instance (e.g., 128MB)** would be more than sufficient to provide sub-millisecond reveal times for the "Privacy-First" feature.
+
+---
+
+While the current throughput and storage requirements are low, the design remains horizontally scalable. The primary bottleneck would be the MySQL read performance on the `city` index during search, which is why a **database index on the `city` column** is the first recommended optimization for production.
