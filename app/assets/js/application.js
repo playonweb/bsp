@@ -3,7 +3,7 @@
 // @ts-ignore
 import { createApp } from 'petite-vue';
 // @ts-ignore
-import { UserSDK } from 'sdk';
+import { getUsers, createUser, getUser } from 'sdk';
 
 // @ts-ignore
 window.initApp = function (initialData) {
@@ -40,9 +40,26 @@ window.initApp = function (initialData) {
         },
 
         // Contact Modal Logic
-        viewContact(user) {
+        async viewContact(user) {
+            // Optimistic UI: show what we have (obfuscated) first
             this.selectedContact = user;
             this.contactModalOpen = true;
+
+            // Fetch clear text details
+            try {
+                // @ts-ignore
+                const res = await getUser(user.id, { reveal: true });
+                if (res.status === 200 && res.data && res.data.data) {
+                    // Update the selected contact with revealed info
+                    this.selectedContact = {
+                        id: res.data.data.id,
+                        ...res.data.data.attributes
+                    };
+                }
+            } catch (err) {
+                console.error("Failed to reveal contact", err);
+                // Graceful degradation: keep showing obfuscated
+            }
         },
 
         closeContact() {
@@ -113,9 +130,15 @@ window.initApp = function (initialData) {
             this.loading = true;
             this.page = 1;
             try {
-                const res = await UserSDK.fetchUsers({ city: this.searchQuery, page: 1, limit: 20 });
-                this.users = res.users;
-                this.hasMore = !!(res.meta && res.meta.next_page);
+                // @ts-ignore
+                const res = await getUsers({ city: this.searchQuery || undefined, page: 1, limit: 20 });
+                if (res.status === 200 && res.data) {
+                    // map attributes to flat object for UI
+                    this.users = (res.data.data || []).map(u => ({ id: u.id, ...u.attributes }));
+                    this.hasMore = !!(res.data.meta && res.data.meta.next_page);
+                } else {
+                    this.users = [];
+                }
             } catch (e) {
                 console.error('Search error:', e);
                 this.globalError = 'Failed to search. Please check your connection.';
@@ -128,14 +151,18 @@ window.initApp = function (initialData) {
             if (this.loadingMore || !this.hasMore) return;
             this.loadingMore = true;
             try {
-                const res = await UserSDK.fetchUsers({
-                    city: this.searchQuery,
-                    page: parseInt(this.page) + 1,
+                // @ts-ignore
+                const res = await getUsers({
+                    city: this.searchQuery || undefined,
+                    page: this.page + 1,
                     limit: 20
                 });
-                this.users = [...this.users, ...res.users];
-                this.page = parseInt(res.meta.page);
-                this.hasMore = !!(res.meta && res.meta.next_page);
+                if (res.status === 200 && res.data) {
+                    const newUsers = (res.data.data || []).map(u => ({ id: u.id, ...u.attributes }));
+                    this.users = [...this.users, ...newUsers];
+                    this.page = res.data.meta.page;
+                    this.hasMore = !!(res.data.meta && res.data.meta.next_page);
+                }
             } catch (e) {
                 console.error('Load more error:', e);
                 this.globalError = 'Failed to load more. Please try again.';
@@ -152,37 +179,50 @@ window.initApp = function (initialData) {
 
             this.submitting = true;
             try {
-                const newUserRecord = await UserSDK.createUser({
-                    name: this.newUser.name,
-                    email: this.newUser.email,
-                    city: this.newUser.city,
-                    phone: this.newUser.phone || null
-                });
+                // Construct JSON:API payload
+                const payload = {
+                    data: {
+                        type: 'users',
+                        attributes: {
+                            name: this.newUser.name,
+                            email: this.newUser.email,
+                            city: this.newUser.city,
+                            phone: this.newUser.phone || null
+                        }
+                    }
+                };
 
-                // UI Updates
-                this.users.unshift(newUserRecord);
+                // @ts-ignore
+                const res = await createUser(payload);
 
-                // Reset
-                this.newUser = { name: '', email: '', city: '', phone: '' };
-                this.errors = {};
-                this.closeForm();
+                if (res.status === 201 && res.data && res.data.data) {
+                    const newUserRecord = { id: res.data.data.id, ...res.data.data.attributes };
+
+                    // UI Updates
+                    this.users.unshift(newUserRecord);
+
+                    // Reset
+                    this.newUser = { name: '', email: '', city: '', phone: '' };
+                    this.errors = {};
+                    this.closeForm();
+                } else if (res.status === 422) {
+                    // Handle validation errors from server
+                    if (res.data && res.data.errors) {
+                        this.errors = {};
+                        res.data.errors.forEach(e => {
+                            // simplistic mapping, might need adjustment based on exact error structure
+                            const field = e.source?.pointer?.split('/').pop() || 'general';
+                            this.errors[field] = e.detail || e.title;
+                        });
+                    }
+                } else {
+                    throw new Error('Unexpected status: ' + res.status);
+                }
 
             } catch (err) {
                 console.error("Submit Error", err);
-                if (err && err.errors) {
-                    this.errors = {};
-                    err.errors.forEach(e => {
-                        const field = e.source?.pointer?.split('/').pop();
-                        if (field) this.errors[field] = e.detail;
-                    });
-                } else if (err && (err.detail || err.title)) {
-                    const msg = err.detail || err.title;
-                    this.globalError = msg;
-                    setTimeout(() => this.globalError = null, 5000);
-                } else {
-                    this.globalError = 'Connection Error: Unable to reach server.';
-                    setTimeout(() => this.globalError = null, 5000);
-                }
+                this.globalError = 'Connection Error: Unable to reach server.';
+                setTimeout(() => this.globalError = null, 5000);
             } finally {
                 this.submitting = false;
             }

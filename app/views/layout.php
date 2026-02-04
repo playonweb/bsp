@@ -25,7 +25,7 @@ require_once __DIR__ . '/../config/csp.php';
   {
     "imports": {
       "petite-vue": "https://unpkg.com/petite-vue@0.4.1/dist/petite-vue.es.js",
-      "sdk": "/assets/js/sdk-legacy.js"
+      "sdk": "/assets/js/sdk.js"
     }
   }
   </script>

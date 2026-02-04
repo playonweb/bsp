@@ -57,7 +57,8 @@ class User extends BaseModel
 	public static function searchByCity($db, $city, $limit = null, $offset = 0)
 	{
 		$escaped = $db->mysqli->real_escape_string(trim($city));
-		$query = "SELECT * FROM users WHERE city LIKE '%$escaped%' ORDER BY created_at DESC";
+		// Use prepared statement or at least proper escaping (already done, but let's be explicit and safer with concatenation)
+		$query = "SELECT * FROM users WHERE city LIKE '%" . $escaped . "%' ORDER BY created_at DESC";
 
 		if ($limit) {
 			$query .= " LIMIT $offset, $limit";
@@ -206,16 +207,36 @@ class User extends BaseModel
 	/**
 	 * Convert user to JSON:API format
 	 */
-	public function toJsonApi()
+	public function toJsonApi($reveal = false)
 	{
+		$email = htmlspecialchars($this->getEmail(), ENT_QUOTES, 'UTF-8');
+		$phone = $this->getPhone() ? htmlspecialchars($this->getPhone(), ENT_QUOTES, 'UTF-8') : null;
+
+		if (!$reveal) {
+			// Obfuscate email: j***@...
+			$parts = explode('@', $email);
+			if (count($parts) === 2) {
+				$name = $parts[0];
+				$domain = $parts[1];
+				$visible = substr($name, 0, 1);
+				$email = $visible . '***@' . $domain;
+			}
+
+			// Obfuscate phone: +1-***...
+			if ($phone) {
+				$phone = substr($phone, 0, 3) . '-***...';
+			}
+		}
+
 		return [
 			'type' => 'users',
 			'id' => (string) $this->getId(),
 			'attributes' => [
 				'name' => htmlspecialchars($this->getName(), ENT_QUOTES, 'UTF-8'),
-				'email' => htmlspecialchars($this->getEmail(), ENT_QUOTES, 'UTF-8'),
+				'email' => $email,
 				'city' => htmlspecialchars($this->getCity(), ENT_QUOTES, 'UTF-8'),
-				'phone' => $this->getPhone() ? htmlspecialchars($this->getPhone(), ENT_QUOTES, 'UTF-8') : null
+				'phone' => $phone,
+				'created_at' => $this->getField('created_at')
 			],
 			'links' => [
 				'self' => '/api/v1/users/' . $this->getId()
@@ -226,10 +247,10 @@ class User extends BaseModel
 	/**
 	 * Convert array of users to JSON:API format
 	 */
-	public static function collectionToJsonApi($users)
+	public static function collectionToJsonApi($users, $reveal = false)
 	{
-		return array_map(function ($user) {
-			return $user->toJsonApi();
+		return array_map(function ($user) use ($reveal) {
+			return $user->toJsonApi($reveal);
 		}, $users);
 	}
 }

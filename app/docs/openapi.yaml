@@ -23,7 +23,7 @@ paths:
     get:
       summary: List users
       operationId: getUsers
-      description: Get all users or filter by city with pagination.
+      description: Get all users or filter by city with pagination. Emails and Phone numbers will be always obfuscated.
       parameters:
         - $ref: '#/components/parameters/CityFilter'
         - $ref: '#/components/parameters/Page'
