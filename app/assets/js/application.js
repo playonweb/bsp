@@ -9,14 +9,11 @@ import { UserSDK } from 'sdk';
 window.initApp = function (initialData) {
     const appState = {
         users: initialData.users || [],
-        allCities: initialData.cities || [],
         newUser: { name: '', email: '', city: '', phone: '' },
         searchQuery: '',
         loading: false,
         submitting: false,
         errors: {},
-        showCityDropdown: false,
-        cityFilter: '',
         formVisible: false,
         isMobile: window.innerWidth < 1024,
 
@@ -30,21 +27,8 @@ window.initApp = function (initialData) {
         selectedContact: null,
         contactModalOpen: false,
 
-        // Getters
-        get filteredCities() {
-            if (!this.cityFilter) return this.allCities;
-            const lower = this.cityFilter.toLowerCase();
-            return this.allCities.filter(c => c.toLowerCase().includes(lower));
-        },
-
         getInitials(name) {
             return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-        },
-
-        selectCity(city) {
-            this.newUser.city = city;
-            this.showCityDropdown = false;
-            this.cityFilter = '';
         },
 
         toggleForm() {
@@ -53,10 +37,6 @@ window.initApp = function (initialData) {
 
         closeForm() {
             this.formVisible = false;
-        },
-
-        closeDropdowns() {
-            this.showCityDropdown = false;
         },
 
         // Contact Modal Logic
@@ -181,10 +161,6 @@ window.initApp = function (initialData) {
 
                 // UI Updates
                 this.users.unshift(newUserRecord);
-                if (newUserRecord.city && !this.allCities.includes(newUserRecord.city)) {
-                    this.allCities.push(newUserRecord.city);
-                    this.allCities.sort();
-                }
 
                 // Reset
                 this.newUser = { name: '', email: '', city: '', phone: '' };
