@@ -101,8 +101,8 @@ if (count($nameParts) > 1) {
             </div>
 
             <div class="mt-8 text-center">
-                <a href="/docs/index.php#terms" class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
-                    Verified Connection
+                <a href="/docs/index.php#privacy" class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
+                    Privacy Policy
                 </a>
             </div>
         </div>
