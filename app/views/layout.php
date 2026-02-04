@@ -57,21 +57,16 @@ require_once __DIR__ . '/../config/csp.php';
         </div>
       </div>
 
-      <div class="hidden md:flex items-center gap-1 transition-all">
+      <div class="flex items-center gap-1 transition-all">
         <a href="https://github.com/rahuldhole"
-          class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
-          <i class="pi pi-github text-xs"></i> Github
+          class="px-3 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
+          <i class="pi pi-github text-[10px] sm:text-xs"></i> Github
         </a>
         <a href="/docs/index.php"
-          class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
-          <i class="pi pi-file text-xs"></i> Docs
+          class="px-3 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
+          <i class="pi pi-file text-[10px] sm:text-xs"></i> Docs
         </a>
       </div>
-
-      <!-- Mobile Menu Button -->
-      <button class="md:hidden w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white">
-        <i class="pi pi-bars text-xl"></i>
-      </button>
     </div>
   </nav>
 
