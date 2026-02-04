@@ -430,7 +430,7 @@ While the current throughput and storage requirements are low, the design remain
 
 ---
 
-## Final Decisions (Trade-offs)
+## Key Decisions
 
 1. The Engine: MyISAM does not support row-level locking (it locks the whole table for writes), which is a bottleneck for high-concurrency systems.
 
