@@ -104,6 +104,7 @@ window.initApp = function (initialData) {
                 height: 180,
                 colorDark: "#ffffff",
                 colorLight: "transparent",
+                // @ts-ignore
                 correctLevel: QRCode.CorrectLevel.H
             });
         },
