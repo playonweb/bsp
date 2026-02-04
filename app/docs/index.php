@@ -7,19 +7,14 @@ $render_page = $_GET["page"] ?? "";
 
 $sidebar_menu_items = [
     [
-        "title" => "Challenges",
-        "id" => "challenges",
-        "link" => "challenges.md"
-    ],
-    [
-        "title" => "Solutions",
-        "id" => "solutions",
-        "link" => "solutions.md"
-    ],
-    [
         "title" => "System Design",
         "id" => "system-design",
         "link" => "system-design.md"
+    ],
+    [
+        "title" => "Challenges",
+        "id" => "challenges",
+        "link" => "challenges.md"
     ],
     [
         "title" => "Legal",

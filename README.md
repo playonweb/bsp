@@ -1,8 +1,8 @@
 # PHP Test Application.
 
-👉 **[docs/challenges.md](app/docs/challenges.md)**
+👉 **[docs/system-design.md](app/docs/system-design.md)**
 
-👉 **[docs/solutions.md](app/docs/solutions.md)**
+👉 **[docs/chsllenges.md](app/docs/challenges.md)**
 
 ## Quick start
 
