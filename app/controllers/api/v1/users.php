@@ -29,15 +29,6 @@ try {
 }
 
 /**
- * GET /api/v1/users/cities
- */
-function handleCities($app)
-{
-    $cities = User::getCities($app->db);
-    echo json_encode(['data' => $cities]);
-}
-
-/**
  * GET /api/v1/users
  * GET /api/v1/users?city=Prague
  * GET /api/v1/users?filter[city]=Paris

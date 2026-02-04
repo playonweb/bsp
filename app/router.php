@@ -11,7 +11,6 @@ $routes = [
     'GET' => [
         '/^api\/v1\/users$/' => 'api/v1/users.php',
         '/^api\/v1\/users\/(\d+)$/' => 'api/v1/users.php',
-        '/^api\/v1\/users\/cities$/' => 'api/v1/users.php',
     ],
     'POST' => [
         '/^api\/v1\/users$/' => 'api/v1/users.php',
