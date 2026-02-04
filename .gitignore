@@ -2,8 +2,3 @@
 .project
 .env*
 vendor
-node_modules
-dist
-*.js.map
-*.ts
-!*.d.ts

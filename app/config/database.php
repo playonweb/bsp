@@ -6,8 +6,8 @@
  */
 
 $database = array(
-	'address' => getenv('DB_HOST') ?: 'db',
-	'username' => getenv('DB_USER') ?: 'root',
-	'password' => getenv('DB_PASS') ?: 'root',
-	'database' => getenv('DB_NAME') ?: 'php_test'
+	'address' => getenv('DB_HOST'),
+	'username' => getenv('DB_USER'),
+	'password' => getenv('DB_PASS'),
+	'database' => getenv('DB_NAME')
 );
