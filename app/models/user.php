@@ -57,7 +57,7 @@ class User extends BaseModel
 	public static function searchByCity($db, $city, $limit = null, $offset = 0)
 	{
 		$escaped = $db->mysqli->real_escape_string(trim($city));
-		$query = "SELECT * FROM users WHERE city LIKE '%" . $escaped . "%' ORDER BY created_at DESC";
+		$query = "SELECT * FROM users WHERE city LIKE '%" . $escaped . "%' ORDER BY id DESC";
 
 		if ($limit) {
 			$query .= " LIMIT $offset, $limit";
@@ -72,7 +72,7 @@ class User extends BaseModel
 	public static function getUsersData($db, $limit = 20, $offset = 0, $reveal = false)
 	{
 		$limitArr = $limit ? "LIMIT $offset, $limit" : "";
-		$query = "SELECT * FROM users ORDER BY created_at DESC $limitArr";
+		$query = "SELECT * FROM users ORDER BY id DESC $limitArr";
 		$rows = $db->query($query);
 		return self::formatRows($rows, $reveal);
 	}
@@ -83,7 +83,7 @@ class User extends BaseModel
 	public static function searchByCityData($db, $city, $limit = 20, $offset = 0, $reveal = false)
 	{
 		$escaped = $db->mysqli->real_escape_string(trim($city));
-		$query = "SELECT * FROM users WHERE city LIKE '%$escaped%' ORDER BY created_at DESC";
+		$query = "SELECT * FROM users WHERE city LIKE '%$escaped%' ORDER BY id DESC";
 		if ($limit) {
 			$query .= " LIMIT $offset, $limit";
 		}
