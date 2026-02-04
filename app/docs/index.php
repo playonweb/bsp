@@ -56,7 +56,7 @@ Usage:
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DocsViewer</title>
+    <title>Docs | Alink</title>
 
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/primeicons@7.0.0/primeicons.min.css">
@@ -78,11 +78,10 @@ Usage:
 
     <style>
         body {
-            background-color: #0d1117;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            /* Hides the page until Petite Vue & Tailwind are ready to prevent flashing */
             opacity: 0;
             transition: opacity 0.2s;
+            background-color: #0d1117;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
         }
 
         .markdown-body {
@@ -152,6 +151,7 @@ Usage:
             transform: rotate(90deg);
         }
 
+        /* Scrollbar styling */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -164,6 +164,10 @@ Usage:
         ::-webkit-scrollbar-thumb {
             background: #30363d;
             border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #58a6ff;
         }
 
         .loader {
@@ -184,6 +188,21 @@ Usage:
                 transform: rotate(360deg);
             }
         }
+
+        /* TOC Specific Animations */
+        .toc-item-enter-active,
+        .toc-item-leave-active {
+            transition: all 0.2s ease;
+            max-height: 500px;
+            opacity: 1;
+            overflow: hidden;
+        }
+
+        .toc-item-enter-from,
+        .toc-item-leave-to {
+            max-height: 0;
+            opacity: 0;
+        }
     </style>
 
     <script type="importmap">
@@ -193,8 +212,9 @@ Usage:
 
 <body @vue:mounted="init" class="flex flex-col h-screen text-gray-300 overflow-hidden bg-[#0d1117]">
 
+    <!-- Header -->
     <header
-        class="h-14 bg-[#161b22]/95 backdrop-blur-md border-b border-[#30363d] flex items-center justify-between px-4 sticky top-0 z-50">
+        class="h-14 bg-[#161b22]/95 backdrop-blur-md border-b border-[#30363d] flex items-center justify-between px-4 sticky top-0 z-50 shrink-0">
         <div class="flex items-center gap-3">
             <!-- Mobile Menu Toggle -->
             <button class="md:hidden text-gray-400 hover:text-white p-1" @click="sidebarOpen = !sidebarOpen"
@@ -218,22 +238,33 @@ Usage:
             </div>
         </div>
 
-        <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
-            <a v-for="link in topBar" :href="link.link"
-                class="hover:text-blue-400 transition-colors flex items-center gap-2 text-gray-400">
-                <i :class="link.icon" v-if="link.icon.includes('pi-')"></i>
-                <span v-else class="font-bold opacity-70">{{link.icon}}</span>
-                <span>{{link.text}}</span>
-            </a>
-        </nav>
+        <!-- Top Navigation -->
+        <div class="flex items-center gap-4">
+            <!-- Mobile TOC Toggle -->
+            <button class="xl:hidden text-gray-400 hover:text-blue-400 p-1" @click="mobileTocOpen = !mobileTocOpen"
+                v-if="toc.length > 0">
+                <i class="pi pi-list text-lg"></i>
+            </button>
+
+            <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+                <a v-for="link in topBar" :href="link.link"
+                    class="hover:text-blue-400 transition-colors flex items-center gap-2 text-gray-400">
+                    <i :class="link.icon" v-if="link.icon.includes('pi-')"></i>
+                    <span v-else class="font-bold opacity-70">{{link.icon}}</span>
+                    <span>{{link.text}}</span>
+                </a>
+            </nav>
+        </div>
     </header>
 
+    <!-- Main Workspace -->
     <div class="flex flex-1 overflow-hidden relative">
-        <!-- Mobile Backdrop -->
+
+        <!-- Mobile Backdrop for Nav Sidebar -->
         <div v-if="sidebarOpen" @click="sidebarOpen = false"
             class="fixed inset-0 bg-black/60 z-30 md:hidden transition-opacity"></div>
 
-        <!-- Sidebar -->
+        <!-- Left Navigation Sidebar -->
         <aside v-if="!isSingleDoc"
             class="bg-[#0d1117] border-r border-[#30363d] flex flex-col absolute md:relative h-full z-40 shadow-2xl md:shadow-none overflow-hidden transition-all duration-300 ease-in-out"
             :class="[
@@ -241,8 +272,6 @@ Usage:
         desktopSidebarVisible ? 'md:translate-x-0 md:w-72' : 'md:w-0 md:border-r-0' /* Desktop State */
       ]">
             <div class="p-4 flex flex-col h-full w-72">
-                <!-- Fixed width inner container to prevent content squishing during transition -->
-
                 <!-- Search Bar -->
                 <div class="mb-4">
                     <div class="relative">
@@ -257,7 +286,6 @@ Usage:
 
                     <div class="space-y-1">
                         <div v-for="item in filteredSidebarMenu" :key="item.id || item.title">
-
                             <!-- Regular Link -->
                             <button v-if="!item.submenu" @click="loadPage(item.link, item.id)"
                                 :class="currentUrl === item.link ? 'bg-blue-500/10 text-blue-400' : 'text-gray-400 hover:bg-[#1f242c] hover:text-gray-100'"
@@ -278,7 +306,6 @@ Usage:
                                         :class="{ 'rotate': searchQuery || openSubmenus.includes(item.title) }"></i>
                                 </button>
 
-                                <!-- Auto-expand if searching -->
                                 <div class="submenu-grid"
                                     :class="{ 'open': searchQuery || openSubmenus.includes(item.title) }">
                                     <div class="submenu-content pl-6 pt-1 space-y-1">
@@ -291,10 +318,8 @@ Usage:
                                     </div>
                                 </div>
                             </div>
-
                         </div>
 
-                        <!-- Empty Search State -->
                         <div v-if="filteredSidebarMenu.length === 0"
                             class="text-center py-4 text-xs text-gray-600 italic">
                             No matching documents
@@ -317,39 +342,136 @@ Usage:
             </div>
         </aside>
 
-        <main class="flex-1 overflow-y-auto bg-[#0d1117] relative">
-            <div class="max-w-4xl mx-auto px-6 py-10 md:px-12 md:py-16">
+        <!-- Center Content & Right TOC Wrapper -->
+        <div class="flex flex-1 overflow-hidden relative">
 
-                <div v-if="loading" class="flex flex-col items-center justify-center py-32 opacity-60">
-                    <div class="loader mb-4"></div>
-                    <p class="text-xs font-mono tracking-widest uppercase">Fetching</p>
+            <!-- Main Content Scroll Area -->
+            <main id="main-scroll" class="flex-1 overflow-y-auto bg-[#0d1117] scroll-smooth relative">
+                <div class="max-w-4xl mx-auto px-6 py-10 md:px-12 md:py-16 min-h-full">
+
+                    <div v-if="loading" class="flex flex-col items-center justify-center py-32 opacity-60">
+                        <div class="loader mb-4"></div>
+                        <p class="text-xs font-mono tracking-widest uppercase">Fetching</p>
+                    </div>
+
+                    <div v-else-if="error"
+                        class="p-8 rounded-2xl border border-red-500/20 bg-red-500/5 text-center mt-10">
+                        <i class="pi pi-exclamation-circle text-3xl text-red-400/50 mb-4"></i>
+                        <h3 class="font-bold text-red-400">Unable to load document</h3>
+                        <p class="text-sm text-gray-500 mt-2">{{error}}</p>
+                        <button @click="loadPage(currentUrl)"
+                            class="mt-6 text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 px-4 py-2 rounded-full transition-colors">Retry
+                            Connection</button>
+                    </div>
+
+                    <div v-show="!loading && !error" id="content" class="markdown-body pb-20"></div>
                 </div>
+            </main>
 
-                <div v-else-if="error" class="p-8 rounded-2xl border border-red-500/20 bg-red-500/5 text-center mt-10">
-                    <i class="pi pi-exclamation-circle text-3xl text-red-400/50 mb-4"></i>
-                    <h3 class="font-bold text-red-400">Unable to load document</h3>
-                    <p class="text-sm text-gray-500 mt-2">{{error}}</p>
-                    <button @click="loadPage(currentUrl)"
-                        class="mt-6 text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 px-4 py-2 rounded-full transition-colors">Retry
-                        Connection</button>
+            <!-- Right TOC Sidebar (Desktop) -->
+            <aside v-if="toc.length > 0"
+                class="hidden xl:block w-72 border-l border-[#30363d] bg-[#0d1117]/50 backdrop-blur-sm overflow-y-auto shrink-0">
+                <div class="p-6 fixed w-72 top-14 bottom-0 overflow-y-auto custom-scrollbar">
+                    <h5 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">On this page</h5>
+
+                    <!-- Recursive TOC Render -->
+                    <ul class="space-y-1">
+                        <li v-for="item in toc" :key="item.id" class="relative">
+                            <div class="flex items-start group">
+                                <!-- Expand/Collapse Chevron for Parents -->
+                                <button v-if="item.children && item.children.length > 0"
+                                    @click.stop="item.expanded = !item.expanded"
+                                    class="mt-1 mr-1 p-0.5 rounded hover:bg-gray-800 text-gray-500 transition-colors">
+                                    <i class="pi pi-chevron-right text-[10px] block transition-transform duration-200"
+                                        :class="{ 'rotate-90': item.expanded }"></i>
+                                </button>
+                                <!-- Spacer if no children to align text -->
+                                <div v-else class="w-4 mr-1"></div>
+
+                                <a :href="'#' + item.id" @click.prevent="scrollToId(item.id)"
+                                    class="text-sm py-0.5 block transition-colors leading-snug hover:text-gray-200"
+                                    :class="activeTocId === item.id ? 'text-blue-400 font-medium' : 'text-gray-400'">
+                                    {{ item.text }}
+                                </a>
+                            </div>
+
+                            <!-- Children (2nd Level) -->
+                            <div v-if="item.children && item.children.length > 0"
+                                class="grid transition-[grid-template-rows] duration-200 ease-out ml-2 border-l border-gray-800"
+                                :class="item.expanded ? 'grid-rows-[1fr] mt-1 mb-2' : 'grid-rows-[0fr]'">
+                                <ul class="overflow-hidden">
+                                    <li v-for="child in item.children" :key="child.id" class="pl-4 py-1">
+                                        <a :href="'#' + child.id" @click.prevent="scrollToId(child.id)"
+                                            class="text-xs block transition-colors hover:text-gray-300 truncate"
+                                            :class="activeTocId === child.id ? 'text-blue-400' : 'text-gray-500'">
+                                            {{ child.text }}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
+            </aside>
 
-                <div v-show="!loading && !error" id="content" class="markdown-body"></div>
+            <!-- Mobile TOC Drawer -->
+            <div v-if="mobileTocOpen" class="xl:hidden absolute inset-0 z-50 flex justify-end">
+                <div class="absolute inset-0 bg-black/60" @click="mobileTocOpen = false"></div>
+                <div
+                    class="w-72 bg-[#161b22] h-full shadow-2xl relative flex flex-col border-l border-[#30363d] animate-slide-in">
+                    <div class="p-4 border-b border-[#30363d] flex justify-between items-center">
+                        <span class="text-sm font-bold text-gray-300">Table of Contents</span>
+                        <button @click="mobileTocOpen = false" class="text-gray-400 hover:text-white">
+                            <i class="pi pi-times"></i>
+                        </button>
+                    </div>
+                    <div class="p-4 overflow-y-auto flex-1">
+                        <ul class="space-y-3">
+                            <li v-for="item in toc" :key="item.id">
+                                <a :href="'#' + item.id" @click="mobileTocOpen = false; scrollToId(item.id)"
+                                    class="block text-sm font-medium"
+                                    :class="activeTocId === item.id ? 'text-blue-400' : 'text-gray-400'">
+                                    {{ item.text }}
+                                </a>
+                                <ul v-if="item.children && item.children.length"
+                                    class="mt-2 ml-4 space-y-2 border-l border-gray-700 pl-3">
+                                    <li v-for="child in item.children" :key="child.id">
+                                        <a :href="'#' + child.id" @click="mobileTocOpen = false; scrollToId(child.id)"
+                                            class="block text-xs"
+                                            :class="activeTocId === child.id ? 'text-blue-400' : 'text-gray-500'">
+                                            {{ child.text }}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-        </main>
+
+        </div>
     </div>
 
     <script type="module">
         import { createApp } from 'petite-vue';
 
         createApp({
+            // UI States
             sidebarOpen: false,
             desktopSidebarVisible: true,
+            mobileTocOpen: false,
+
+            // Data States
             loading: false,
             error: null,
             currentUrl: '',
             openSubmenus: [],
             searchQuery: '',
+
+            // TOC States
+            toc: [],
+            activeTocId: '',
+            observer: null,
 
             topBar: [
                 { text: "Home", icon: "pi pi-home", link: "/" },
@@ -363,7 +485,6 @@ Usage:
             get isSingleDoc() {
                 if (!this.sidebarMenu || this.sidebarMenu.length === 0) return false;
                 if (this.sidebarMenu.length > 1) return false;
-                // Check if the single item has a submenu
                 return !this.sidebarMenu[0].submenu;
             },
 
@@ -372,16 +493,14 @@ Usage:
                 const q = this.searchQuery.toLowerCase();
 
                 return this.sidebarMenu.map(item => {
-                    // Check children
                     let filteredSub = [];
                     if (item.submenu) {
                         filteredSub = item.submenu.filter(s => s.title.toLowerCase().includes(q));
                     }
-
                     const matchesParent = item.title.toLowerCase().includes(q);
 
-                    if (matchesParent) return item; // Parent matches, keep all (or logic to keep filtered)
-                    if (filteredSub.length > 0) return { ...item, submenu: filteredSub }; // Only children match
+                    if (matchesParent) return item;
+                    if (filteredSub.length > 0) return { ...item, submenu: filteredSub };
 
                     return null;
                 }).filter(Boolean);
@@ -389,18 +508,96 @@ Usage:
 
             init() {
                 requestAnimationFrame(() => {
-                    mermaid.initialize({
-                        startOnLoad: false,
-                        theme: 'dark',
-                        securityLevel: 'loose'
-                    });
+                    mermaid.initialize({ startOnLoad: false, theme: 'dark', securityLevel: 'loose' });
                     marked.setOptions({ gfm: true, breaks: true });
-
                     this.checkHashAndLoad();
-
                     document.body.style.opacity = '1';
                 });
             },
+
+            // --- TOC Logic ---
+            generateToc() {
+                const content = document.getElementById('content');
+                if (!content) return;
+
+                const headers = Array.from(content.querySelectorAll('h1, h2, h3'));
+                const tocData = [];
+                let currentParent = null;
+
+                headers.forEach((h, index) => {
+                    // Ensure ID
+                    if (!h.id) {
+                        h.id = 'heading-' + index + '-' + h.innerText.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                    }
+
+                    const level = parseInt(h.tagName.substring(1));
+                    const item = {
+                        id: h.id,
+                        text: h.innerText,
+                        level,
+                        children: [],
+                        expanded: true
+                    };
+
+                    // Simple Logic: 
+                    // H1 and H2 are top level. H3 is child of previous H2.
+                    if (level <= 2) {
+                        tocData.push(item);
+                        currentParent = item;
+                    } else if (currentParent) {
+                        currentParent.children.push(item);
+                    } else {
+                        // Orphan H3 (starts doc with H3), treat as top level
+                        tocData.push(item);
+                        currentParent = item;
+                    }
+                });
+
+                this.toc = tocData;
+                this.setupIntersectionObserver();
+            },
+
+            setupIntersectionObserver() {
+                if (this.observer) this.observer.disconnect();
+
+                const options = {
+                    root: document.getElementById('main-scroll'),
+                    rootMargin: '-80px 0px -80% 0px', // Active when element is near top
+                    threshold: 0
+                };
+
+                this.observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            this.activeTocId = entry.target.id;
+
+                            // Auto expand parent if child is active
+                            this.toc.forEach(parent => {
+                                if (parent.children.some(child => child.id === this.activeTocId)) {
+                                    // Optional: parent.expanded = true;
+                                }
+                            });
+                        }
+                    });
+                }, options);
+
+                const content = document.getElementById('content');
+                content.querySelectorAll('h1, h2, h3').forEach(h => {
+                    this.observer.observe(h);
+                });
+            },
+
+            scrollToId(id) {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Update hash without jump
+                    history.pushState(null, null, '#' + id);
+                    this.activeTocId = id;
+                }
+            },
+
+            // --- Navigation & Content Loading ---
 
             findPathToId(items, id, path = []) {
                 for (const item of items) {
@@ -425,38 +622,28 @@ Usage:
             },
 
             checkHashAndLoad() {
-                let hash = window.location.hash.slice(1);
-                let targetItem = null;
+                const hash = window.location.hash.slice(1);
 
-                // check $render_page parameter
+                // Check if hash matches a sidebar ID first
+                let targetItem = null;
+                // CUSTOMISED: if render_page is set, load that page
                 <?php if ($render_page) { ?>
                     hash = '<?php echo $render_page; ?>';
                 <?php } ?>
-
                 if (hash) {
                     const path = this.findPathToId(this.sidebarMenu, hash);
                     if (path) {
-                        // Open parent submenus
                         path.slice(0, -1).forEach(p => {
-                            if (typeof p === 'string' && !this.openSubmenus.includes(p)) {
-                                this.openSubmenus.push(p);
-                            }
+                            if (typeof p === 'string' && !this.openSubmenus.includes(p)) this.openSubmenus.push(p);
                         });
                         targetItem = path[path.length - 1];
                     }
                 }
 
-                // Fallback to first item if no hash or hash not found
-                if (!targetItem) {
-                    targetItem = this.findFirstItem(this.sidebarMenu);
-                }
-
-                // cleanup url remove parameters and hash
+                if (!targetItem) targetItem = this.findFirstItem(this.sidebarMenu);
+                // CUSTOMISED: cleanup url remove parameters and hash
                 window.history.replaceState(null, null, window.location.pathname);
-
-                if (targetItem) {
-                    this.loadPage(targetItem.link, targetItem.id);
-                }
+                if (targetItem) this.loadPage(targetItem.link, targetItem.id);
             },
 
             highlightText(text) {
@@ -466,9 +653,7 @@ Usage:
             },
 
             toggleSubmenu(title) {
-                // No-op while searching to prevent confusion
                 if (this.searchQuery) return;
-
                 const index = this.openSubmenus.indexOf(title);
                 if (index > -1) this.openSubmenus.splice(index, 1);
                 else this.openSubmenus.push(title);
@@ -478,65 +663,71 @@ Usage:
                 if (!url || url === '#') return;
                 this.currentUrl = url;
 
-                // Update URL hash without scrolling
-                if (id) {
-                    window.history.pushState(null, null, `#${id}`);
+                // If clicking a new page but preserving hash might be tricky, reset hash unless it's a deep link
+                if (id && !window.location.hash.includes(id)) {
+                    // Only push state if meaningful change
                 }
 
                 this.loading = true;
                 this.error = null;
                 this.sidebarOpen = false;
+                this.mobileTocOpen = false;
+                this.toc = []; // Clear TOC while loading
 
                 try {
                     const res = await fetch(url);
                     if (!res.ok) throw new Error(`Status: ${res.status}`);
                     const rawMd = await res.text();
                     this.renderContent(rawMd);
+
+                    // Generate TOC after render
+                    this.$nextTick(() => {
+                        this.generateToc();
+
+                        // Handle scroll to hash if deep link exists (e.g. #heading-id)
+                        const hash = window.location.hash.slice(1);
+                        if (hash) {
+                            setTimeout(() => {
+                                const el = document.getElementById(hash);
+                                if (el) el.scrollIntoView();
+                            }, 100);
+                        }
+                    });
+
                 } catch (e) {
                     this.error = e.message;
                 } finally {
                     this.loading = false;
                 }
             },
+
             renderContent(rawMd) {
-                // 1. Pre-process custom <mdiv> tags
                 const processed = rawMd.replace(
-                    //gi, 
-                    (match, capture) => capture.replace(/^<mdiv/, `<div`).replace(/<\/mdiv>$/, '</div>')
+                    /(<mdiv[\s\S]*?<\/mdiv>)/gi,
+                    (match, capture) => capture.replace(/^<mdiv/, `<div class="mdiv"`).replace(/<\/mdiv>$/, '</div>')
                 );
 
                 const el = document.getElementById("content");
                 if (!el) return;
 
-                // 2. Parse Markdown
                 el.innerHTML = marked.parse(processed);
 
-                // 3. Process all <pre> blocks
                 el.querySelectorAll('pre').forEach(pre => {
                     const code = pre.querySelector('code');
                     if (!code) return;
-
-                    // Check if it's a Mermaid diagram
                     const isMermaid = code.classList.contains('language-mermaid');
 
                     if (isMermaid) {
-                        // MERMAID LOGIC: 
-                        // Move text to a clean div and hide the original <code> to prevent conflicts
                         const diagramReq = code.textContent;
-                        pre.innerHTML = ''; // Clear the <pre>
+                        pre.innerHTML = '';
                         const mermaidDiv = document.createElement('div');
                         mermaidDiv.className = 'mermaid';
                         mermaidDiv.textContent = diagramReq;
                         pre.appendChild(mermaidDiv);
-
-                        // Remove <pre> background/border to let the .mermaid class handle styling
                         pre.style.background = 'transparent';
                         pre.style.border = 'none';
                     } else {
-                        // REGULAR CODE LOGIC:
                         hljs.highlightElement(code);
-
-                        // Add Copy Button
                         const btn = document.createElement('button');
                         btn.className = 'absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider text-gray-500 hover:text-white bg-[#0d1117] border border-[#30363d] px-2 py-1 rounded opacity-0 transition-opacity z-10 cursor-pointer';
                         btn.innerText = 'Copy';
@@ -553,13 +744,8 @@ Usage:
                 });
 
                 const diagrams = el.querySelectorAll('.mermaid');
-                if (diagrams.length) {
-                    mermaid.run({ nodes: diagrams });
-                }
-
-                if (window.MathJax) {
-                    MathJax.typesetPromise([el]);
-                }
+                if (diagrams.length) mermaid.run({ nodes: diagrams });
+                if (window.MathJax) MathJax.typesetPromise([el]);
             }
         }).mount();
     </script>
