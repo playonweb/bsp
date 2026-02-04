@@ -12,9 +12,9 @@ $sidebar_menu_items = [
         "link" => "system-design.md"
     ],
     [
-        "title" => "Challenges",
-        "id" => "challenges",
-        "link" => "challenges.md"
+        "title" => "Problem",
+        "id" => "problem",
+        "link" => "problem.md"
     ],
     [
         "title" => "Legal",

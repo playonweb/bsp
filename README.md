@@ -2,7 +2,7 @@
 
 👉 **[docs/system-design.md](app/docs/system-design.md)**
 
-👉 **[docs/chsllenges.md](app/docs/challenges.md)**
+👉 **[docs/problem.md](app/docs/problem.md)**
 
 ## Quick start
 
