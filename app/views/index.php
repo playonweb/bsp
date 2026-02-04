@@ -3,13 +3,10 @@
 $initialUsers = [];
 if (!empty($users)) {
 	foreach ($users as $user) {
-		$initialUsers[] = [
-			'id' => $user->getId(),
-			'name' => htmlspecialchars($user->getName(), ENT_QUOTES, 'UTF-8'),
-			'email' => htmlspecialchars($user->getEmail(), ENT_QUOTES, 'UTF-8'),
-			'city' => htmlspecialchars($user->getCity(), ENT_QUOTES, 'UTF-8'),
-			'phone' => $user->getPhone() ? htmlspecialchars($user->getPhone(), ENT_QUOTES, 'UTF-8') : ''
-		];
+		// Use toJsonApi() to ensure we get the standard (obfuscated) representation + ID
+		$json = $user->toJsonApi(false);
+		// Flatten structure for the frontend: { id: ..., name: ..., ... }
+		$initialUsers[] = array_merge(['id' => $json['id']], $json['attributes']);
 	}
 }
 ?>

@@ -101,7 +101,8 @@ if (count($nameParts) > 1) {
             </div>
 
             <div class="mt-8 text-center">
-                <a href="/docs/index.php#privacy" class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
+                <a href="/docs/index.php#privacy"
+                    class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
                     Privacy Policy
                 </a>
             </div>
@@ -109,14 +110,19 @@ if (count($nameParts) > 1) {
     </div>
 </div>
 
-<script>
-    const userData = {
-        email: <?= json_encode($user->getEmail()) ?>,
-        phone: <?= json_encode($user->getPhone()) ?>
-    };
+<script type="module">
+    import { getUser } from 'sdk';
+
+    const userId = <?= json_encode((string) $user->getId()) ?>;
+
+    // We no longer inject sensitive data here.
+    // const userData = { ... }; 
 
     function showStatus(msg, isSuccess = true) {
         const status = document.getElementById('status');
+        // Check if status element exists, if not create a temp toast or ignore
+        if (!status) return;
+
         const originalText = 'Verified Connection';
 
         status.textContent = msg;
@@ -130,53 +136,74 @@ if (count($nameParts) > 1) {
         }, 2500);
     }
 
-    function reveal(id) {
+    // Expose functions to window so onclick handlers work
+    window.reveal = async function (id) {
         const el = document.getElementById(id);
         if (el.dataset.revealed) return el.textContent;
 
-        const value = userData[id];
-        if (!value) return '';
+        el.textContent = 'Loading...';
 
-        el.textContent = value;
-        el.dataset.revealed = '1';
-        el.classList.remove('border-dashed', 'text-slate-400');
-        el.classList.add('border-solid', 'border-white/20', 'text-white', 'bg-black/60');
+        try {
+            // @ts-ignore
+            const res = await getUser(userId, { reveal: true });
+            if (res.status === 200 && res.data && res.data.data) {
+                const attrs = res.data.data.attributes;
+                const value = attrs[id]; // 'email' or 'phone'
 
-        // Add a subtle pop animation
-        el.animate([
-            { transform: 'scale(1)' },
-            { transform: 'scale(1.02)' },
-            { transform: 'scale(1)' }
-        ], { duration: 200 });
+                if (value) {
+                    el.textContent = value;
+                    el.dataset.revealed = '1';
+                    el.classList.remove('border-dashed', 'text-slate-400');
+                    el.classList.add('border-solid', 'border-white/20', 'text-white', 'bg-black/60');
 
-        return value;
-    }
+                    // Add a subtle pop animation
+                    el.animate([
+                        { transform: 'scale(1)' },
+                        { transform: 'scale(1.02)' },
+                        { transform: 'scale(1)' }
+                    ], { duration: 200 });
 
-    function copyValue(id) {
-        const val = reveal(id);
-        if (!val) return;
+                    return value;
+                }
+            }
+        } catch (e) {
+            console.error(e);
+            el.textContent = 'Error loading data';
+        }
+        return '';
+    };
+
+    window.copyValue = async function (id) {
+        // If not revealed, reveal first
+        const el = document.getElementById(id);
+        if (!el.dataset.revealed) {
+            await window.reveal(id);
+        }
+
+        const val = el.textContent;
+        // Check if it's the actual value and not "Loading..." or error
+        if (!val || val === 'Loading...' || val === 'click to reveal ' + id) return;
 
         navigator.clipboard.writeText(val).then(() => {
-            showStatus('Copied to clipboard');
+            // showStatus('Copied to clipboard'); 
+            // Simple toast fallback since status element might be missing in this view
+            alert('Copied to clipboard');
         }).catch(() => {
-            // Fallback
-            const textArea = document.createElement("textarea");
-            textArea.value = val;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-            showStatus('Copied to clipboard');
+            alert('Failed to copy');
         });
-    }
+    };
 
-    function openMail() {
-        const val = reveal('email');
-        if (val) window.location.href = 'mailto:' + val;
-    }
+    window.openMail = async function () {
+        const el = document.getElementById('email');
+        if (!el.dataset.revealed) await window.reveal('email');
+        const val = el.textContent;
+        if (val && val.includes('@')) window.location.href = 'mailto:' + val;
+    };
 
-    function openTel() {
-        const val = reveal('phone');
-        if (val) window.location.href = 'tel:' + val.replace(/[\s\-\(\)]/g, '');
-    }
+    window.openTel = async function () {
+        const el = document.getElementById('phone');
+        if (!el.dataset.revealed) await window.reveal('phone');
+        const val = el.textContent;
+        if (val && /[\d\+]/.test(val)) window.location.href = 'tel:' + val.replace(/[\s\-\(\)]/g, '');
+    };
 </script>

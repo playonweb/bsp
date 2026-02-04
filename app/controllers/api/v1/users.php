@@ -89,8 +89,10 @@ function handleShow($app, $id)
         sendJsonApiError(404, 'User not found');
     }
 
+    $reveal = isset($_GET['reveal']) && $_GET['reveal'] === 'true';
+
     echo json_encode([
-        'data' => $user->toJsonApi()
+        'data' => $user->toJsonApi($reveal)
     ]);
 }
 
@@ -107,7 +109,13 @@ function handleCreate($app)
     }
 
     // Extract attributes from JSON:API format
-    $attributes = $input['data']['attributes'] ?? $input ?? [];
+    // Expected: { "data": { "type": "users", "attributes": { "name": ... } } }
+    $attributes = $input['data']['attributes'] ?? [];
+
+    if (empty($attributes)) {
+        // Fallback for clearer error or support legacy if strictly needed (but we want strict now)
+        sendJsonApiError(400, 'Invalid Payload: Missing data.attributes');
+    }
 
     // Create user using model
     $result = User::createUser($app->db, $attributes);
