@@ -15,6 +15,7 @@ Usage:
 - add links of your markdown files in the `topBar` array.
 -->
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -175,7 +176,8 @@ Usage:
                     <img src="/favicon.ico" alt="Logo" class="w-5 h-5">
                 </div>
                 <span class="font-bold text-white tracking-tight text-sm sm:text-base">link</span>
-                <span class="text-[10px] text-neutral-500 font-bold uppercase tracking-widest mt-1">Your Digital Contact</span>
+                <span class="text-[10px] text-neutral-500 font-bold uppercase tracking-widest mt-1">Your Digital
+                    Contact</span>
             </div>
         </div>
 
@@ -380,15 +382,18 @@ Usage:
             },
 
             init() {
-                mermaid.initialize({ startOnLoad: false, theme: 'dark', securityLevel: 'loose' });
-                marked.setOptions({ gfm: true, breaks: true });
+                requestAnimationFrame(() => {
+                    mermaid.initialize({
+                        startOnLoad: false,
+                        theme: 'dark',
+                        securityLevel: 'loose'
+                    });
+                    marked.setOptions({ gfm: true, breaks: true });
 
-                // Handle URL Hash or Default
-                this.checkHashAndLoad();
+                    this.checkHashAndLoad();
 
-                // Optional: Listen for manual hash changes
-                window.addEventListener('hashchange', () => this.checkHashAndLoad());
-                document.body.style.opacity = '1';
+                    document.body.style.opacity = '1';
+                });
             },
 
             findPathToId(items, id, path = []) {
@@ -479,40 +484,68 @@ Usage:
                     this.loading = false;
                 }
             },
-
             renderContent(rawMd) {
+                // 1. Pre-process custom <mdiv> tags
                 const processed = rawMd.replace(
-                    /<!--\s*(<mdiv\s*(?:data-id="([^"]+)")?>[\s\S]*?<\/mdiv>)\s*-->/gi, 
-                    (match, capture, id) => capture
-                        .replace(/^<mdiv/, `<div`)
-                        .replace(/<\/mdiv>$/, '</div>')
+                    //gi, 
+                    (match, capture) => capture.replace(/^<mdiv/, `<div`).replace(/<\/mdiv>$/, '</div>')
                 );
 
                 const el = document.getElementById("content");
                 if (!el) return;
 
+                // 2. Parse Markdown
                 el.innerHTML = marked.parse(processed);
 
-                el.querySelectorAll('pre code').forEach(code => hljs.highlightElement(code));
-
+                // 3. Process all <pre> blocks
                 el.querySelectorAll('pre').forEach(pre => {
-                    const btn = document.createElement('button');
-                    btn.className = 'absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider text-gray-500 hover:text-white bg-[#0d1117] border border-[#30363d] px-2 py-1 rounded opacity-0 transition-opacity';
-                    btn.innerText = 'Copy';
-                    btn.onclick = () => {
-                        navigator.clipboard.writeText(pre.querySelector('code').innerText);
-                        btn.innerText = 'Done';
-                        setTimeout(() => btn.innerText = 'Copy', 2000);
-                    };
-                    pre.addEventListener('mouseenter', () => btn.classList.remove('opacity-0'));
-                    pre.addEventListener('mouseleave', () => btn.classList.add('opacity-0'));
-                    pre.appendChild(btn);
+                    const code = pre.querySelector('code');
+                    if (!code) return;
+
+                    // Check if it's a Mermaid diagram
+                    const isMermaid = code.classList.contains('language-mermaid');
+
+                    if (isMermaid) {
+                        // MERMAID LOGIC: 
+                        // Move text to a clean div and hide the original <code> to prevent conflicts
+                        const diagramReq = code.textContent;
+                        pre.innerHTML = ''; // Clear the <pre>
+                        const mermaidDiv = document.createElement('div');
+                        mermaidDiv.className = 'mermaid';
+                        mermaidDiv.textContent = diagramReq;
+                        pre.appendChild(mermaidDiv);
+
+                        // Remove <pre> background/border to let the .mermaid class handle styling
+                        pre.style.background = 'transparent';
+                        pre.style.border = 'none';
+                    } else {
+                        // REGULAR CODE LOGIC:
+                        hljs.highlightElement(code);
+
+                        // Add Copy Button
+                        const btn = document.createElement('button');
+                        btn.className = 'absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider text-gray-500 hover:text-white bg-[#0d1117] border border-[#30363d] px-2 py-1 rounded opacity-0 transition-opacity z-10 cursor-pointer';
+                        btn.innerText = 'Copy';
+                        btn.onclick = (e) => {
+                            e.stopPropagation();
+                            navigator.clipboard.writeText(code.innerText);
+                            btn.innerText = 'Done';
+                            setTimeout(() => btn.innerText = 'Copy', 2000);
+                        };
+                        pre.addEventListener('mouseenter', () => btn.classList.remove('opacity-0'));
+                        pre.addEventListener('mouseleave', () => btn.classList.add('opacity-0'));
+                        pre.appendChild(btn);
+                    }
                 });
 
                 const diagrams = el.querySelectorAll('.mermaid');
-                if (diagrams.length) mermaid.run({ nodes: diagrams });
+                if (diagrams.length) {
+                    mermaid.run({ nodes: diagrams });
+                }
 
-                if (window.MathJax) MathJax.typesetPromise([el]);
+                if (window.MathJax) {
+                    MathJax.typesetPromise([el]);
+                }
             }
         }).mount();
     </script>
