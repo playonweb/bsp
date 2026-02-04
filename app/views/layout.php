@@ -45,10 +45,12 @@ require_once __DIR__ . '/../config/csp.php';
   <nav class="sticky top-0 z-50 bg-black/60 backdrop-blur-2xl border-b border-white/10 px-4 sm:px-8 py-4">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-4 group cursor-pointer">
-        <div
-          class="w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform duration-300">
-          <img src="/favicon.ico" alt="Logo" class="w-6 h-6 object-contain invert">
-        </div>
+        <a href="/">
+          <div
+            class="w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform duration-300">
+            <img src="/favicon.ico" alt="Logo" class="w-6 h-6 object-contain invert">
+          </div>
+        </a>
         <div class="flex flex-col">
           <span class="font-extrabold text-lg sm:text-xl tracking-tight text-white leading-none">link</span>
           <span class="text-[10px] text-neutral-500 font-bold uppercase tracking-widest mt-1">Digital Contact</span>
