@@ -61,7 +61,8 @@ $initialUsers = $users ?? [];
 					{{ getInitials(selectedContact?.name ?? '') }}
 				</div>
 
-				<h3 class="text-2xl font-black text-white tracking-tight leading-tight">{{ selectedContact?.name ?? '' }}</h3>
+				<h3 class="text-2xl font-black text-white tracking-tight leading-tight">{{ selectedContact?.name ?? ''
+					}}</h3>
 				<div
 					class="flex items-center gap-2 text-blue-400 font-bold text-xs uppercase tracking-widest mt-2 bg-blue-400/10 px-3 py-1 rounded-full">
 					<i class="pi pi-map-marker text-[10px]"></i>
@@ -252,6 +253,12 @@ $initialUsers = $users ?? [];
 								</div>
 								<p v-if="errors.phone" class="text-red-400 text-[11px] font-medium ml-1">{{ errors.phone
 									}}</p>
+							</div>
+							<!-- Terms & Conditions -->
+							<div>
+								<input type="checkbox" v-model="terms" required>
+								I agree to the <a href="/docs/index.php#terms" class="text-blue-400">Terms &
+									Conditions</a>
 							</div>
 
 							<button type="submit" :disabled="submitting"
