@@ -18,6 +18,11 @@ $routes = [
     ]
 ];
 
+$alias = [
+    "terms" => "/docs/index.php#terms",
+    "privacy" => "/docs/index.php#privacy",
+];
+
 // Rate Limiting
 function checkRateLimit($limit = 60, $seconds = 60)
 {
@@ -81,6 +86,11 @@ if (isApiRequest($segments)) {
             $app->renderView('card', array(
                 'user' => $user
             ));
+            exit;
+        }
+    } else {
+        if (isset($alias[$url])) {
+            header("Location: {$alias[$url]}", true, 302);
             exit;
         }
     }
