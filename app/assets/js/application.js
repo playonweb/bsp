@@ -17,7 +17,7 @@ window.initApp = function (initialData) {
         errors: {},
         showCityDropdown: false,
         cityFilter: '',
-        formVisible: window.innerWidth >= 1024,
+        formVisible: false,
         isMobile: window.innerWidth < 1024,
 
         // Pagination
@@ -52,7 +52,7 @@ window.initApp = function (initialData) {
         },
 
         closeForm() {
-            if (this.isMobile) this.formVisible = false;
+            this.formVisible = false;
         },
 
         closeDropdowns() {
@@ -232,14 +232,7 @@ window.initApp = function (initialData) {
 
     // Responsive listener
     window.addEventListener('resize', () => {
-        const wasMobile = appState.isMobile;
         appState.isMobile = window.innerWidth < 1024;
-
-        if (appState.isMobile && !wasMobile) {
-            appState.formVisible = false;
-        } else if (!appState.isMobile && wasMobile) {
-            appState.formVisible = true;
-        }
     });
 
     // Handle infinite scroll after mount

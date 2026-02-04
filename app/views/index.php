@@ -117,11 +117,11 @@ $allCities = User::getCities($this->db);
 
 
 	<!-- Mobile Overlay -->
-	<div v-if="isMobile && formVisible" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" @click="closeForm()">
+	<div v-if="formVisible" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" @click="closeForm()">
 	</div>
 
 	<!-- FAB - Mobile Only -->
-	<div class="fixed bottom-6 right-6 z-30 lg:hidden" v-if="!formVisible">
+	<div class="fixed bottom-6 right-6 z-30" v-if="!formVisible">
 		<button @click="toggleForm()"
 			class="w-14 h-14 bg-blue-600 hover:bg-blue-500 active:scale-95 rounded-full flex items-center justify-center shadow-lg shadow-blue-600/40 text-white transition-all duration-200">
 			<i class="pi pi-plus text-xl"></i>
@@ -155,33 +155,24 @@ $allCities = User::getCities($this->db);
 			</div>
 		</div>
 
-		<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
+		<div class="relative">
 
-			<!-- Form Section (Sticky on Desktop) -->
-			<div class="lg:col-span-4 transition-all duration-300 ease-in-out" :class="{
-					'fixed inset-y-0 right-0 w-full sm:w-[420px] z-50 bg-[#1c1c1e] shadow-2xl transform translate-x-0': isMobile && formVisible, 
-					'translate-x-full': isMobile && !formVisible, 
-					'sticky top-8': !isMobile
+			<!-- Form Section (Always Drawer) -->
+			<div class="transition-all duration-300 ease-in-out fixed inset-y-0 right-0 w-full sm:w-[420px] z-50 bg-[#1c1c1e] shadow-2xl transform"
+				:class="{
+					'translate-x-0': formVisible, 
+					'translate-x-full': !formVisible
 				}">
 
-				<div class="h-full overflow-y-auto"
-					:class="{'p-6 sm:p-8': isMobile, 'bg-slate-800/30 border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl': !isMobile}">
+				<div class="h-full overflow-y-auto p-6 sm:p-8">
 
-					<!-- Mobile Form Header -->
-					<div v-if="isMobile" class="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
+					<!-- Form Header -->
+					<div class="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
 						<h2 class="text-2xl font-bold text-white">Add Member</h2>
 						<button @click="closeForm()"
 							class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/20 transition-all">
 							<i class="pi pi-times"></i>
 						</button>
-					</div>
-
-					<div v-else class="mb-8 flex items-center gap-3">
-						<div
-							class="w-10 h-10 rounded-2xl bg-blue-500/20 flex items-center justify-center text-blue-400">
-							<i class="pi pi-user-plus text-lg"></i>
-						</div>
-						<h2 class="text-xl font-bold text-white">New Entry</h2>
 					</div>
 
 					<form @submit.prevent="handleSubmit" class="space-y-6">
@@ -263,10 +254,10 @@ $allCities = User::getCities($this->db);
 			</div>
 
 			<!-- Main Content: Grid -->
-			<div class="lg:col-span-8 w-full">
+			<div class="w-full">
 
 				<!-- Grid Layout -->
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
 					<div v-for="user in users" :key="user.id"
 						class="bg-slate-800/30 border border-white/10 rounded-3xl p-6 backdrop-blur-xl hover:bg-slate-800/50 transition-colors group">
 
