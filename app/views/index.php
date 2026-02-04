@@ -5,6 +5,7 @@ $initialUsers = $users ?? [];
 
 <!-- Initialize app with data -->
 <script>
+	// @ts-check
 	document.addEventListener('DOMContentLoaded', function () {
 		if (window.initApp) {
 			window.initApp({
@@ -30,84 +31,99 @@ $initialUsers = $users ?? [];
 
 	<!-- Contact Details Modal (Visiting Card) -->
 	<div v-if="contactModalOpen && selectedContact"
-		class="fixed inset-0 z-[60] flex items-center justify-center px-4 animate-fade-in">
-		<div class="absolute inset-0 bg-black/70 backdrop-blur-sm" @click="closeContact()"></div>
-		<div
-			class="relative bg-slate-900 border border-white/10 rounded-3xl p-8 max-w-md w-full shadow-2xl overflow-hidden">
+		class="fixed inset-0 z-[60] flex items-center justify-center px-4 animate-fade-in" @click="closeContact()">
 
-			<!-- Modal Header -->
-			<div class="flex items-start justify-between mb-8">
-				<div class="flex items-center gap-4">
+		<!-- Backdrop (Blur) -->
+		<div class="absolute inset-0 bg-black/80 backdrop-blur-xl"></div>
+
+		<!-- Card Container -->
+		<div class="relative glass-dark rounded-[2.5rem] p-8 sm:p-10 max-w-sm w-full shadow-2xl overflow-hidden animate-scale-in border border-white/10"
+			@click.stop> <!-- Prevents bubbling to backdrop and main div -->
+
+			<!-- Card Header Decoration -->
+			<div class="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">
+			</div>
+
+			<!-- Branding Watermark -->
+			<div class="absolute -right-8 -top-8 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl pointer-events-none">
+			</div>
+
+			<!-- Close Button -->
+			<button @click="closeContact()"
+				class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-500 hover:text-white transition-all">
+				<i class="pi pi-times"></i>
+			</button>
+
+			<div class="flex flex-col items-center text-center mt-4">
+				<!-- Avatar / Initials -->
+				<div
+					class="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10 flex items-center justify-center text-3xl font-black text-white shadow-2xl mb-6 transform hover:rotate-3 transition-transform">
+					{{ getInitials(selectedContact?.name ?? '') }}
+				</div>
+
+				<h3 class="text-2xl font-black text-white tracking-tight leading-tight">{{ selectedContact?.name ?? '' }}</h3>
+				<div
+					class="flex items-center gap-2 text-blue-400 font-bold text-xs uppercase tracking-widest mt-2 bg-blue-400/10 px-3 py-1 rounded-full">
+					<i class="pi pi-map-marker text-[10px]"></i>
+					{{ selectedContact?.city ?? '' }}
+				</div>
+			</div>
+
+			<!-- QR Code Section -->
+			<div class="mt-10 flex justify-center">
+				<div id="qrcode" class="p-4 bg-white/5 rounded-3xl border border-white/10 shadow-inner group relative">
 					<div
-						class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-white/10 flex items-center justify-center text-2xl font-bold text-white shadow-inner">
-						{{ selectedContact ? getInitials(selectedContact.name) : '' }}
-					</div>
-					<div v-if="selectedContact">
-						<h3 class="text-2xl font-bold text-white">{{ selectedContact ? selectedContact.name : '' }}</h3>
-						<div class="flex items-center gap-2 text-slate-400 text-sm mt-1">
-							<i class="pi pi-map-marker text-xs"></i>
-							{{ selectedContact ? selectedContact.city : '' }}
-						</div>
+						class="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl blur-xl">
 					</div>
 				</div>
-				<button @click="closeContact()"
-					class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
-					<i class="pi pi-times"></i>
+			</div>
+
+			<!-- Action Buttons -->
+			<div class="mt-10 space-y-3">
+				<div class="grid grid-cols-2 gap-3">
+					<a :href="'mailto:' + selectedContact?.email ?? ''"
+						class="flex flex-col items-center justify-center p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-blue-500/30 transition-all group">
+						<i class="pi pi-envelope text-lg text-blue-400 group-hover:scale-110 transition-transform"></i>
+						<span class="text-[10px] font-bold text-slate-400 mt-2 uppercase">Email</span>
+					</a>
+					<a v-if="selectedContact?.phone ?? ''" :href="'tel:' + selectedContact?.phone ?? ''"
+						class="flex flex-col items-center justify-center p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-emerald-500/30 transition-all group">
+						<i class="pi pi-phone text-lg text-emerald-400 group-hover:scale-110 transition-transform"></i>
+						<span class="text-[10px] font-bold text-slate-400 mt-2 uppercase">Call</span>
+					</a>
+					<div v-else
+						class="flex flex-col items-center justify-center p-4 rounded-2xl bg-white/5 border border-white/5 opacity-50">
+						<i class="pi pi-phone text-lg text-slate-600"></i>
+						<span class="text-[10px] font-bold text-slate-600 mt-2 uppercase">No Phone</span>
+					</div>
+				</div>
+
+				<button @click="shareContact(selectedContact)"
+					class="w-full py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-xl shadow-blue-600/20 flex items-center justify-center gap-3 transition-all active:scale-[0.98]">
+					<i class="pi pi-share-alt"></i>
+					Share Digital Card
 				</button>
 			</div>
 
-			<!-- Contact Info -->
-			<div class="space-y-4" v-if="selectedContact">
-				<div
-					class="bg-white/5 rounded-2xl p-4 border border-white/5 hover:border-blue-500/30 transition-colors group">
-					<p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Email Address</p>
-					<div class="flex items-center justify-between gap-3">
-						<a :href="selectedContact ? 'mailto:' + selectedContact.email : '#'"
-							class="text-blue-300 hover:text-blue-200 truncate font-mono text-sm">
-							{{ selectedContact ? selectedContact.email : '' }}
-						</a>
-						<button @click="copyToClipboard(selectedContact ? selectedContact.email : '')"
-							class="opacity-0 group-hover:opacity-100 p-2 text-slate-400 hover:text-white transition-all bg-white/5 rounded-lg">
-							<i class="pi pi-copy"></i>
-						</button>
+			<!-- Branding Footer -->
+			<div class="mt-10 pt-6 border-t border-white/5 flex flex-col items-center gap-2">
+				<div class="flex items-center gap-2">
+					<div class="w-5 h-5 bg-blue-600 rounded-md flex items-center justify-center">
+						<img src="/favicon.ico" class="w-3 h-3 invert" />
 					</div>
+					<span class="text-[10px] font-black text-white uppercase tracking-tighter">Alink Digital</span>
 				</div>
-
-				<div
-					class="bg-white/5 rounded-2xl p-4 border border-white/5 hover:border-emerald-500/30 transition-colors group">
-					<p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Phone Number</p>
-					<div class="flex items-center justify-between gap-3">
-						<div v-if="selectedContact && selectedContact.phone">
-							<a :href="selectedContact ? 'tel:' + selectedContact.phone : '#'"
-								class="text-emerald-300 hover:text-emerald-200 truncate font-mono text-sm">
-								{{ selectedContact.phone }}
-							</a>
-						</div>
-						<span v-else class="text-slate-500 text-sm italic">Not provided</span>
-
-						<button v-if="selectedContact && selectedContact.phone"
-							@click="copyToClipboard(selectedContact.phone)"
-							class="opacity-0 group-hover:opacity-100 p-2 text-slate-400 hover:text-white transition-all bg-white/5 rounded-lg">
-							<i class="pi pi-copy"></i>
-						</button>
-					</div>
-				</div>
-			</div>
-
-			<div class="mt-8 pt-6 border-t border-white/5 text-center">
-				<p class="text-xs text-slate-500">Contact details are private and for internal use only.</p>
+				<p class="text-[9px] text-slate-600 font-bold uppercase tracking-widest">Minimalist vCard • Fast &
+					Secure</p>
 			</div>
 		</div>
 	</div>
 
 
-	<!-- Mobile Overlay -->
-	<div v-if="formVisible" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" @click="closeForm()">
-	</div>
 
 	<!-- FAB - Mobile Only -->
 	<div class="fixed bottom-6 right-6 z-30" v-if="!formVisible">
-		<button @click="toggleForm()"
+		<button @click.stop="toggleForm()"
 			class="w-14 h-14 bg-blue-600 hover:bg-blue-500 active:scale-95 rounded-full flex items-center justify-center shadow-lg shadow-blue-600/40 text-white transition-all duration-200">
 			<i class="pi pi-plus text-xl"></i>
 		</button>
@@ -142,71 +158,113 @@ $initialUsers = $users ?? [];
 
 		<div class="relative">
 
-			<!-- Form Section (Always Drawer) -->
-			<div class="transition-all duration-300 ease-in-out fixed inset-y-0 right-0 w-full sm:w-[420px] z-50 bg-[#1c1c1e] shadow-2xl transform"
-				:class="{
-					'translate-x-0': formVisible, 
-					'translate-x-full': !formVisible
-				}">
+			<!-- Form Modal (Apple Design Standards) -->
+			<div v-if="formVisible" class="fixed inset-0 z-50 flex items-center justify-center px-4 py-6 sm:px-0">
 
-				<div class="h-full overflow-y-auto p-6 sm:p-8">
+				<!-- Backdrop -->
+				<div class="absolute inset-0 bg-black/60 backdrop-blur-md animate-fade-in" @click="closeForm()"></div>
 
-					<!-- Form Header -->
-					<div class="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
-						<h2 class="text-2xl font-bold text-white">Add Member</h2>
-						<button @click="closeForm()"
-							class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/20 transition-all">
-							<i class="pi pi-times"></i>
-						</button>
+				<!-- Modal Container -->
+				<div class="relative glass-dark rounded-[2.5rem] w-full max-w-lg shadow-2xl overflow-hidden animate-scale-in"
+					@click.stop>
+
+					<!-- Header Decoration -->
+					<div
+						class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">
 					</div>
 
-					<form @submit.prevent="handleSubmit" class="space-y-6">
-						<!-- Name -->
-						<div class="space-y-2">
-							<label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Full
-								Name</label>
-							<input v-model="newUser.name" @blur="validateField('name')" type="text"
-								placeholder="John Appleseed"
-								class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all placeholder-slate-600"
-								:class="{'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/20': errors.name}">
-							<p v-if="errors.name" class="text-red-400 text-xs ml-1">{{ errors.name }}</p>
-						</div>
-
-						<!-- Email -->
-						<div class="space-y-2">
-							<label
-								class="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Email</label>
-							<input v-model="newUser.email" @blur="validateField('email')" type="email"
-								placeholder="john@example.com"
-								class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all placeholder-slate-600"
-								:class="{'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/20': errors.email}">
-							<p v-if="errors.email" class="text-red-400 text-xs ml-1">{{ errors.email }}</p>
-						</div>
-
-						<!-- City -->
-						<div class="space-y-2 relative">
-							<label
-								class="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">City</label>
-							<p v-if="errors.city" class="text-red-400 text-xs ml-1">{{ errors.city }}</p>
-						</div>
-
-						<!-- Phone (Simple) -->
-						<div class="space-y-2">
-							<label
-								class="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Phone</label>
-							<input v-model="newUser.phone" @blur="validateField('phone')" type="tel"
-								placeholder="+1 (555) 000-0000"
-								class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all placeholder-slate-600"
-								:class="{'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/20': errors.phone}">
-							<p v-if="errors.phone" class="text-red-400 text-xs ml-1">{{ errors.phone }}</p>
-						</div>
-
-						<button type="submit" :disabled="submitting"
-							class="w-full py-4 mt-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2 transition-all transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
-							<i v-if="submitting" class="pi pi-spin pi-spinner"></i>
-							<span v-else>Register Member</span>
+					<div class="p-8 sm:p-12">
+						<!-- Close Button -->
+						<button @click="closeForm()"
+							class="absolute top-8 right-8 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all border border-white/5">
+							<i class="pi pi-times"></i>
 						</button>
-					</form>
+
+						<!-- Form Header -->
+						<div class="mb-10">
+							<h2 class="text-3xl font-extrabold text-white tracking-tight mb-3">Join the Future</h2>
+							<p class="text-slate-400 text-sm font-medium leading-relaxed">
+								Alink makes networking seamless, memorable, and eco-friendly. Create your one-tap
+								digital card today.
+							</p>
+						</div>
+
+						<form @submit.prevent="handleSubmit" class="space-y-6">
+							<!-- Name -->
+							<div class="space-y-2">
+								<label class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Full
+									Name</label>
+								<div class="relative group">
+									<i
+										class="pi pi-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 transition-colors"></i>
+									<input v-model="newUser.name" @blur="validateField('name')" type="text"
+										placeholder="e.g. Jonathan Ive"
+										class="w-full bg-black/40 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder-slate-600"
+										:class="{'border-red-500/50 focus:ring-red-500/10': errors.name}">
+								</div>
+								<p v-if="errors.name" class="text-red-400 text-[11px] font-medium ml-1">{{ errors.name
+									}}</p>
+							</div>
+
+							<!-- Email -->
+							<div class="space-y-2">
+								<label
+									class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Email</label>
+								<div class="relative group">
+									<i
+										class="pi pi-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 transition-colors"></i>
+									<input v-model="newUser.email" @blur="validateField('email')" type="email"
+										placeholder="john@example.com"
+										class="w-full bg-black/40 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder-slate-600"
+										:class="{'border-red-500/50 focus:ring-red-500/10': errors.email}">
+								</div>
+								<p v-if="errors.email" class="text-red-400 text-[11px] font-medium ml-1">{{ errors.email
+									}}</p>
+							</div>
+
+							<!-- City -->
+							<div class="space-y-2">
+								<label
+									class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">City</label>
+								<div class="relative group">
+									<i
+										class="pi pi-map-marker absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 transition-colors"></i>
+									<input v-model="newUser.city" @blur="validateField('city')" type="text"
+										placeholder="e.g. Cupertino"
+										class="w-full bg-black/40 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder-slate-600"
+										:class="{'border-red-500/50 focus:ring-red-500/10': errors.city}">
+								</div>
+								<p v-if="errors.city" class="text-red-400 text-[11px] font-medium ml-1">{{ errors.city
+									}}</p>
+							</div>
+
+							<!-- Phone -->
+							<div class="space-y-2">
+								<label
+									class="text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">Phone</label>
+								<div class="relative group">
+									<i
+										class="pi pi-phone absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 transition-colors"></i>
+									<input v-model="newUser.phone" @blur="validateField('phone')" type="tel"
+										placeholder="+1 (555) 000-0000"
+										class="w-full bg-black/40 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder-slate-600"
+										:class="{'border-red-500/50 focus:ring-red-500/10': errors.phone}">
+								</div>
+								<p v-if="errors.phone" class="text-red-400 text-[11px] font-medium ml-1">{{ errors.phone
+									}}</p>
+							</div>
+
+							<button type="submit" :disabled="submitting"
+								class="w-full py-5 mt-6 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-2xl shadow-blue-500/20 flex items-center justify-center gap-3 transition-all transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
+								<i v-if="submitting" class="pi pi-spin pi-spinner"></i>
+								<span v-else>Get Your Digital Card</span>
+							</button>
+
+							<p class="text-center text-[10px] text-slate-600 font-bold uppercase tracking-[0.2em] mt-8">
+								Your Digital Contact, One Tap Away
+							</p>
+						</form>
+					</div>
 				</div>
 			</div>
 
@@ -237,7 +295,7 @@ $initialUsers = $users ?? [];
 							</div>
 						</div>
 
-						<button @click="viewContact(user)"
+						<button @click.stop="viewContact(user)"
 							class="mt-6 w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300 hover:text-white transition-all flex items-center justify-center gap-2 border border-white/5 group-hover:border-white/10">
 							<i class="pi pi-id-card"></i>
 							View Contact
