@@ -57,7 +57,6 @@ class User extends BaseModel
 	public static function searchByCity($db, $city, $limit = null, $offset = 0)
 	{
 		$escaped = $db->mysqli->real_escape_string(trim($city));
-		// Use prepared statement or at least proper escaping (already done, but let's be explicit and safer with concatenation)
 		$query = "SELECT * FROM users WHERE city LIKE '%" . $escaped . "%' ORDER BY created_at DESC";
 
 		if ($limit) {
@@ -65,6 +64,59 @@ class User extends BaseModel
 		}
 
 		return self::sql($db, $query);
+	}
+
+	/**
+	 * Get users with data (efficient, fixes N+1)
+	 */
+	public static function getUsersData($db, $limit = 20, $offset = 0, $reveal = false)
+	{
+		$limitArr = $limit ? "LIMIT $offset, $limit" : "";
+		$query = "SELECT * FROM users ORDER BY created_at DESC $limitArr";
+		$rows = $db->query($query);
+		return self::formatRows($rows, $reveal);
+	}
+
+	/**
+	 * Search users with data (efficient, fixes N+1)
+	 */
+	public static function searchByCityData($db, $city, $limit = 20, $offset = 0, $reveal = false)
+	{
+		$escaped = $db->mysqli->real_escape_string(trim($city));
+		$query = "SELECT * FROM users WHERE city LIKE '%$escaped%' ORDER BY created_at DESC";
+		if ($limit) {
+			$query .= " LIMIT $offset, $limit";
+		}
+		$rows = $db->query($query);
+		return self::formatRows($rows, $reveal);
+	}
+
+	/**
+	 * Format multiple rows efficiently
+	 */
+	private static function formatRows($rows, $reveal = false)
+	{
+		if (!is_array($rows))
+			return [];
+		return array_map(function ($row) use ($reveal) {
+			$email = $row['email'] ?? '';
+			$phone = $row['phone'] ?? null;
+			if (!$reveal) {
+				$email = self::obfuscateEmail($email);
+				$phone = self::obfuscatePhone($phone);
+			} else {
+				$email = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
+				$phone = $phone ? htmlspecialchars($phone, ENT_QUOTES, 'UTF-8') : null;
+			}
+			return [
+				'id' => (string) $row['id'],
+				'name' => htmlspecialchars($row['name'] ?? '', ENT_QUOTES, 'UTF-8'),
+				'email' => $email,
+				'city' => htmlspecialchars($row['city'] ?? '', ENT_QUOTES, 'UTF-8'),
+				'phone' => $phone,
+				'created_at' => $row['created_at'] ?? null
+			];
+		}, $rows);
 	}
 
 	/**
@@ -205,27 +257,46 @@ class User extends BaseModel
 	}
 
 	/**
+	 * Obfuscate email: j***@...
+	 */
+	public static function obfuscateEmail($email)
+	{
+		$email = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
+		$parts = explode('@', $email);
+		if (count($parts) === 2) {
+			$name = $parts[0];
+			$domain = $parts[1];
+			$visible = substr($name, 0, 1);
+			return $visible . '***@' . $domain;
+		}
+		return $email;
+	}
+
+	/**
+	 * Obfuscate phone: +1-***...
+	 */
+	public static function obfuscatePhone($phone)
+	{
+		if (!$phone)
+			return null;
+		$phone = htmlspecialchars($phone, ENT_QUOTES, 'UTF-8');
+		return substr($phone, 0, 3) . '-***...';
+	}
+
+	/**
 	 * Convert user to JSON:API format
 	 */
 	public function toJsonApi($reveal = false)
 	{
-		$email = htmlspecialchars($this->getEmail(), ENT_QUOTES, 'UTF-8');
-		$phone = $this->getPhone() ? htmlspecialchars($this->getPhone(), ENT_QUOTES, 'UTF-8') : null;
+		$email = $this->getEmail();
+		$phone = $this->getPhone();
 
 		if (!$reveal) {
-			// Obfuscate email: j***@...
-			$parts = explode('@', $email);
-			if (count($parts) === 2) {
-				$name = $parts[0];
-				$domain = $parts[1];
-				$visible = substr($name, 0, 1);
-				$email = $visible . '***@' . $domain;
-			}
-
-			// Obfuscate phone: +1-***...
-			if ($phone) {
-				$phone = substr($phone, 0, 3) . '-***...';
-			}
+			$email = self::obfuscateEmail($email);
+			$phone = self::obfuscatePhone($phone);
+		} else {
+			$email = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
+			$phone = $phone ? htmlspecialchars($phone, ENT_QUOTES, 'UTF-8') : null;
 		}
 
 		return [
@@ -246,6 +317,7 @@ class User extends BaseModel
 
 	/**
 	 * Convert array of users to JSON:API format
+	 * To fix N+1, use this to handle a collection efficiently
 	 */
 	public static function collectionToJsonApi($users, $reveal = false)
 	{
