@@ -1,6 +1,47 @@
 <?php
 require_once __DIR__ . '/../config/cors.php';
 require_once __DIR__ . '/../config/csp.php';
+
+// DIRTY TRICK: to hydrate required page, todo in ssr
+$render_page = $_GET["page"] ?? "";
+
+$sidebar_menu_items = [
+                [
+                    "title" => "Challenges",
+                    "id" => "challenges",
+                    "link" => "challenges.md"
+                ],
+                [
+                    "title" => "Solutions",
+                    "id" => "solutions",
+                    "link" => "solutions.md"
+                ],
+                [
+                    "title" => "System Design",
+                    "id" => "system-design",
+                    "link" => "system-design.md"
+                ],
+                [
+                    "title" => "Branding",
+                    "id" => "branding",
+                    "link" => "branding.md"
+                ],
+                [
+                    "title" => "Security Audit",
+                    "id" => "security-audit",
+                    "link" => "security-audit.md"
+                ],
+                [
+                    "title" => "Terms & Conditions",
+                    "id" => "terms",
+                    "link" => "terms.md"
+                ],
+                [
+                    "title" => "Privacy Policy",
+                    "id" => "privacy",
+                    "link" => "privacy.md"
+                ]
+            ]
 ?>
 
 <!DOCTYPE html>
@@ -321,43 +362,7 @@ Usage:
                 { text: "v1.0", icon: "📦", link: "#" }
             ],
 
-            sidebarMenu: [
-                {
-                    title: "Challenges",
-                    id: "challenges",
-                    link: "challenges.md"
-                },
-                {
-                    title: "Solutions",
-                    id: "solutions",
-                    link: "solutions.md"
-                },
-                {
-                    title: "System Design",
-                    id: "system-design",
-                    link: "system-design.md"
-                },
-                {
-                    title: "Branding",
-                    id: "branding",
-                    link: "branding.md"
-                },
-                {
-                    title: "Security Audit",
-                    id: "security-audit",
-                    link: "security-audit.md"
-                },
-                {
-                    title: "Terms & Conditions",
-                    id: "terms",
-                    link: "terms.md"
-                },
-                {
-                    title: "Privacy Policy",
-                    id: "privacy",
-                    link: "privacy.md"
-                }
-            ],
+            sidebarMenu: <?php echo json_encode($sidebar_menu_items); ?>,
 
             get isSingleDoc() {
                 if (!this.sidebarMenu || this.sidebarMenu.length === 0) return false;
@@ -424,8 +429,13 @@ Usage:
             },
 
             checkHashAndLoad() {
-                const hash = window.location.hash.slice(1);
+                let hash = window.location.hash.slice(1);
                 let targetItem = null;
+
+                // check $render_page parameter
+                <?php if ($render_page) { ?>
+                    hash = '<?php echo $render_page; ?>';
+                <?php } ?>
 
                 if (hash) {
                     const path = this.findPathToId(this.sidebarMenu, hash);
@@ -444,6 +454,9 @@ Usage:
                 if (!targetItem) {
                     targetItem = this.findFirstItem(this.sidebarMenu);
                 }
+
+                // cleanup url remove parameters and hash
+                window.history.replaceState(null, null, window.location.pathname);
 
                 if (targetItem) {
                     this.loadPage(targetItem.link, targetItem.id);

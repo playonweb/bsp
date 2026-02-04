@@ -257,7 +257,7 @@ $initialUsers = $users ?? [];
 							<!-- Terms & Conditions -->
 							<div>
 								<input type="checkbox" v-model="terms" required>
-								I agree to the <a href="/docs/index.php#terms" class="text-blue-400">Terms &
+								I agree to the <a href="/docs/index.php?page=terms#terms" class="text-blue-400">Terms &
 									Conditions</a>
 							</div>
 

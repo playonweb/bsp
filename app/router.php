@@ -19,8 +19,8 @@ $routes = [
 ];
 
 $alias = [
-    "terms" => "/docs/index.php#terms",
-    "privacy" => "/docs/index.php#privacy",
+    "terms" => "/docs/index.php?page=terms#terms",
+    "privacy" => "/docs/index.php?page=privacy#privacy",
 ];
 
 // Rate Limiting
