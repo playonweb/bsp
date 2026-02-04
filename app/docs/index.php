@@ -6,43 +6,44 @@ require_once __DIR__ . '/../config/csp.php';
 $render_page = $_GET["page"] ?? "";
 
 $sidebar_menu_items = [
-                [
-                    "title" => "Challenges",
-                    "id" => "challenges",
-                    "link" => "challenges.md"
-                ],
-                [
-                    "title" => "Solutions",
-                    "id" => "solutions",
-                    "link" => "solutions.md"
-                ],
-                [
-                    "title" => "System Design",
-                    "id" => "system-design",
-                    "link" => "system-design.md"
-                ],
-                [
-                    "title" => "Branding",
-                    "id" => "branding",
-                    "link" => "branding.md"
-                ],
-                [
-                    "title" => "Security Audit",
-                    "id" => "security-audit",
-                    "link" => "security-audit.md"
-                ],
-                [
-                    "title" => "Terms & Conditions",
-                    "id" => "terms",
-                    "link" => "terms.md"
-                ],
-                [
-                    "title" => "Privacy Policy",
-                    "id" => "privacy",
-                    "link" => "privacy.md"
-                ]
+    [
+        "title" => "Challenges",
+        "id" => "challenges",
+        "link" => "challenges.md"
+    ],
+    [
+        "title" => "Solutions",
+        "id" => "solutions",
+        "link" => "solutions.md"
+    ],
+    [
+        "title" => "System Design",
+        "id" => "system-design",
+        "link" => "system-design.md"
+    ],
+    [
+        "title" => "Legal",
+        "id" => "legal",
+        "submenu" => [
+            [
+                "title" => "Branding",
+                "id" => "branding",
+                "link" => "branding.md"
+            ],
+            [
+                "title" => "Terms & Conditions",
+                "id" => "terms",
+                "link" => "terms.md"
+            ],
+            [
+                "title" => "Privacy Policy",
+                "id" => "privacy",
+                "link" => "privacy.md"
             ]
-?>
+        ]
+    ]
+]
+    ?>
 
 <!DOCTYPE html>
 <!--
