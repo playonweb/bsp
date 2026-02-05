@@ -41,12 +41,25 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `city`, `phone`, `created_at`) VALUES
-(1, 'Andrej', 'andrej@mail.test', 'Glasgow', NULL, '2013-09-19 22:20:19'),
-(2, 'Juraj', 'juraj@mail.test', 'Praha', NULL, '2013-09-19 22:20:34'),
-(3, 'Jožko', 'jozko@mail.test', 'Bratislava', NULL, '2013-09-19 22:21:04'),
-(4, 'Peter', 'peter@mail.test', 'Brno', NULL, '2013-09-19 22:21:17'),
-(5, 'Jon', 'jon@mail.test', 'New York', NULL, '2013-09-19 22:21:41');
+INSERT INTO users (name, email, city, phone, created_at)
+SELECT
+  CONCAT('User', n),
+  CONCAT('user', n, '@test.com'),
+  ELT(1 + (n % 6), 'Paris','London','Berlin','Rome','Madrid','Prague'),
+  CONCAT('+33', LPAD(n, 9, '0')),
+  TIMESTAMP('2013-01-01') + INTERVAL (n % 365) DAY
+FROM (
+  SELECT @n := @n + 1 AS n
+  FROM information_schema.tables, (SELECT @n := 0) t
+  LIMIT 10000
+) x;
+
+INSERT INTO `users` (`name`, `email`, `city`, `phone`, `created_at`) VALUES
+('Andrej', 'andrej@mail.test', 'Glasgow', NULL, '2013-09-19 22:20:19'),
+('Juraj', 'juraj@mail.test', 'Praha', NULL, '2013-09-19 22:20:34'),
+('Jožko', 'jozko@mail.test', 'Bratislava', NULL, '2013-09-19 22:21:04'),
+('Peter', 'peter@mail.test', 'Brno', NULL, '2013-09-19 22:21:17'),
+('Jon', 'jon@mail.test', 'New York', NULL, '2013-09-19 22:21:41');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
