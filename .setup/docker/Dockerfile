@@ -1,37 +1,26 @@
-# Base image
 FROM php:7.4-apache
 
-# Install system deps
-RUN apt-get update && apt-get install -y \
-    unzip git curl \
- && rm -rf /var/lib/apt/lists/*
-
-# Enable Apache modules
-RUN a2enmod rewrite
-
-# Install PHP extensions
-RUN docker-php-ext-install mysqli pdo pdo_mysql
-
-# Install Composer globally
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-# Set working directory
 WORKDIR /var/www/html
 
-# Copy only composer files first (caching)
-COPY app/composer.json app/composer.lock ./
+# System deps
+RUN apt-get update && apt-get install -y \
+    libzip-dev \
+ && docker-php-ext-install mysqli opcache \
+ && a2enmod rewrite \
+ && rm -rf /var/lib/apt/lists/*
 
-# Install PHP dependencies (prod only, optimized)
-RUN composer install --no-dev --optimize-autoloader
+# PHP hardening
+RUN { \
+  echo "opcache.enable=1"; \
+  echo "opcache.validate_timestamps=0"; \
+  echo "expose_php=0"; \
+} > /usr/local/etc/php/conf.d/prod.ini
 
-# Copy rest of application
-COPY app .
+# Copy app
+COPY --chown=www-data:www-data app/ .
 
-# Optional: set Apache permissions
-RUN chown -R www-data:www-data /var/www/html
+# Healthcheck
+HEALTHCHECK CMD curl -f http://localhost/ || exit 1
 
-# Expose Apache port
-EXPOSE 80
-
-# Default command
+USER www-data
 CMD ["apache2-foreground"]
