@@ -4,7 +4,7 @@ if (!ob_start("ob_gzhandler"))
 // Init app instance
 $app = require "./core/app.php";
 
-// Get first 20 users from DB for SSR
+// Eager load only 20 users
 $users = User::getUsersData($app->db, 20);
 
 // Render view 'views/index.php' and pass users variable there
