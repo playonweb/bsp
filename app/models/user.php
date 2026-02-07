@@ -39,7 +39,7 @@ class User extends BaseModel
 	public static function getAllUsers($db, $limit = null, $offset = 0)
 	{
 		$limitArr = $limit ? [$offset, $limit] : null;
-		return self::find($db, '*', [], ['created_at' => 'DESC'], $limitArr);
+		return self::find($db, '*', [], ['id' => 'DESC'], $limitArr);
 	}
 
 	/**
@@ -113,8 +113,7 @@ class User extends BaseModel
 				'name' => htmlspecialchars($row['name'] ?? '', ENT_QUOTES, 'UTF-8'),
 				'email' => $email,
 				'city' => htmlspecialchars($row['city'] ?? '', ENT_QUOTES, 'UTF-8'),
-				'phone' => $phone,
-				'created_at' => $row['created_at'] ?? null
+				'phone' => $phone
 			];
 		}, $rows);
 	}
@@ -293,8 +292,7 @@ class User extends BaseModel
 				'name' => htmlspecialchars($this->getName(), ENT_QUOTES, 'UTF-8'),
 				'email' => $email,
 				'city' => htmlspecialchars($this->getCity(), ENT_QUOTES, 'UTF-8'),
-				'phone' => $phone,
-				'created_at' => $this->getField('created_at')
+				'phone' => $phone
 			],
 			'links' => [
 				'self' => '/api/v1/users/' . $this->getId()
