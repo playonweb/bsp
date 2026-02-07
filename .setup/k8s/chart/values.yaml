@@ -1,5 +1,5 @@
 replicaCount: 2
-allowedHosts: "alink.obabu.net,localhost:8080"
+allowedHosts: "alink.obabu.net"
 
 image:
   repository: rahuldhole/alink-app
