@@ -1,2 +1,5 @@
 .git
 .env
+.setup
+.github
+.project
