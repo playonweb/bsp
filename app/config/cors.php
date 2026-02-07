@@ -1,5 +1,6 @@
 <?php
 $host = $_SERVER['HTTP_HOST'] ?? '';
+error_log("CORS CHECK: Host is '$host'");
 
 header("Access-Control-Allow-Origin: $host");
 header("Access-Control-Allow-Credentials: true");
@@ -15,7 +16,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 $allowedHosts = getenv('ALLOWED_HOSTS') ?: 'localhost:8080';
 $allowedHostsArray = array_map('trim', explode(',', $allowedHosts));
 
-if (!in_array($host, $allowedHostsArray)) {
+$isLocal = preg_match('/^(localhost|127\.0\.0\.1)(:\d+)?$/', $host);
+
+if (!in_array($host, $allowedHostsArray) && !$isLocal) {
     http_response_code(403);
     $template = "<body style='background-color: black; color: white; border: 1px solid #ccc; padding: 10px; margin: 10px; border-radius: 5px;'>
     <h1>❌ CORS origin denied</h1>

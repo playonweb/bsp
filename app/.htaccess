@@ -18,8 +18,9 @@ RewriteRule ^(views|models|database|core|controllers|config|logs|vendor|packages
 RewriteRule ^$ index.php [L]
 
 # 5. Serve Real Files (Images, JS, CSS)
-# If the file exists on the disk, stop here and show it
-RewriteCond %{REQUEST_FILENAME} -f
+# If the file or directory exists on the disk, stop here and show it
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
 # 6. The Router Fallback
