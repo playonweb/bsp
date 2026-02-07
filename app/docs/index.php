@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../config/cors.php';
-require_once __DIR__ . '/../config/csp.php';
+// require_once __DIR__ . '/../config/cors.php';
+// require_once __DIR__ . '/../config/csp.php';
 
 $render_page = $_GET["page"] ?? "";
 ?>
@@ -114,7 +114,7 @@ $render_page = $_GET["page"] ?? "";
 
   <!-- External stylesheets loaded AFTER critical inline styles -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.css">
 </head>
 
 <body>
@@ -133,11 +133,11 @@ $render_page = $_GET["page"] ?? "";
     window.$docsify = {
       name: 'Docs',
       repo: 'https://github.com/rahuldhole/alink',
+      homepage: 'system-design.md',
       loadSidebar: true,
       subMaxLevel: 3,
       auto2top: true,
       basePath: '/docs/',
-      // homepage: 'system-design.md'
 
       // Search Plugin Config
       search: {
@@ -181,14 +181,14 @@ $render_page = $_GET["page"] ?? "";
   </script>
 
   <!-- Docsify v4 -->
-  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4"></script>
 
   <!-- Plugins -->
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/docsify-tabs@1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-tabs@1/dist/docsify-tabs.min.js"></script>
 
   <!-- Mermaid Support -->
   <script type="module">
@@ -196,11 +196,10 @@ $render_page = $_GET["page"] ?? "";
     mermaid.initialize({ startOnLoad: false, theme: 'dark' });
     window.mermaid = mermaid;
   </script>
-  <script src="//unpkg.com/docsify-mermaid@2.0.1/dist/docsify-mermaid.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-mermaid@2/dist/docsify-mermaid.min.js"></script>
 
   <!-- Vue Support -->
-  <script src="//cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
 
   <!-- Handle Legacy ?page= redirect -->
   <script>
