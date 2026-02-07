@@ -4,6 +4,7 @@
 # GLOBAL ARGUMENTS
 # ##########################################################
 ARG BASE_STAGE=base
+ARG PHP_ENV=production
 # www-data non root user exists in php apache
 ARG USERNAME=www-data
 ARG ADMIN_USER=admin
@@ -28,13 +29,6 @@ RUN apt-get update && apt-get install -y \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR $WORKING_DIR
-
-# PHP hardening
-RUN { \
-  echo "opcache.enable=1"; \
-  echo "opcache.validate_timestamps=0"; \
-  echo "expose_php=0"; \
-} > /usr/local/etc/php/conf.d/prod.ini
 
 
 
@@ -102,6 +96,14 @@ FROM litetools AS powertools
 FROM ${BASE_STAGE} AS final
 ARG USERNAME
 ARG WORKING_DIR
+
+
+# PHP hardening
+RUN if [ "${PHP_ENV}" = "production" ]; then \
+  echo "opcache.enable=1"; \
+  echo "opcache.validate_timestamps=0"; \
+  echo "expose_php=0"; \
+fi > /usr/local/etc/php/conf.d/prod.ini
 
 # Copy app
 COPY --chown=www-data:www-data app/ .
