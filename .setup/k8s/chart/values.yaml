@@ -1,0 +1,85 @@
+replicaCount: 2
+allowedHosts: "alink.obabu.net,localhost:8080"
+
+image:
+  repository: rahuldhole/alink-app
+  pullPolicy: Always
+  tag: "" # Overridden by CI/CD
+
+imagePullSecrets:
+  - name: docker-hub-secret
+nameOverride: ""
+fullnameOverride: "alink-app"
+
+serviceAccount:
+  create: false
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  runAsNonRoot: false
+  seccompProfile:
+    type: RuntimeDefault
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/limit-rps: "10"
+  hosts:
+    - host: alink.obabu.net
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: alink-tls
+      hosts:
+        - alink.obabu.net
+
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "100m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+
+livenessProbe:
+  httpGet:
+    path: /healthz.php
+    port: http
+  initialDelaySeconds: 15
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /healthz.php
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+mysql:
+  enabled: true
+  image: mysql:8.0
+  dbName: "php_db"
+  dbUser: "root"
+  secret:
+    create: true
+    name: "mysql-passwords"
+    # rootPassword and userPassword will be injected by Helm --set
+  resources:
+    requests:
+      storage: 1Gi

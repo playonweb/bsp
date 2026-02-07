@@ -1,0 +1,14 @@
+{{- if .Values.mysql.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "standard-app.fullname" . }}-mysql
+  labels:
+    {{- include "standard-app.labels" . | nindent 4 }}
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: {{ include "standard-app.fullname" . }}-mysql
+  clusterIP: None
+{{- end }}

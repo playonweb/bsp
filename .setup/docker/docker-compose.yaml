@@ -12,15 +12,15 @@ services:
     environment:
       ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost:8080}
       DB_HOST: ${DB_HOST:-db}
-      DB_NAME: ${DB_NAME:-php_test}
       DB_USER: ${DB_USER:-root}
+      DB_NAME: ${DB_NAME:-php_test}
       DB_PASS: ${DB_PASS:-root}
 
   db:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-php_test}
+      MYSQL_ROOT_PASSWORD: ${DB_PASS:-root}
+      MYSQL_DATABASE: ${DB_NAME:-php_test}
       TZ: UTC
     ports:
       - "3306:3306"

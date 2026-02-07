@@ -1,0 +1,55 @@
+{{- if .Values.mysql.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "standard-app.fullname" . }}-mysql
+  labels:
+    {{- include "standard-app.labels" . | nindent 4 }}
+    
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "standard-app.fullname" . }}-mysql
+  serviceName: "{{ include "standard-app.fullname" . }}-mysql"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ include "standard-app.fullname" . }}-mysql
+    spec:
+      containers:
+      - name: mysql
+        image: {{ .Values.mysql.image }}
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.mysql.secret.name }}
+              key: root-password
+        - name: MYSQL_DATABASE
+          value: {{ .Values.mysql.dbName | quote }}
+        ports:
+        - containerPort: 3306
+        livenessProbe:
+          exec:
+            command: ["/bin/sh", "-c", "mysqladmin ping -u root -p${MYSQL_ROOT_PASSWORD}"]
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command: ["/bin/sh", "-c", "mysql -u root -p${MYSQL_ROOT_PASSWORD} -e 'SELECT 1'"]
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 1
+        volumeMounts:
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        {{- toYaml .Values.mysql.resources | nindent 8 }}
+{{- end }}

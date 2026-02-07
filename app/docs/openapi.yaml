@@ -16,7 +16,7 @@ servers:
     description: Production server
     variables:
       prodHost:
-        default: alink.playonweb.org
+        default: alink.obabu.net
 
 paths:
   /api/v1/users:
