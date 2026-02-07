@@ -1,12 +1,26 @@
+networks:
+  betterstack-php:
+    name: betterstack-php
+
 services:
   app:
     build:
       context: ../../
       dockerfile: .setup/docker/Dockerfile
+    tty: true
+    mem_limit: 2048m
+    cpus: '1'
     ports:
       - "8080:80"
     volumes:
       - ../../app:/var/www/html
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    networks:
+      - betterstack-php
     depends_on:
       - db
     environment:
@@ -18,10 +32,14 @@ services:
 
   db:
     image: mysql:8.0
+    mem_limit: 2048m
+    cpus: '1'
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASS:-root}
       MYSQL_DATABASE: ${DB_NAME:-php_test}
       TZ: UTC
+    networks:
+      - betterstack-php
     ports:
       - "3306:3306"
     volumes:
