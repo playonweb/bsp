@@ -10,6 +10,10 @@ services:
     build:
       context: ../../
       dockerfile: .setup/docker/Dockerfile
+      args:
+        BASE_STAGE: ${BASE_STAGE:-base}
+      tags: 
+        - betterstack/php-app:${BASE_STAGE:-base}
     tty: true
     mem_limit: 2048m
     cpus: '1'
