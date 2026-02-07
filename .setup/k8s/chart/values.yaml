@@ -74,7 +74,7 @@ readinessProbe:
 mysql:
   enabled: true
   image: mysql:8.0
-  dbName: "php_db"
+  dbName: "php_test"
   dbUser: "root"
   secret:
     create: true
