@@ -149,7 +149,6 @@ window.initApp = function (initialData) {
             const shareUrl = `${window.location.protocol}//${window.location.host}/${user.id}`;
             const shareData = {
                 title: user.name + ' - Alink',
-                text: `Contact details for ${user.name}`,
                 url: shareUrl
             };
 
