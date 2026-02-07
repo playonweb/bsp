@@ -5,6 +5,15 @@ vars:
   ENV_FILE: .env
 
 tasks:
+  rebuild: # no cache
+    desc: Build the application
+    cmds:
+      - |
+        if [ -f {{.ENV_FILE}} ]; then
+          docker compose --env-file {{.ENV_FILE}} -f {{.COMPOSE_FILE}} build --no-cache
+        else
+          docker compose -f {{.COMPOSE_FILE}} build
+        fi
   up:
     desc: Start the development environment
     cmds:
