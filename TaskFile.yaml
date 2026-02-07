@@ -5,15 +5,16 @@ vars:
   ENV_FILE: .env
 
 tasks:
-  rebuild: # no cache
-    desc: Build the application
+  sync:secrets:
+    desc: Sync secrets from GitHub to .env file
     cmds:
-      - |
-        if [ -f {{.ENV_FILE}} ]; then
-          docker compose --env-file {{.ENV_FILE}} -f {{.COMPOSE_FILE}} build --no-cache
-        else
-          docker compose -f {{.COMPOSE_FILE}} build
-        fi
+      - .github/scripts/sync-secrets.sh
+
+  deploy:
+    desc: Deploy the application
+    cmds:
+      - gh workflow run "Deploy Alink App"
+
   up:
     desc: Start the development environment
     cmds:
@@ -51,12 +52,6 @@ tasks:
 
   reset:
     desc: Reset the database and restart services
-    cmds:
-      - task: down
-      - task: up
-
-  restart:
-    desc: Restart the application
     cmds:
       - task: down
       - task: up
