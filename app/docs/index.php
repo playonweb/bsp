@@ -119,12 +119,12 @@ $render_page = $_GET["page"] ?? "";
 
 <body>
   <nav style="display: flex; justify-content: space-between; align-items: center;">
-    <a href="/" style="color: #c9d1d9;">
-      <img src=" /favicon.ico" alt="Logo" style="width: 20px; height: 20px; object-fit: contain; filter: invert(1);">
+    <a href="/" style="color: #c9d1d9; display: flex; align-items: center; gap: 0.5rem;">
+      <img src=" /favicon.ico" alt="Logo" style="width: 20px; height: 20px; object-fit: contain; filter: invert(1);" />
       Alink
     </a>
-    <a href="/docs/openapi.php" style="color: #c9d1d9;">
-      <img src="https://www.svgrepo.com/show/354420/swagger.svg" height="20"> OpenAPI
+    <a href="/docs/openapi.php" style="color: #c9d1d9; display: flex; align-items: center; gap: 0.5rem;">
+      <img src="https://www.svgrepo.com/show/354420/swagger.svg" height="20" alt="OpenAPI" /> OpenAPI
     </a>
   </nav>
   <div id="app"></div>
