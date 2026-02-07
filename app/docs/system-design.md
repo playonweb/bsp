@@ -529,3 +529,4 @@ die("(" . $this->mysqli->errno . ") " . ... print_r(debug_backtrace(),true) ...)
 3. advanced search, sort & filter options
 4. Compile & tree shake tailwind, primeicons & use vuejs instead of petite-vue
 5. Captcha, better rate limiting for security. MyISAM engine was a bottleneck acting like a dirty rate limiter, now it's InnoDB. 
+6. Plotting data on a World Map
