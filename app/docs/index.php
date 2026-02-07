@@ -119,11 +119,11 @@ $render_page = $_GET["page"] ?? "";
 
 <body>
   <nav style="display: flex; justify-content: space-between; align-items: center;">
-    <a href="/" style="color: #c9d1d9; text-decoration: none;">
-      <img src="/favicon.ico" alt="Logo" style="width: 20px; height: 20px; object-fit: contain; filter: invert(1);">
+    <a href="/" style="color: #c9d1d9;">
+      <img src=" /favicon.ico" alt="Logo" style="width: 20px; height: 20px; object-fit: contain; filter: invert(1);">
       Alink
     </a>
-    <a href="/docs/openapi.php" style="color: #c9d1d9; text-decoration: none;">
+    <a href="/docs/openapi.php" style="color: #c9d1d9;">
       <img src="https://www.svgrepo.com/show/354420/swagger.svg" height="20"> OpenAPI
     </a>
   </nav>
@@ -137,6 +137,7 @@ $render_page = $_GET["page"] ?? "";
       subMaxLevel: 3,
       auto2top: true,
       basePath: '/docs/',
+      // homepage: 'system-design.md'
 
       // Search Plugin Config
       search: {
@@ -204,9 +205,9 @@ $render_page = $_GET["page"] ?? "";
   <!-- Handle Legacy ?page= redirect -->
   <script>
     <?php if ($render_page) { ?>
-        if (!window.location.hash) {
-          window.location.hash = '#/<?php echo $render_page; ?>';
-        }
+      if (!window.location.hash) {
+        window.location.hash = '#/<?php echo $render_page; ?>';
+      }
     <?php } ?>
   </script>
 </body>
