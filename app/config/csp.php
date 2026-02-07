@@ -30,6 +30,9 @@ sendCSP([
         // Some libraries (like MathJax or Mermaid) may fetch additional config/resources
         'https://cdn.jsdelivr.net',
         'https://cdnjs.cloudflare.com',
+    ],
+    'img-src' => [
+        'https://www.svgrepo.com',
     ]
 ]);
 

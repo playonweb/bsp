@@ -55,6 +55,12 @@ tasks:
       - task: down
       - task: up
 
+  restart:
+    desc: Restart the application
+    cmds:
+      - task: down
+      - task: up
+
   default:
     desc: Show available tasks
     cmds:

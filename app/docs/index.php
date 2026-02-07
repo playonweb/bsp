@@ -118,14 +118,22 @@ $render_page = $_GET["page"] ?? "";
 </head>
 
 <body>
+  <nav style="display: flex; justify-content: space-between; align-items: center;">
+    <a href="/" style="color: #c9d1d9; text-decoration: none;">
+      <img src="/favicon.ico" alt="Logo" style="width: 20px; height: 20px; object-fit: contain; filter: invert(1);">
+      Alink
+    </a>
+    <a href="/docs/openapi.php" style="color: #c9d1d9; text-decoration: none;">
+      <img src="https://www.svgrepo.com/show/354420/swagger.svg" height="20"> OpenAPI
+    </a>
+  </nav>
   <div id="app"></div>
 
   <script>
     window.$docsify = {
-      name: 'Alink Docs',
+      name: 'Docs',
       repo: 'https://github.com/rahuldhole/alink',
       loadSidebar: true,
-      loadNavbar: true,
       subMaxLevel: 3,
       auto2top: true,
       basePath: '/docs/',
@@ -171,15 +179,6 @@ $render_page = $_GET["page"] ?? "";
     }
   </script>
 
-  <!-- Handle Legacy ?page= redirect -->
-  <script>
-    <?php if ($render_page) { ?>
-      if (!window.location.hash) {
-        window.location.hash = '#/<?php echo $render_page; ?>';
-      }
-    <?php } ?>
-  </script>
-
   <!-- Docsify v4 -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
 
@@ -200,6 +199,15 @@ $render_page = $_GET["page"] ?? "";
 
   <!-- Vue Support -->
   <script src="//cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+  </script>
+
+  <!-- Handle Legacy ?page= redirect -->
+  <script>
+    <?php if ($render_page) { ?>
+        if (!window.location.hash) {
+          window.location.hash = '#/<?php echo $render_page; ?>';
+        }
+    <?php } ?>
   </script>
 </body>
 
