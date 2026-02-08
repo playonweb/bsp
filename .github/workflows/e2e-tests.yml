@@ -2,10 +2,10 @@
 name: E2E Tests
 
 on:
-  # push:
-  #   branches: [main]
-  # pull_request:
-  #   branches: [main]
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -67,8 +67,6 @@ jobs:
           selenium-side-runner \
             --server http://localhost:8080 \
             --base-url http://localhost:8080 \
-            --output-directory ./test-results \
-            --output-format junit \
             --force \
             tests/e2e/test-suite.side
         continue-on-error: true
@@ -168,8 +166,6 @@ jobs:
             -c "browserName=firefox" \
             --server http://localhost:8080 \
             --base-url http://localhost:8080 \
-            --output-directory ./test-results \
-            --output-format junit \
             --force \
             tests/e2e/test-suite.side
         continue-on-error: true
