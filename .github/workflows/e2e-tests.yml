@@ -1,4 +1,4 @@
-name: E2E Tests
+name: CI
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browser: [chrome]
+        browser: [chrome, firefox] # [chrome, firefox]
 
     steps:
       - name: Checkout code
@@ -42,7 +42,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          # Removed cache: 'npm' because it requires a package-lock.json which was not found
 
       - name: Install Dependencies
         run: npm install selenium-side-runner@latest
@@ -51,9 +50,9 @@ jobs:
         if: matrix.browser == 'chrome'
         uses: nanasess/setup-chromedriver@v2
 
-      # - name: Install GeckoDriver
-      #   if: matrix.browser == 'firefox'
-      #   run: npm install geckodriver && npx geckodriver --version
+      - name: Install GeckoDriver
+        if: matrix.browser == 'firefox'
+        run: npm install geckodriver && npx geckodriver --version
 
       - name: Run Tests
         id: run_tests
