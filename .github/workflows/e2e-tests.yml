@@ -42,7 +42,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          # Removed cache: 'npm' because it requires a package-lock.json which was not found
 
       - name: Install Dependencies
         run: npm install selenium-side-runner@latest
