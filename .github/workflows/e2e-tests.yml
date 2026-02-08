@@ -55,6 +55,7 @@ jobs:
           node-version: '20'
 
       - name: Install Selenium SIDE Runner and Reporters
+        # Install locally to ensure dependencies are resolved correctly by npx
         run: |
           npm install selenium-side-runner@latest jest-junit
 
@@ -68,12 +69,16 @@ jobs:
 
       - name: Run E2E Tests
         id: e2e_tests
+        # Use npx for local execution
+        # Create jest.config.js to handle reporters and avoid CLI parsing errors with dashes
+        # Added double dashes (--) to chrome arguments (Critical for headless mode)
+        # Use absolute path for output directory
         run: |
+          echo "module.exports = { reporters: ['default', 'jest-junit'] };" > jest.config.js
           mkdir -p ${{ github.workspace }}/.test-results
           npx selenium-side-runner \
             --base-url http://localhost:8080 \
             --output-directory "${{ github.workspace }}/.test-results" \
-            --jest-options "--reporters=default --reporters=jest-junit" \
             --force \
             -c "browserName=chrome goog:chromeOptions.args=[--headless,--no-sandbox,--disable-dev-shm-usage,--disable-gpu,--window-size=1920,1080]" \
             tests/e2e/test-suite.side
@@ -171,13 +176,14 @@ jobs:
 
       - name: Run E2E Tests (Firefox)
         id: e2e_tests
+        # Create jest.config.js to handle reporters
         # Added double dashes (--) to firefox arguments
         run: |
+          echo "module.exports = { reporters: ['default', 'jest-junit'] };" > jest.config.js
           mkdir -p ${{ github.workspace }}/.test-results
           npx selenium-side-runner \
             --base-url http://localhost:8080 \
             --output-directory "${{ github.workspace }}/.test-results" \
-            --jest-options "--reporters=default --reporters=jest-junit" \
             --force \
             -c "browserName=firefox moz:firefoxOptions.args=[--headless]" \
             tests/e2e/test-suite.side
