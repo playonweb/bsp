@@ -38,7 +38,7 @@ $initialUsers = $users ?? [];
 		<div class="absolute inset-0 bg-black/80 backdrop-blur-xl"></div>
 
 		<!-- Card Container -->
-		<div class="relative glass-dark rounded-[2.5rem] p-8 sm:p-10 max-w-sm w-full shadow-2xl overflow-hidden animate-scale-in border border-white/10"
+		<div class="relative glass-dark rounded-[2.5rem] p-6 sm:p-10 max-w-sm w-full shadow-2xl overflow-y-auto max-h-[90vh] animate-scale-in border border-white/10"
 			@click.stop> <!-- Prevents bubbling to backdrop and main div -->
 
 			<!-- Card Header Decoration -->
@@ -51,14 +51,14 @@ $initialUsers = $users ?? [];
 
 			<!-- Close Button -->
 			<button @click="closeContact()" data-testid="contact-modal-close"
-				class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-500 hover:text-white transition-all">
+				class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-500 hover:text-white transition-all z-10">
 				<i class="pi pi-times"></i>
 			</button>
 
-			<div class="flex flex-col items-center text-center mt-4">
+			<div class="flex flex-col items-center text-center mt-2 sm:mt-4">
 				<!-- Avatar / Initials -->
 				<div
-					class="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10 flex items-center justify-center text-3xl font-black text-white shadow-2xl mb-6 transform hover:rotate-3 transition-transform">
+					class="w-20 h-20 sm:w-24 sm:h-24 rounded-[2rem] bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10 flex items-center justify-center text-3xl font-black text-white shadow-2xl mb-4 sm:mb-6 transform hover:rotate-3 transition-transform">
 					{{ getInitials(selectedContact?.name ?? '') }}
 				</div>
 
@@ -72,7 +72,7 @@ $initialUsers = $users ?? [];
 			</div>
 
 			<!-- QR Code Section -->
-			<div class="mt-10 flex justify-center">
+			<div class="mt-6 sm:mt-10 flex justify-center">
 				<div id="qrcode" data-testid="qr-code-container"
 					class="p-4 bg-white/5 rounded-3xl border border-white/10 shadow-inner group relative">
 					<div
@@ -82,7 +82,7 @@ $initialUsers = $users ?? [];
 			</div>
 
 			<!-- Action Buttons -->
-			<div class="mt-10 space-y-3">
+			<div class="mt-6 sm:mt-10 space-y-3">
 				<div class="grid grid-cols-2 gap-3">
 					<a :href="'mailto:' + selectedContact?.email ?? ''"
 						class="flex flex-col items-center justify-center p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-blue-500/30 transition-all group">
@@ -109,7 +109,7 @@ $initialUsers = $users ?? [];
 			</div>
 
 			<!-- Branding Footer -->
-			<div class="mt-10 pt-6 border-t border-white/5 flex flex-col items-center gap-2">
+			<div class="mt-6 sm:mt-10 pt-4 sm:pt-6 border-t border-white/5 flex flex-col items-center gap-2">
 				<div class="flex items-center gap-2">
 					<div class="w-5 h-5 bg-blue-600 rounded-md flex items-center justify-center">
 						<img src="/favicon.ico" class="w-3 h-3 invert" />
@@ -180,7 +180,7 @@ $initialUsers = $users ?? [];
 					<div class="p-8 sm:p-12">
 						<!-- Close Button -->
 						<button @click="closeForm()" data-testid="form-modal-close"
-							class="absolute top-8 right-8 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all border border-white/5">
+							class="absolute top-8 right-8 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all border border-white/5 z-10">
 							<i class="pi pi-times"></i>
 						</button>
 
@@ -265,7 +265,7 @@ $initialUsers = $users ?? [];
 							</div>
 
 							<button type="submit" :disabled="submitting" data-testid="form-submit-btn"
-								class="w-full py-5 mt-6 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-2xl shadow-blue-500/20 flex items-center justify-center gap-3 transition-all transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
+								class="relative w-full py-5 mt-6 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-2xl shadow-blue-500/20 flex items-center justify-center gap-3 transition-all transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed z-10">
 								<i v-if="submitting" class="pi pi-spin pi-spinner"></i>
 								<span v-else>Get Your Digital Card</span>
 							</button>

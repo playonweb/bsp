@@ -123,6 +123,18 @@
           "value": ""
         },
         {
+          "id": "9a",
+          "command": "runScript",
+          "target": "document.querySelector('[data-testid=\"form-submit-btn\"]').scrollIntoView({block: 'center', behavior: 'smooth'})",
+          "value": ""
+        },
+        {
+          "id": "9b",
+          "command": "pause",
+          "target": "500",
+          "value": ""
+        },
+        {
           "id": "10",
           "command": "click",
           "target": "css=[data-testid='form-submit-btn']",
@@ -273,6 +285,18 @@
           "value": ""
         },
         {
+          "id": "7a",
+          "command": "runScript",
+          "target": "document.querySelector('[data-testid=\"contact-modal-close\"]').scrollIntoView({block: 'center', behavior: 'smooth'})",
+          "value": ""
+        },
+        {
+          "id": "7b",
+          "command": "pause",
+          "target": "500",
+          "value": ""
+        },
+        {
           "id": "8",
           "command": "click",
           "target": "css=[data-testid='contact-modal-close']",
@@ -415,6 +439,18 @@
           "id": "4",
           "command": "assertElementPresent",
           "target": "css=[data-testid='form-modal-close']",
+          "value": ""
+        },
+        {
+          "id": "4a",
+          "command": "runScript",
+          "target": "document.querySelector('[data-testid=\"form-modal-close\"]').scrollIntoView({block: 'center', behavior: 'smooth'})",
+          "value": ""
+        },
+        {
+          "id": "4b",
+          "command": "pause",
+          "target": "500",
           "value": ""
         },
         {

@@ -15,11 +15,11 @@ if (count($nameParts) > 1) {
 }
 ?>
 
-<div class="flex items-center justify-center min-h-[70vh] py-12">
+<div class="flex items-center justify-center min-h-[60vh] sm:min-h-[70vh] py-6 sm:py-12">
     <div
         class="w-full max-w-[360px] p-[2px] rounded-[32px] bg-gradient-to-br from-white/10 via-white/5 to-transparent shadow-2xl animate-in fade-in zoom-in duration-700">
         <div
-            class="bg-neutral-900/90 backdrop-blur-3xl rounded-[30px] p-8 px-6 relative overflow-hidden border border-white/5 shadow-inner">
+            class="bg-neutral-900/90 backdrop-blur-3xl rounded-[30px] p-6 sm:p-8 px-5 sm:px-6 relative overflow-hidden border border-white/5 shadow-inner">
 
             <!-- Dynamic Background Glow -->
             <div
@@ -30,9 +30,9 @@ if (count($nameParts) > 1) {
             </div>
 
             <!-- Header Section -->
-            <div class="text-center mb-10 relative z-10">
+            <div class="text-center mb-6 sm:mb-10 relative z-10">
                 <div
-                    class="w-24 h-24 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-3xl mx-auto mb-6 flex items-center justify-center text-4xl font-black text-white shadow-xl shadow-blue-500/20 rotate-3 hover:rotate-0 transition-transform duration-500 cursor-default">
+                    class="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-3xl mx-auto mb-4 sm:mb-6 flex items-center justify-center text-4xl font-black text-white shadow-xl shadow-blue-500/20 rotate-3 hover:rotate-0 transition-transform duration-500 cursor-default">
                     <?= $initials ?>
                 </div>
                 <h1 class="m-0 text-2xl font-black tracking-tight text-white mb-2">
@@ -100,7 +100,7 @@ if (count($nameParts) > 1) {
 
             </div>
 
-            <div class="mt-8 text-center">
+            <div class="mt-6 sm:mt-8 text-center">
                 <a href="/docs/index.php#privacy"
                     class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
                     Privacy Policy

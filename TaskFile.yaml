@@ -71,7 +71,7 @@ tasks:
   test:chrome:headless:
     desc: Run E2E tests in headless mode (Chrome)
     cmds:
-      - selenium-side-runner --base-url http://localhost:8080 -c "browserName=chrome goog:chromeOptions.args=[disable-infobars, headless]" {{.TEST_SUITE}}
+      - selenium-side-runner --base-url http://localhost:8080 -c "browserName=chrome goog:chromeOptions.args=[disable-infobars, headless, window-size=1920,1080, no-sandbox, disable-dev-shm-usage, disable-gpu]" {{.TEST_SUITE}}
 
   test:firefox:
     desc: Run E2E tests locally (Firefox)
