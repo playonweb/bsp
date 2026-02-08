@@ -74,20 +74,28 @@ jobs:
             CAPS="browserName=firefox moz:firefoxOptions.args=[--headless]"
           fi
 
-          # Use --output-directory for the side-runner directly.
-          # We also set JEST_JUNIT environment variables which jest-junit reads automatically.
-          export JEST_JUNIT_OUTPUT_DIR="test-results"
-          export JEST_JUNIT_OUTPUT_NAME="junit-${{ matrix.browser }}.xml"
+          # Force jest-junit configuration via a temporary side-runner config file
+          # This ensures the reporter is used even if CLI flags are swallowed
+          cat <<EOF > side-runner.config.js
+          module.exports = {
+            jestConfig: {
+              reporters: [
+                "default",
+                ["jest-junit", { 
+                  outputDirectory: "test-results", 
+                  outputName: "junit-${{ matrix.browser }}.xml" 
+                }]
+              ]
+            }
+          };
+          EOF
 
           npx selenium-side-runner \
             --base-url http://localhost:8080 \
             --force \
-            --output-directory "test-results" \
+            --config-file side-runner.config.js \
             -c "$CAPS" \
-            tests/e2e/test-suite.side \
-            -- \
-            --reporters=default \
-            --reporters=jest-junit
+            tests/e2e/test-suite.side
 
         # We allow this to pass temporarily so we can check for artifacts, 
         # but the next step ensures we fail if no report exists.
