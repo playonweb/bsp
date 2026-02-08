@@ -37,8 +37,8 @@ jobs:
       - name: Wait for Health
         run: |
           echo "Waiting for application..."
-          # Loop for up to 120 seconds checking the endpoint
-          timeout 120 bash -c 'until curl -s -f http://localhost:8080/healthz.php; do sleep 2; done' || (echo "Timeout reached" && exit 1)
+          # Loop for up to 60 seconds (reduced from 120 to fail earlier)
+          timeout 60 bash -c 'until curl -s -f http://localhost:8080/healthz.php; do sleep 2; done' || (echo "Timeout reached" && exit 1)
           echo "✓ Application is healthy!"
 
       - name: Setup Node.js
@@ -47,7 +47,8 @@ jobs:
           node-version: '20'
 
       - name: Install Dependencies
-        run: npm install selenium-side-runner@latest jest-junit
+        # Explicitly install jest to ensure compatibility with jest-junit
+        run: npm install selenium-side-runner@latest jest-junit jest
 
       # Setup Drivers based on matrix
       - name: Install ChromeDriver
@@ -63,50 +64,41 @@ jobs:
         id: run_tests
         env:
           BROWSER: ${{ matrix.browser }}
-          # These env vars help jest-junit if config fails
+          # Environment variables for jest-junit
           JEST_JUNIT_OUTPUT_DIR: "test-results"
           JEST_JUNIT_OUTPUT_NAME: "junit-${{ matrix.browser }}.xml"
         run: |
           mkdir -p test-results
           
-          # 1. Generate Jest Config explicitly to force the reporter
-          # We use the matrix browser name to create unique report files
-          cat <<EOF > jest.config.js
-          module.exports = {
-            reporters: [
-              'default',
-              ['jest-junit', { 
-                outputDirectory: 'test-results', 
-                outputName: 'junit-${{ matrix.browser }}.xml',
-                uniqueOutputName: false 
-              }]
-            ]
-          };
-          EOF
-
-          # 2. Set Capabilities based on browser
+          # Set Capabilities based on browser
           if [ "$BROWSER" == "chrome" ]; then
             CAPS="browserName=chrome goog:chromeOptions.args=[--headless,--no-sandbox,--disable-dev-shm-usage,--disable-gpu,--window-size=1920,1080]"
           else
             CAPS="browserName=firefox moz:firefoxOptions.args=[--headless]"
           fi
 
-          # 3. Run Runner
-          # We don't use --output-directory for the runner itself to avoid conflict with jest-junit
+          # Run Runner with explicit reporter arguments passed to Jest via '--'
           npx selenium-side-runner \
             --base-url http://localhost:8080 \
             --force \
             -c "$CAPS" \
-            tests/e2e/test-suite.side
+            tests/e2e/test-suite.side \
+            -- \
+            --reporters=default \
+            --reporters=jest-junit
 
-        # Allow step to "pass" so we can upload reports, but mark job as failed later if needed
+        # We allow this to pass temporarily so we can check for artifacts, 
+        # but the next step ensures we fail if no report exists.
         continue-on-error: true
 
-      - name: Debug Output
-        if: always()
+      - name: Verify Results (Fail Early)
         run: |
-          echo "Listing test results folder:"
-          ls -R test-results || echo "Folder not found!"
+          if [ ! -f "test-results/junit-${{ matrix.browser }}.xml" ]; then
+            echo "::error::❌ No JUnit XML report found! Tests likely crashed or configuration failed."
+            ls -R test-results || echo "Folder empty"
+            exit 1
+          fi
+          echo "✅ Test report found."
 
       - name: Upload Artifacts
         if: always()
@@ -122,9 +114,9 @@ jobs:
         with:
           report_paths: 'test-results/*.xml'
           check_name: 'E2E Results (${{ matrix.browser }})'
-          fail_on_failure: true     # Fail the build if tests failed
-          require_tests: true       # Fail if no xml is found
-          detailed_summary: true    # Shows a table in the Workflow Summary
+          fail_on_failure: true
+          require_tests: true
+          detailed_summary: true
           include_passed: true
 
       - name: Dump Logs on Failure
@@ -136,7 +128,6 @@ jobs:
         if: always()
         run: docker compose -f .setup/docker/docker-compose.yaml down -v
 
-      # Explicitly fail the job if the test runner failed (since we used continue-on-error)
       - name: Check Final Status
         if: steps.run_tests.outcome == 'failure'
         run: exit 1
