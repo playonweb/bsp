@@ -34,7 +34,7 @@ jobs:
           interval=2
           
           while [ $elapsed -lt $timeout ]; do
-            if curl -f http://localhost:${{ env.APP_PORT }}/healthz.php 2>/dev/null; then
+            if curl -f http://localhost:8080/healthz.php 2>/dev/null; then
               echo "✓ Application is healthy!"
               exit 0
             fi
@@ -69,8 +69,8 @@ jobs:
       - name: Run E2E Tests
         run: |
           selenium-side-runner \
-            --server http://localhost:${{ env.APP_PORT }} \
-            --base-url http://localhost:${{ env.APP_PORT }} \
+            --server http://localhost:8080 \
+            --base-url http://localhost:8080 \
             --output-directory ./test-results \
             --output-format junit \
             --force \
@@ -126,15 +126,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up environment variables
-        run: |
-          cp env.example .env
-          echo "DB_HOST=db" >> .env
-          echo "DB_PORT=3306" >> .env
-          echo "DB_NAME=alink" >> .env
-          echo "DB_USER=alink_user" >> .env
-          echo "DB_PASS=secure_password_123" >> .env
-
       - name: Start application with Docker Compose
         run: |
           docker compose -f .setup/docker/docker-compose.yaml up -d --build
@@ -149,7 +140,7 @@ jobs:
           interval=2
           
           while [ $elapsed -lt $timeout ]; do
-            if curl -f http://localhost:${{ env.APP_PORT }}/healthz.php 2>/dev/null; then
+            if curl -f http://localhost:8080/healthz.php 2>/dev/null; then
               echo "✓ Application is healthy!"
               exit 0
             fi
@@ -179,8 +170,8 @@ jobs:
       - name: Run E2E Tests (Firefox)
         run: |
           selenium-side-runner \
-            --server http://localhost:${{ env.APP_PORT }} \
-            --base-url http://localhost:${{ env.APP_PORT }} \
+            --server http://localhost:8080 \
+            --base-url http://localhost:8080 \
             --output-directory ./test-results \
             --output-format junit \
             --force \
