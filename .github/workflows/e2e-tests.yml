@@ -64,9 +64,6 @@ jobs:
         id: run_tests
         env:
           BROWSER: ${{ matrix.browser }}
-          # Environment variables for jest-junit
-          JEST_JUNIT_OUTPUT_DIR: "test-results"
-          JEST_JUNIT_OUTPUT_NAME: "junit-${{ matrix.browser }}.xml"
         run: |
           mkdir -p test-results
           
@@ -77,10 +74,15 @@ jobs:
             CAPS="browserName=firefox moz:firefoxOptions.args=[--headless]"
           fi
 
-          # Run Runner with explicit reporter arguments passed to Jest via '--'
+          # Use --output-directory for the side-runner directly.
+          # We also set JEST_JUNIT environment variables which jest-junit reads automatically.
+          export JEST_JUNIT_OUTPUT_DIR="test-results"
+          export JEST_JUNIT_OUTPUT_NAME="junit-${{ matrix.browser }}.xml"
+
           npx selenium-side-runner \
             --base-url http://localhost:8080 \
             --force \
+            --output-directory "test-results" \
             -c "$CAPS" \
             tests/e2e/test-suite.side \
             -- \
@@ -93,12 +95,25 @@ jobs:
 
       - name: Verify Results (Fail Early)
         run: |
+          # The side-runner might place the file inside a subfolder or rename it.
+          # We check the directory and move the file if necessary to match our expected path.
+          echo "Checking for reports in test-results..."
+          ls -R test-results
+          
+          # If the file exists but isn't named exactly right (e.g. results.xml), rename it.
+          # Otherwise, check if our specific filename exists.
           if [ ! -f "test-results/junit-${{ matrix.browser }}.xml" ]; then
-            echo "::error::❌ No JUnit XML report found! Tests likely crashed or configuration failed."
-            ls -R test-results || echo "Folder empty"
-            exit 1
+            # Search for any xml file in the directory and move it to the expected name
+            FOUND_XML=$(find test-results -name "*.xml" | head -n 1)
+            if [ -n "$FOUND_XML" ]; then
+              mv "$FOUND_XML" "test-results/junit-${{ matrix.browser }}.xml"
+              echo "✅ Found and moved $FOUND_XML to expected path."
+            else
+              echo "::error::❌ No JUnit XML report found! Tests likely crashed or configuration failed."
+              exit 1
+            fi
           fi
-          echo "✅ Test report found."
+          echo "✅ Test report verified."
 
       - name: Upload Artifacts
         if: always()
