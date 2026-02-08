@@ -9,15 +9,13 @@ on:
 
 permissions:
   contents: read
-  checks: write
-  statuses: write
-  pull-requests: write
 
 jobs:
   e2e:
     name: E2E (${{ matrix.browser }})
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+
     strategy:
       fail-fast: false
       matrix:
@@ -36,6 +34,7 @@ jobs:
       - name: Wait for Health
         run: |
           echo "Waiting for application..."
+          # Poll the health endpoint for up to 60 seconds
           timeout 60 bash -c 'until curl -s -f http://localhost:8080/healthz.php; do sleep 2; done' || (echo "Timeout reached" && exit 1)
           echo "✓ Application is healthy!"
 
@@ -43,123 +42,48 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
       - name: Install Dependencies
-        run: |
-          npm install selenium-side-runner@latest
-          npm install @seleniumhq/side-utils@latest
+        run: npm install selenium-side-runner@latest
 
       - name: Install ChromeDriver
         if: matrix.browser == 'chrome'
         uses: nanasess/setup-chromedriver@v2
+
+      # - name: Install GeckoDriver
+      #   if: matrix.browser == 'firefox'
+      #   run: npm install geckodriver && npx geckodriver --version
 
       - name: Run Tests
         id: run_tests
         env:
           BROWSER: ${{ matrix.browser }}
         run: |
-          mkdir -p test-results
-          
-          # Set Capabilities based on browser
+          # Define capabilities for Headless execution
+          # --no-sandbox & --disable-dev-shm-usage are critical for Docker/CI stability
           if [ "$BROWSER" == "chrome" ]; then
             CAPS="browserName=chrome goog:chromeOptions.args=[--headless,--no-sandbox,--disable-dev-shm-usage,--disable-gpu,--window-size=1920,1080]"
           else
             CAPS="browserName=firefox moz:firefoxOptions.args=[--headless]"
           fi
 
-          # Run with output format that can be parsed
+          echo "Starting Selenium Side Runner..."
+          
+          # Run tests directly. 
+          # --timeout 15000: Increase step timeout to 15s to prevent flakes on slow CI runners
           npx selenium-side-runner \
             --base-url http://localhost:8080 \
-            --output-directory test-results \
-            --output-format junit \
-            --force \
             -c "$CAPS" \
-            tests/e2e/test-suite.side 2>&1 | tee test-results/test-output.log
-          
-          # Capture exit code
-          TEST_EXIT_CODE=${PIPESTATUS[0]}
-          echo "test_exit_code=$TEST_EXIT_CODE" >> $GITHUB_OUTPUT
-          
-          # Exit with the test exit code
-          exit $TEST_EXIT_CODE
-        continue-on-error: true
-
-      - name: Verify and Normalize Results
-        if: always()
-        run: |
-          echo "Checking for reports in test-results..."
-          ls -la test-results/
-          
-          # Look for any XML files
-          if compgen -G "test-results/*.xml" > /dev/null; then
-            echo "✅ Found XML report(s):"
-            ls -la test-results/*.xml
-            
-            # Rename to standardized name if needed
-            if [ ! -f "test-results/junit-${{ matrix.browser }}.xml" ]; then
-              FIRST_XML=$(find test-results -name "*.xml" -type f | head -n 1)
-              if [ -n "$FIRST_XML" ]; then
-                cp "$FIRST_XML" "test-results/junit-${{ matrix.browser }}.xml"
-                echo "✅ Copied $FIRST_XML to standardized name"
-              fi
-            fi
-          else
-            echo "::warning::No JUnit XML found. Checking test output..."
-            if [ -f "test-results/test-output.log" ]; then
-              echo "Test output log:"
-              cat test-results/test-output.log
-            fi
-            
-            # Create minimal XML report for visibility
-            cat > test-results/junit-${{ matrix.browser }}.xml <<'EOF'
-              <?xml version="1.0" encoding="UTF-8"?>
-              <testsuites name="E2E Tests" tests="1" failures="1" errors="0" time="0">
-                <testsuite name="selenium-side-runner" tests="1" failures="1" errors="0" time="0">
-                  <testcase name="Report Generation Failed" classname="E2ETest">
-                    <failure message="selenium-side-runner did not generate a JUnit report. Check logs for details."/>
-                  </testcase>
-                </testsuite>
-              </testsuites>
-              EOF
-            echo "::error::Created placeholder XML report due to missing test results"
-          fi
-
-      - name: Upload Artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: e2e-results-${{ matrix.browser }}
-          path: test-results/
-          retention-days: 14
-
-      - name: Publish Test Report
-        if: always()
-        uses: mikepenz/action-junit-report@v4
-        with:
-          report_paths: 'test-results/junit-*.xml'
-          check_name: 'E2E Results (${{ matrix.browser }})'
-          fail_on_failure: true
-          require_tests: true
-          detailed_summary: true
-          include_passed: true
+            --timeout 15000 \
+            tests/e2e/test-suite.side
 
       - name: Dump Logs on Failure
-        if: failure() || steps.run_tests.outputs.test_exit_code != '0'
+        if: failure()
         run: |
-          echo "=== Docker Compose Logs ==="
+          echo "=== Application Logs ==="
           docker compose -f .setup/docker/docker-compose.yaml logs --tail=100
-          echo ""
-          echo "=== Test Output ==="
-          if [ -f "test-results/test-output.log" ]; then
-            cat test-results/test-output.log
-          fi
 
       - name: Cleanup
         if: always()
         run: docker compose -f .setup/docker/docker-compose.yaml down -v
-
-      - name: Check Final Status
-        if: steps.run_tests.outputs.test_exit_code != '0'
-        run: |
-          echo "::error::Tests failed with exit code ${{ steps.run_tests.outputs.test_exit_code }}"
-          exit 1
