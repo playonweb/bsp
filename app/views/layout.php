@@ -11,6 +11,26 @@ require_once __DIR__ . '/../config/csp.php';
   <title>Alink</title>
   <link href="/favicon.ico" rel="icon" type="image/x-icon" />
 
+  <!-- Preload critical CSS resources to prevent FOUC -->
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/primeicons@7.0.0/primeicons.min.css" as="style">
+  <link rel="preload" href="/assets/css/application.css" as="style">
+
+  <!-- Critical inline CSS to prevent layout shift -->
+  <style>
+    [v-cloak] {
+      display: none;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #000000;
+      color: #FFFFFF;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 

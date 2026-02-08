@@ -43,7 +43,8 @@ import { getUsers, createUser, getUser } from 'sdk';
 
 /**
  * @param {Object} initialData
- * @param {AppUser[]} initialData.users
+ * @param {AppUser[]} [initialData.users]
+ * @param {AppUser} [initialData.user]
  */
 // @ts-ignore
 window.initApp = function (initialData) {
@@ -69,7 +70,7 @@ window.initApp = function (initialData) {
 
         // Contact View State
         /** @type {AppUser|null} */
-        selectedContact: initialData.users[0] || null,
+        selectedContact: initialData.user || (initialData.users ? initialData.users[0] : null),
         contactModalOpen: false,
 
         /**
@@ -115,7 +116,9 @@ window.initApp = function (initialData) {
         },
 
         /**
+         * View contact details in modal
          * @param {AppUser} user
+         * @returns {Promise<void>}
          */
         async viewContact(user) {
             this.selectedContact = { ...user }; // Clone to avoid mutating list item directly if we want isolation
@@ -127,8 +130,10 @@ window.initApp = function (initialData) {
         },
 
         /**
+         * Reveal obfuscated field (email or phone)
          * @param {AppUser} user
          * @param {'email'|'phone'} field
+         * @returns {Promise<void>}
          */
         async revealField(user, field) {
             if (!user) return;
@@ -159,7 +164,9 @@ window.initApp = function (initialData) {
         },
 
         /**
+         * Copy value to clipboard
          * @param {string} value
+         * @returns {Promise<void>}
          */
         async copyValue(value) {
             if (!value) return;
@@ -171,13 +178,18 @@ window.initApp = function (initialData) {
             }
         },
 
+        /**
+         * Close contact modal
+         */
         closeContact() {
             this.contactModalOpen = false;
             this.selectedContact = null;
         },
 
         /**
+         * Share contact information
          * @param {AppUser|null} user
+         * @returns {Promise<void>}
          */
         async shareContact(user) {
             if (!user) return;
@@ -200,7 +212,9 @@ window.initApp = function (initialData) {
         },
 
         /**
+         * Copy text to clipboard
          * @param {string} text 
+         * @returns {Promise<void>}
          */
         async copyToClipboard(text) {
             if (!text) return;
