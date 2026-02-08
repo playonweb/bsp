@@ -45,10 +45,11 @@ require_once __DIR__ . '/../config/csp.php';
   </div>
 
   <!-- Header -->
-  <nav class="top-0 z-30 bg-black/60 backdrop-blur-2xl border-b border-white/10 px-4 sm:px-8 py-4">
+  <nav data-testid="header-nav"
+    class="top-0 z-30 bg-black/60 backdrop-blur-2xl border-b border-white/10 px-4 sm:px-8 py-4">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-4 group cursor-pointer">
-        <a href="/">
+        <a href="/" data-testid="logo-link">
           <div
             class="w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform duration-300">
             <img src="/favicon.ico" alt="Logo" class="w-6 h-6 object-contain invert">
@@ -61,11 +62,11 @@ require_once __DIR__ . '/../config/csp.php';
       </div>
 
       <div class="flex items-center gap-1 transition-all">
-        <a href="https://github.com/rahuldhole"
+        <a href="https://github.com/rahuldhole" data-testid="github-link"
           class="px-3 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
           <i class="pi pi-github text-[10px] sm:text-xs"></i> Github
         </a>
-        <a href="/docs/index.php"
+        <a href="/docs/index.php" data-testid="docs-link"
           class="px-3 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition-all flex items-center gap-2">
           <i class="pi pi-file text-[10px] sm:text-xs"></i> Docs
         </a>
@@ -77,7 +78,7 @@ require_once __DIR__ . '/../config/csp.php';
     <?= $content ?>
   </main>
 
-  <footer
+  <footer data-testid="footer"
     class="mt-auto py-10 text-center text-neutral-600 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em]">
     &copy; <?= date('Y') ?> Alink
   </footer>

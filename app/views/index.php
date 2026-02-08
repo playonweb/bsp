@@ -18,7 +18,8 @@ $initialUsers = $users ?? [];
 <div @click="closeDropdowns" v-cloak class="font-sans antialiased text-slate-200 selection:bg-blue-500/30">
 
 	<!-- Global Error Toast -->
-	<div v-if="globalError" class="fixed top-6 right-6 z-[100] max-w-sm w-full animate-fade-in">
+	<div v-if="globalError" data-testid="global-error-toast"
+		class="fixed top-6 right-6 z-[100] max-w-sm w-full animate-fade-in">
 		<div
 			class="bg-red-500/10 backdrop-blur-xl border border-red-500/20 text-red-200 px-4 py-3 rounded-2xl shadow-2xl flex items-start gap-3">
 			<i class="pi pi-exclamation-circle text-xl mt-0.5 text-red-400"></i>
@@ -49,7 +50,7 @@ $initialUsers = $users ?? [];
 			</div>
 
 			<!-- Close Button -->
-			<button @click="closeContact()"
+			<button @click="closeContact()" data-testid="contact-modal-close"
 				class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-500 hover:text-white transition-all">
 				<i class="pi pi-times"></i>
 			</button>
@@ -72,7 +73,8 @@ $initialUsers = $users ?? [];
 
 			<!-- QR Code Section -->
 			<div class="mt-10 flex justify-center">
-				<div id="qrcode" class="p-4 bg-white/5 rounded-3xl border border-white/10 shadow-inner group relative">
+				<div id="qrcode" data-testid="qr-code-container"
+					class="p-4 bg-white/5 rounded-3xl border border-white/10 shadow-inner group relative">
 					<div
 						class="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl blur-xl">
 					</div>
@@ -99,7 +101,7 @@ $initialUsers = $users ?? [];
 					</div>
 				</div>
 
-				<button @click="shareContact(selectedContact)"
+				<button @click="shareContact(selectedContact)" data-testid="share-contact-btn"
 					class="w-full py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-xl shadow-blue-600/20 flex items-center justify-center gap-3 transition-all active:scale-[0.98]">
 					<i class="pi pi-share-alt"></i>
 					Share Digital Card
@@ -124,7 +126,7 @@ $initialUsers = $users ?? [];
 
 	<!-- FAB - Mobile Only -->
 	<div class="fixed bottom-6 right-6 z-30" v-if="!formVisible">
-		<button @click.stop="toggleForm()"
+		<button @click.stop="toggleForm()" data-testid="fab-add-contact"
 			class="w-14 h-14 bg-blue-600 hover:bg-blue-500 active:scale-95 rounded-full flex items-center justify-center shadow-lg shadow-blue-600/40 text-white transition-all duration-200">
 			<i class="pi pi-plus text-xl"></i>
 		</button>
@@ -150,6 +152,7 @@ $initialUsers = $users ?? [];
 				<i
 					class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 transition-colors text-sm z-10"></i>
 				<input type="text" v-model="searchQuery" @input="handleSearch" placeholder="Search members by city..."
+					data-testid="search-input"
 					class="w-full bg-black/20 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 focus:bg-black/40 transition-all">
 				<div v-if="loading" class="absolute right-4 top-1/2 -translate-y-1/2 z-10">
 					<i class="pi pi-spin pi-spinner text-blue-500 text-xs"></i>
@@ -176,7 +179,7 @@ $initialUsers = $users ?? [];
 
 					<div class="p-8 sm:p-12">
 						<!-- Close Button -->
-						<button @click="closeForm()"
+						<button @click="closeForm()" data-testid="form-modal-close"
 							class="absolute top-8 right-8 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all border border-white/5">
 							<i class="pi pi-times"></i>
 						</button>
@@ -199,7 +202,7 @@ $initialUsers = $users ?? [];
 									<i
 										class="pi pi-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 transition-colors"></i>
 									<input v-model="newUser.name" @blur="validateField('name')" type="text"
-										placeholder="e.g. Jonathan Ive"
+										data-testid="form-input-name" placeholder="e.g. Jonathan Ive"
 										class="w-full bg-black/40 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder-slate-600"
 										:class="{'border-red-500/50 focus:ring-red-500/10': errors.name}">
 								</div>
@@ -215,7 +218,7 @@ $initialUsers = $users ?? [];
 									<i
 										class="pi pi-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 transition-colors"></i>
 									<input v-model="newUser.email" @blur="validateField('email')" type="email"
-										placeholder="john@example.com"
+										data-testid="form-input-email" placeholder="john@example.com"
 										class="w-full bg-black/40 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder-slate-600"
 										:class="{'border-red-500/50 focus:ring-red-500/10': errors.email}">
 								</div>
@@ -231,7 +234,7 @@ $initialUsers = $users ?? [];
 									<i
 										class="pi pi-map-marker absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 transition-colors"></i>
 									<input v-model="newUser.city" @blur="validateField('city')" type="text"
-										placeholder="e.g. Cupertino"
+										data-testid="form-input-city" placeholder="e.g. Cupertino"
 										class="w-full bg-black/40 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder-slate-600"
 										:class="{'border-red-500/50 focus:ring-red-500/10': errors.city}">
 								</div>
@@ -247,7 +250,7 @@ $initialUsers = $users ?? [];
 									<i
 										class="pi pi-phone absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 transition-colors"></i>
 									<input v-model="newUser.phone" @blur="validateField('phone')" type="tel"
-										placeholder="+1 (555) 000-0000"
+										data-testid="form-input-phone" placeholder="+1 (555) 000-0000"
 										class="w-full bg-black/40 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-sm text-white focus:outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder-slate-600"
 										:class="{'border-red-500/50 focus:ring-red-500/10': errors.phone}">
 								</div>
@@ -256,12 +259,12 @@ $initialUsers = $users ?? [];
 							</div>
 							<!-- Terms & Conditions -->
 							<div>
-								<input type="checkbox" v-model="terms" required>
+								<input type="checkbox" v-model="terms" required data-testid="form-terms-checkbox">
 								I agree to the <a href="/docs/index.php?page=terms#terms" class="text-blue-400">Terms &
 									Conditions</a>
 							</div>
 
-							<button type="submit" :disabled="submitting"
+							<button type="submit" :disabled="submitting" data-testid="form-submit-btn"
 								class="w-full py-5 mt-6 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-2xl shadow-blue-500/20 flex items-center justify-center gap-3 transition-all transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
 								<i v-if="submitting" class="pi pi-spin pi-spinner"></i>
 								<span v-else>Get Your Digital Card</span>
@@ -280,7 +283,7 @@ $initialUsers = $users ?? [];
 
 				<!-- Grid Layout -->
 				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-					<div v-for="user in users" :key="user.id"
+					<div v-for="user in users" :key="user.id" data-testid="contact-card"
 						class="bg-slate-800/30 border border-white/10 rounded-3xl p-6 backdrop-blur-xl hover:bg-slate-800/50 transition-colors group">
 
 						<div class="flex items-start justify-between">
@@ -302,7 +305,7 @@ $initialUsers = $users ?? [];
 							</div>
 						</div>
 
-						<button @click.stop="viewContact(user)"
+						<button @click.stop="viewContact(user)" data-testid="view-contact-btn"
 							class="mt-6 w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-300 hover:text-white transition-all flex items-center justify-center gap-2 border border-white/5 group-hover:border-white/10">
 							<i class="pi pi-id-card"></i>
 							View Contact
@@ -311,13 +314,13 @@ $initialUsers = $users ?? [];
 				</div>
 
 				<!-- Empty State -->
-				<div v-if="users.length === 0 && !loading"
+				<div v-if="users.length === 0 && !loading" data-testid="empty-state"
 					class="bg-slate-800/30 border border-white/10 rounded-3xl p-12 text-center backdrop-blur-xl">
 					<div class="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
 						<i class="pi pi-search text-3xl text-slate-600"></i>
 					</div>
 					<p class="text-slate-400 font-medium">No members found matching your search.</p>
-					<button @click="searchQuery = ''; handleSearch()"
+					<button @click="searchQuery = ''; handleSearch()" data-testid="clear-search-btn"
 						class="mt-4 text-blue-400 hover:text-blue-300 text-sm font-bold transition-colors">
 						Clear Filters
 					</button>
@@ -326,7 +329,7 @@ $initialUsers = $users ?? [];
 				<!-- Pagination / Load More -->
 				<div class="mt-8 flex justify-center" v-if="hasMore || loadingMore">
 					<div id="scroll-sentinel"></div>
-					<button @click="loadMore()" :disabled="loadingMore"
+					<button @click="loadMore()" :disabled="loadingMore" data-testid="load-more-btn"
 						class="px-8 py-3 rounded-full border border-white/10 bg-white/5 text-xs font-bold text-slate-300 uppercase tracking-wider hover:bg-white/10 hover:scale-105 active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:scale-100 flex items-center gap-2 shadow-lg group">
 						<i v-if="loadingMore" class="pi pi-spin pi-spinner"></i>
 						<span v-else>Load More Results</span>

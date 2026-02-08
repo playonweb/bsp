@@ -58,16 +58,16 @@ if (count($nameParts) > 1) {
                             Email Address
                         </span>
                         <div class="flex gap-2">
-                            <button onclick="copyValue('email')"
+                            <button onclick="copyValue('email')" data-testid="card-copy-email"
                                 class="p-1.5 text-slate-500 hover:text-white transition-colors cursor-pointer rounded-lg hover:bg-white/5"
                                 title="Copy">
                                 <i class="pi pi-copy text-sm"></i>
                             </button>
-                            <button onclick="openMail()"
+                            <button onclick="openMail()" data-testid="card-email-action"
                                 class="cursor-pointer bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all shadow-lg shadow-blue-500/20 active:scale-95">Mail</button>
                         </div>
                     </div>
-                    <div id="email" onclick="reveal('email')"
+                    <div id="email" onclick="reveal('email')" data-testid="card-email-reveal"
                         class="text-[14px] text-slate-400 cursor-pointer font-mono bg-black/40 p-3 rounded-xl border border-dashed border-white/10 text-center transition-all hover:border-blue-500/30 hover:bg-black/60 group-hover:text-slate-300">
                         click to reveal email
                     </div>
@@ -83,16 +83,16 @@ if (count($nameParts) > 1) {
                             Phone Number
                         </span>
                         <div class="flex gap-2">
-                            <button onclick="copyValue('phone')"
+                            <button onclick="copyValue('phone')" data-testid="card-copy-phone"
                                 class="p-1.5 text-slate-500 hover:text-white transition-colors cursor-pointer rounded-lg hover:bg-white/5"
                                 title="Copy">
                                 <i class="pi pi-copy text-sm"></i>
                             </button>
-                            <button onclick="openTel()"
+                            <button onclick="openTel()" data-testid="card-phone-action"
                                 class="cursor-pointer bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all shadow-lg shadow-emerald-500/20 active:scale-95">Call</button>
                         </div>
                     </div>
-                    <div id="phone" onclick="reveal('phone')"
+                    <div id="phone" onclick="reveal('phone')" data-testid="card-phone-reveal"
                         class="text-[14px] text-slate-400 cursor-pointer font-mono bg-black/40 p-3 rounded-xl border border-dashed border-white/10 text-center transition-all hover:border-emerald-500/30 hover:bg-black/60 group-hover:text-slate-300">
                         click to reveal phone
                     </div>

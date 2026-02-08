@@ -1,0 +1,224 @@
+name: E2E Tests
+
+on:
+  # push:
+  #   branches: [main]
+  # pull_request:
+  #   branches: [main]
+  workflow_dispatch:
+
+env:
+  APP_PORT: 8080
+
+jobs:
+  e2e-chrome:
+    name: E2E Tests (Chrome)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up environment variables
+        run: |
+          cp env.example .env
+          echo "DB_HOST=db" >> .env
+          echo "DB_PORT=3306" >> .env
+          echo "DB_NAME=alink" >> .env
+          echo "DB_USER=alink_user" >> .env
+          echo "DB_PASS=secure_password_123" >> .env
+
+      - name: Start application with Docker Compose
+        run: |
+          docker compose -f .setup/docker/docker-compose.yaml up -d --build
+        env:
+          COMPOSE_PROJECT_NAME: alink-e2e-test
+
+      - name: Wait for application to be healthy
+        run: |
+          echo "Waiting for application to be ready..."
+          timeout=120
+          elapsed=0
+          interval=2
+          
+          while [ $elapsed -lt $timeout ]; do
+            if curl -f http://localhost:${{ env.APP_PORT }}/healthz.php 2>/dev/null; then
+              echo "✓ Application is healthy!"
+              exit 0
+            fi
+            echo "Waiting... ($elapsed seconds elapsed)"
+            sleep $interval
+            elapsed=$((elapsed + interval))
+          done
+          
+          echo "✗ Application failed to become healthy within ${timeout}s"
+          docker compose -f .setup/docker/docker-compose.yaml logs app
+          exit 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Install Selenium SIDE Runner
+        run: |
+          npm install -g selenium-side-runner@4.0.0-alpha.38
+
+      - name: Install ChromeDriver
+        uses: nanasess/setup-chromedriver@v2
+
+      - name: Verify ChromeDriver installation
+        run: |
+          chromedriver --version
+          which chromedriver
+
+      - name: Run E2E Tests
+        run: |
+          selenium-side-runner \
+            --server http://localhost:${{ env.APP_PORT }} \
+            --base-url http://localhost:${{ env.APP_PORT }} \
+            --output-directory ./test-results \
+            --output-format junit \
+            --force \
+            tests/e2e/test-suite.side
+        continue-on-error: true
+        id: e2e_tests
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-results-chrome
+          path: |
+            test-results/
+            *.log
+          retention-days: 30
+
+      - name: Publish Test Report
+        if: always()
+        uses: mikepenz/action-junit-report@v4
+        with:
+          report_paths: 'test-results/*.xml'
+          check_name: 'E2E Test Results (Chrome)'
+          fail_on_failure: true
+          detailed_summary: true
+          include_passed: true
+
+      - name: Capture application logs on failure
+        if: failure()
+        run: |
+          echo "=== Application Logs ==="
+          docker compose -f .setup/docker/docker-compose.yaml logs app
+          echo "=== Database Logs ==="
+          docker compose -f .setup/docker/docker-compose.yaml logs db
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker compose -f .setup/docker/docker-compose.yaml down -v
+
+      - name: Fail job if tests failed
+        if: steps.e2e_tests.outcome == 'failure'
+        run: exit 1
+
+  e2e-firefox:
+    name: E2E Tests (Firefox)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Run Firefox tests only on main branch to save CI time
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up environment variables
+        run: |
+          cp env.example .env
+          echo "DB_HOST=db" >> .env
+          echo "DB_PORT=3306" >> .env
+          echo "DB_NAME=alink" >> .env
+          echo "DB_USER=alink_user" >> .env
+          echo "DB_PASS=secure_password_123" >> .env
+
+      - name: Start application with Docker Compose
+        run: |
+          docker compose -f .setup/docker/docker-compose.yaml up -d --build
+        env:
+          COMPOSE_PROJECT_NAME: alink-e2e-test-ff
+
+      - name: Wait for application to be healthy
+        run: |
+          echo "Waiting for application to be ready..."
+          timeout=120
+          elapsed=0
+          interval=2
+          
+          while [ $elapsed -lt $timeout ]; do
+            if curl -f http://localhost:${{ env.APP_PORT }}/healthz.php 2>/dev/null; then
+              echo "✓ Application is healthy!"
+              exit 0
+            fi
+            echo "Waiting... ($elapsed seconds elapsed)"
+            sleep $interval
+            elapsed=$((elapsed + interval))
+          done
+          
+          echo "✗ Application failed to become healthy within ${timeout}s"
+          docker compose -f .setup/docker/docker-compose.yaml logs app
+          exit 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Selenium SIDE Runner
+        run: |
+          npm install -g selenium-side-runner@4.0.0-alpha.38
+
+      - name: Install GeckoDriver (Firefox)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y firefox-geckodriver
+
+      - name: Run E2E Tests (Firefox)
+        run: |
+          selenium-side-runner \
+            --server http://localhost:${{ env.APP_PORT }} \
+            --base-url http://localhost:${{ env.APP_PORT }} \
+            --output-directory ./test-results \
+            --output-format junit \
+            --force \
+            -c "goog:chromeOptions.binary=/usr/bin/firefox" \
+            tests/e2e/test-suite.side
+        continue-on-error: true
+        id: e2e_tests
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-results-firefox
+          path: test-results/
+          retention-days: 30
+
+      - name: Publish Test Report
+        if: always()
+        uses: mikepenz/action-junit-report@v4
+        with:
+          report_paths: 'test-results/*.xml'
+          check_name: 'E2E Test Results (Firefox)'
+          fail_on_failure: true
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker compose -f .setup/docker/docker-compose.yaml down -v
+
+      - name: Fail job if tests failed
+        if: steps.e2e_tests.outcome == 'failure'
+        run: exit 1

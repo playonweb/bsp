@@ -56,6 +56,27 @@ tasks:
       - task: down
       - task: up
 
+  test:
+    desc: Run E2E tests locally (Chrome - requires matching ChromeDriver)
+    cmds:
+      - selenium-side-runner --base-url http://localhost:8080 -c "browserName=chrome" tests/e2e/test-suite.side
+
+  test:firefox:
+    desc: Run E2E tests locally (Firefox)
+    cmds:
+      - selenium-side-runner --base-url http://localhost:8080 -c "browserName=firefox" tests/e2e/test-suite.side
+
+  test:headless:
+    desc: Run E2E tests in headless mode (Firefox)
+    cmds:
+      - selenium-side-runner --base-url http://localhost:8080 -c "browserName=firefox moz:firefoxOptions.args=[-headless]" tests/e2e/test-suite.side
+
+  test:report:
+    desc: Run E2E tests and generate JSON report
+    cmds:
+      - mkdir -p test-results
+      - selenium-side-runner --base-url http://localhost:8080 -c "browserName=chrome" --output-directory=test-results tests/e2e/test-suite.side
+
   default:
     desc: Show available tasks
     cmds:

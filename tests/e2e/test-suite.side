@@ -1,0 +1,475 @@
+{
+  "id": "alink-e2e-tests",
+  "version": "2.0",
+  "name": "Alink E2E Test Suite",
+  "url": "http://localhost:8080",
+  "tests": [
+    {
+      "id": "homepage-load",
+      "name": "01 - Homepage Load Test",
+      "commands": [
+        {
+          "id": "1",
+          "command": "open",
+          "target": "/",
+          "value": ""
+        },
+        {
+          "id": "2",
+          "command": "assertTitle",
+          "target": "Alink",
+          "value": ""
+        },
+        {
+          "id": "3",
+          "command": "assertElementPresent",
+          "target": "css=[data-testid='header-nav']",
+          "value": ""
+        },
+        {
+          "id": "4",
+          "command": "assertElementPresent",
+          "target": "css=[data-testid='logo-link']",
+          "value": ""
+        },
+        {
+          "id": "5",
+          "command": "assertElementPresent",
+          "target": "css=[data-testid='github-link']",
+          "value": ""
+        },
+        {
+          "id": "6",
+          "command": "assertElementPresent",
+          "target": "css=[data-testid='docs-link']",
+          "value": ""
+        },
+        {
+          "id": "7",
+          "command": "assertElementPresent",
+          "target": "css=[data-testid='search-input']",
+          "value": ""
+        },
+        {
+          "id": "8",
+          "command": "assertElementPresent",
+          "target": "css=[data-testid='fab-add-contact']",
+          "value": ""
+        },
+        {
+          "id": "9",
+          "command": "assertElementPresent",
+          "target": "css=[data-testid='footer']",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "user-registration",
+      "name": "02 - User Registration Flow",
+      "commands": [
+        {
+          "id": "1",
+          "command": "open",
+          "target": "/",
+          "value": ""
+        },
+        {
+          "id": "2",
+          "command": "click",
+          "target": "css=[data-testid='fab-add-contact']",
+          "value": ""
+        },
+        {
+          "id": "3",
+          "command": "pause",
+          "target": "500",
+          "value": ""
+        },
+        {
+          "id": "4",
+          "command": "assertElementPresent",
+          "target": "css=[data-testid='form-input-name']",
+          "value": ""
+        },
+        {
+          "id": "5",
+          "command": "sendKeys",
+          "target": "css=[data-testid='form-input-name']",
+          "value": "Test User"
+        },
+        {
+          "id": "6",
+          "command": "sendKeys",
+          "target": "css=[data-testid='form-input-email']",
+          "value": "test.user@example.com"
+        },
+        {
+          "id": "7",
+          "command": "sendKeys",
+          "target": "css=[data-testid='form-input-city']",
+          "value": "San Francisco"
+        },
+        {
+          "id": "8",
+          "command": "sendKeys",
+          "target": "css=[data-testid='form-input-phone']",
+          "value": "+1 (555) 123-4567"
+        },
+        {
+          "id": "9",
+          "command": "click",
+          "target": "css=[data-testid='form-terms-checkbox']",
+          "value": ""
+        },
+        {
+          "id": "10",
+          "command": "click",
+          "target": "css=[data-testid='form-submit-btn']",
+          "value": ""
+        },
+        {
+          "id": "11",
+          "command": "pause",
+          "target": "2000",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "search-functionality",
+      "name": "03 - Search by City",
+      "commands": [
+        {
+          "id": "1",
+          "command": "open",
+          "target": "/",
+          "value": ""
+        },
+        {
+          "id": "2",
+          "command": "assertElementPresent",
+          "target": "css=[data-testid='contact-card']",
+          "value": ""
+        },
+        {
+          "id": "3",
+          "command": "click",
+          "target": "css=[data-testid='search-input']",
+          "value": ""
+        },
+        {
+          "id": "4",
+          "command": "sendKeys",
+          "target": "css=[data-testid='search-input']",
+          "value": "San"
+        },
+        {
+          "id": "5",
+          "command": "pause",
+          "target": "1000",
+          "value": ""
+        },
+        {
+          "id": "6",
+          "command": "assertElementPresent",
+          "target": "css=[data-testid='contact-card']",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "clear-search",
+      "name": "04 - Clear Search Filter",
+      "commands": [
+        {
+          "id": "1",
+          "command": "open",
+          "target": "/",
+          "value": ""
+        },
+        {
+          "id": "2",
+          "command": "sendKeys",
+          "target": "css=[data-testid='search-input']",
+          "value": "NonExistentCity123"
+        },
+        {
+          "id": "3",
+          "command": "pause",
+          "target": "1000",
+          "value": ""
+        },
+        {
+          "id": "4",
+          "command": "assertElementPresent",
+          "target": "css=[data-testid='empty-state']",
+          "value": ""
+        },
+        {
+          "id": "5",
+          "command": "click",
+          "target": "css=[data-testid='clear-search-btn']",
+          "value": ""
+        },
+        {
+          "id": "6",
+          "command": "pause",
+          "target": "1000",
+          "value": ""
+        },
+        {
+          "id": "7",
+          "command": "assertElementPresent",
+          "target": "css=[data-testid='contact-card']",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "view-contact-modal",
+      "name": "05 - View Contact Modal",
+      "commands": [
+        {
+          "id": "1",
+          "command": "open",
+          "target": "/",
+          "value": ""
+        },
+        {
+          "id": "2",
+          "command": "pause",
+          "target": "500",
+          "value": ""
+        },
+        {
+          "id": "3",
+          "command": "click",
+          "target": "css=[data-testid='view-contact-btn']",
+          "value": ""
+        },
+        {
+          "id": "4",
+          "command": "pause",
+          "target": "500",
+          "value": ""
+        },
+        {
+          "id": "5",
+          "command": "assertElementPresent",
+          "target": "css=[data-testid='qr-code-container']",
+          "value": ""
+        },
+        {
+          "id": "6",
+          "command": "assertElementPresent",
+          "target": "css=[data-testid='share-contact-btn']",
+          "value": ""
+        },
+        {
+          "id": "7",
+          "command": "assertElementPresent",
+          "target": "css=[data-testid='contact-modal-close']",
+          "value": ""
+        },
+        {
+          "id": "8",
+          "command": "click",
+          "target": "css=[data-testid='contact-modal-close']",
+          "value": ""
+        },
+        {
+          "id": "9",
+          "command": "pause",
+          "target": "500",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "contact-reveal",
+      "name": "06 - Contact Card Reveal Functionality",
+      "commands": [
+        {
+          "id": "1",
+          "comment": "This test requires navigating to a specific user card page using the routing scheme",
+          "command": "open",
+          "target": "/1",
+          "value": ""
+        },
+        {
+          "id": "2",
+          "command": "pause",
+          "target": "1000",
+          "value": ""
+        },
+        {
+          "id": "3",
+          "command": "assertElementPresent",
+          "target": "css=[data-testid='card-email-reveal']",
+          "value": ""
+        },
+        {
+          "id": "4",
+          "command": "assertText",
+          "target": "css=[data-testid='card-email-reveal']",
+          "value": "click to reveal email"
+        },
+        {
+          "id": "5",
+          "command": "click",
+          "target": "css=[data-testid='card-email-reveal']",
+          "value": ""
+        },
+        {
+          "id": "6",
+          "command": "pause",
+          "target": "1500",
+          "value": ""
+        },
+        {
+          "id": "7",
+          "command": "assertElementPresent",
+          "target": "css=[data-testid='card-phone-reveal']",
+          "value": ""
+        },
+        {
+          "id": "8",
+          "command": "assertText",
+          "target": "css=[data-testid='card-phone-reveal']",
+          "value": "click to reveal phone"
+        },
+        {
+          "id": "9",
+          "command": "click",
+          "target": "css=[data-testid='card-phone-reveal']",
+          "value": ""
+        },
+        {
+          "id": "10",
+          "command": "pause",
+          "target": "1500",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "navigation-tests",
+      "name": "07 - Navigation Links",
+      "commands": [
+        {
+          "id": "1",
+          "command": "open",
+          "target": "/",
+          "value": ""
+        },
+        {
+          "id": "2",
+          "command": "assertElementPresent",
+          "target": "css=[data-testid='logo-link']",
+          "value": ""
+        },
+        {
+          "id": "3",
+          "command": "click",
+          "target": "css=[data-testid='logo-link']",
+          "value": ""
+        },
+        {
+          "id": "4",
+          "command": "assertTitle",
+          "target": "Alink",
+          "value": ""
+        },
+        {
+          "id": "5",
+          "command": "assertElementPresent",
+          "target": "css=[data-testid='docs-link']",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "form-modal-close",
+      "name": "08 - Form Modal Close Button",
+      "commands": [
+        {
+          "id": "1",
+          "command": "open",
+          "target": "/",
+          "value": ""
+        },
+        {
+          "id": "2",
+          "command": "click",
+          "target": "css=[data-testid='fab-add-contact']",
+          "value": ""
+        },
+        {
+          "id": "3",
+          "command": "pause",
+          "target": "500",
+          "value": ""
+        },
+        {
+          "id": "4",
+          "command": "assertElementPresent",
+          "target": "css=[data-testid='form-modal-close']",
+          "value": ""
+        },
+        {
+          "id": "5",
+          "command": "click",
+          "target": "css=[data-testid='form-modal-close']",
+          "value": ""
+        },
+        {
+          "id": "6",
+          "command": "pause",
+          "target": "500",
+          "value": ""
+        },
+        {
+          "id": "7",
+          "command": "assertElementPresent",
+          "target": "css=[data-testid='fab-add-contact']",
+          "value": ""
+        }
+      ]
+    }
+  ],
+  "suites": [
+    {
+      "id": "full-suite",
+      "name": "Full E2E Test Suite",
+      "persistSession": false,
+      "parallel": false,
+      "timeout": 300,
+      "tests": [
+        "homepage-load",
+        "user-registration",
+        "search-functionality",
+        "clear-search",
+        "view-contact-modal",
+        "contact-reveal",
+        "navigation-tests",
+        "form-modal-close"
+      ]
+    },
+    {
+      "id": "smoke-suite",
+      "name": "Smoke Test Suite",
+      "persistSession": false,
+      "parallel": false,
+      "timeout": 120,
+      "tests": [
+        "homepage-load",
+        "navigation-tests"
+      ]
+    }
+  ],
+  "urls": [
+    "http://localhost:8080"
+  ],
+  "plugins": []
+}
