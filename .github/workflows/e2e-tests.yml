@@ -1,4 +1,3 @@
-# TODO: Fix workflow and 
 # WORKAROUND: Use Selenium IDE locally and import test-suit.side as a project to run them all.
 name: E2E Tests
 
@@ -19,11 +18,6 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      - name: Abort e2e test is not ready yet
-        run: |
-          echo "Aborting! e2e test CI is not ready yet.  WORKAROUND: Use Selenium IDE locally and import test-suit.side as a project to run them all."
-          exit 1
-
       - name: Checkout code
         uses: actions/checkout@v4
 
