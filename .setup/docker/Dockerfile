@@ -99,11 +99,11 @@ ARG WORKING_DIR
 
 
 # PHP hardening
-RUN if [ "${PHP_ENV}" = "production" ]; then \
-  echo "opcache.enable=1"; \
-  echo "opcache.validate_timestamps=0"; \
-  echo "expose_php=0"; \
-fi > /usr/local/etc/php/conf.d/prod.ini
+# RUN if [ "${PHP_ENV}" = "production" ]; then \
+#   echo "opcache.enable=1"; \
+#   echo "opcache.validate_timestamps=0"; \
+#   echo "expose_php=0"; \
+# fi > /usr/local/etc/php/conf.d/prod.ini
 
 # Copy app
 COPY --chown=www-data:www-data app/ .
