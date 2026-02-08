@@ -64,14 +64,14 @@ tasks:
       - task: test:firefox:headless
 
   test:chrome:
-    desc: Run E2E tests locally (Chrome - requires matching ChromeDriver)
+    desc: Run E2E tests locally (Chrome - requires matching ChromeDriver binary (https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json) and `npm install -g chromedriver@<version>`)
     cmds:
       - selenium-side-runner --base-url http://localhost:8080 -c "browserName=chrome" {{.TEST_SUITE}}
 
   test:chrome:headless:
     desc: Run E2E tests in headless mode (Chrome)
     cmds:
-      - selenium-side-runner --base-url http://localhost:8080 -c "goog:chromeOptions.args=[disable-infobars, headless]" {{.TEST_SUITE}}
+      - selenium-side-runner --base-url http://localhost:8080 -c "browserName=chrome goog:chromeOptions.args=[disable-infobars, headless]" {{.TEST_SUITE}}
 
   test:firefox:
     desc: Run E2E tests locally (Firefox)
