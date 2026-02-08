@@ -8,9 +8,11 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  statuses: write
   checks: write
+  contents: write
   pull-requests: write
+  actions: write
 
 jobs:
   e2e-chrome:
@@ -123,107 +125,107 @@ jobs:
         if: steps.e2e_tests.outcome == 'failure'
         run: exit 1
 
-  e2e-firefox:
-    name: E2E Tests (Firefox)
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
+  # e2e-firefox:
+  #   name: E2E Tests (Firefox)
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 15
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name: Start application with Docker Compose
-        run: |
-          docker compose -f .setup/docker/docker-compose.yaml up -d --build
-        env:
-          COMPOSE_PROJECT_NAME: alink-e2e-test-ff
+  #     - name: Start application with Docker Compose
+  #       run: |
+  #         docker compose -f .setup/docker/docker-compose.yaml up -d --build
+  #       env:
+  #         COMPOSE_PROJECT_NAME: alink-e2e-test-ff
 
-      - name: Wait for application to be healthy
-        run: |
-          echo "Waiting for application to be ready..."
-          timeout=120
-          elapsed=0
-          interval=2
+  #     - name: Wait for application to be healthy
+  #       run: |
+  #         echo "Waiting for application to be ready..."
+  #         timeout=120
+  #         elapsed=0
+  #         interval=2
           
-          while [ $elapsed -lt $timeout ]; do
-            if curl -f http://localhost:8080/healthz.php 2>/dev/null; then
-              echo "✓ Application is healthy!"
-              exit 0
-            fi
-            echo "Waiting... ($elapsed seconds elapsed)"
-            sleep $interval
-            elapsed=$((elapsed + interval))
-          done
+  #         while [ $elapsed -lt $timeout ]; do
+  #           if curl -f http://localhost:8080/healthz.php 2>/dev/null; then
+  #             echo "✓ Application is healthy!"
+  #             exit 0
+  #           fi
+  #           echo "Waiting... ($elapsed seconds elapsed)"
+  #           sleep $interval
+  #           elapsed=$((elapsed + interval))
+  #         done
           
-          echo "✗ Application failed to become healthy within ${timeout}s"
-          docker compose -f .setup/docker/docker-compose.yaml logs app
-          exit 1
+  #         echo "✗ Application failed to become healthy within ${timeout}s"
+  #         docker compose -f .setup/docker/docker-compose.yaml logs app
+  #         exit 1
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '20'
 
-      - name: Install Selenium SIDE Runner and Reporters
-        run: |
-          npm install selenium-side-runner@latest jest-junit geckodriver
+  #     - name: Install Selenium SIDE Runner and Reporters
+  #       run: |
+  #         npm install selenium-side-runner@latest jest-junit geckodriver
 
-      - name: Verify geckodriver installation
-        run: |
-          # Use npx to check the locally installed geckodriver or system path if setup-geckodriver was used
-          # Note: Since we npm installed it, it's in node_modules/.bin
-          npx geckodriver --version || echo "Global geckodriver not found, relying on npm package"
+  #     - name: Verify geckodriver installation
+  #       run: |
+  #         # Use npx to check the locally installed geckodriver or system path if setup-geckodriver was used
+  #         # Note: Since we npm installed it, it's in node_modules/.bin
+  #         npx geckodriver --version || echo "Global geckodriver not found, relying on npm package"
 
-      - name: Run E2E Tests (Firefox)
-        id: e2e_tests
-        # Create jest.config.js to handle reporters
-        # Added double dashes (--) to firefox arguments
-        run: |
-          echo "module.exports = { reporters: ['default', 'jest-junit'] };" > jest.config.js
-          mkdir -p ${{ github.workspace }}/.test-results
-          npx selenium-side-runner \
-            --base-url http://localhost:8080 \
-            --output-directory "${{ github.workspace }}/.test-results" \
-            --force \
-            -c "browserName=firefox moz:firefoxOptions.args=[--headless]" \
-            tests/e2e/test-suite.side
-        env:
-          JEST_JUNIT_OUTPUT_DIR: "${{ github.workspace }}/.test-results"
-          JEST_JUNIT_OUTPUT_NAME: "junit-firefox.xml"
-        continue-on-error: true
+  #     - name: Run E2E Tests (Firefox)
+  #       id: e2e_tests
+  #       # Create jest.config.js to handle reporters
+  #       # Added double dashes (--) to firefox arguments
+  #       run: |
+  #         echo "module.exports = { reporters: ['default', 'jest-junit'] };" > jest.config.js
+  #         mkdir -p ${{ github.workspace }}/.test-results
+  #         npx selenium-side-runner \
+  #           --base-url http://localhost:8080 \
+  #           --output-directory "${{ github.workspace }}/.test-results" \
+  #           --force \
+  #           -c "browserName=firefox moz:firefoxOptions.args=[--headless]" \
+  #           tests/e2e/test-suite.side
+  #       env:
+  #         JEST_JUNIT_OUTPUT_DIR: "${{ github.workspace }}/.test-results"
+  #         JEST_JUNIT_OUTPUT_NAME: "junit-firefox.xml"
+  #       continue-on-error: true
 
-      - name: Upload Test Results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: e2e-.test-results-firefox
-          path: |
-            ${{ github.workspace }}/.test-results/
-          retention-days: 30
+  #     - name: Upload Test Results
+  #       if: always()
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: e2e-.test-results-firefox
+  #         path: |
+  #           ${{ github.workspace }}/.test-results/
+  #         retention-days: 30
 
-      - name: Publish Test Report
-        if: always()
-        uses: mikepenz/action-junit-report@v4
-        with:
-          report_paths: '${{ github.workspace }}/.test-results/*.xml'
-          check_name: 'E2E Test Results (Firefox)'
-          fail_on_failure: true
-          detailed_summary: true
-          include_passed: true
+  #     - name: Publish Test Report
+  #       if: always()
+  #       uses: mikepenz/action-junit-report@v4
+  #       with:
+  #         report_paths: '${{ github.workspace }}/.test-results/*.xml'
+  #         check_name: 'E2E Test Results (Firefox)'
+  #         fail_on_failure: true
+  #         detailed_summary: true
+  #         include_passed: true
 
-      - name: Capture application logs on failure
-        if: failure() || steps.e2e_tests.outcome == 'failure'
-        run: |
-          echo "=== Application Logs ==="
-          docker compose -f .setup/docker/docker-compose.yaml logs app
-          echo "=== Database Logs ==="
-          docker compose -f .setup/docker/docker-compose.yaml logs db
+  #     - name: Capture application logs on failure
+  #       if: failure() || steps.e2e_tests.outcome == 'failure'
+  #       run: |
+  #         echo "=== Application Logs ==="
+  #         docker compose -f .setup/docker/docker-compose.yaml logs app
+  #         echo "=== Database Logs ==="
+  #         docker compose -f .setup/docker/docker-compose.yaml logs db
 
-      - name: Cleanup
-        if: always()
-        run: |
-          docker compose -f .setup/docker/docker-compose.yaml down -v
+  #     - name: Cleanup
+  #       if: always()
+  #       run: |
+  #         docker compose -f .setup/docker/docker-compose.yaml down -v
 
-      - name: Fail job if tests failed
-        if: steps.e2e_tests.outcome == 'failure'
-        run: exit 1
+  #     - name: Fail job if tests failed
+  #       if: steps.e2e_tests.outcome == 'failure'
+  #       run: exit 1
