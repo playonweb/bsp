@@ -74,14 +74,17 @@ jobs:
         # Added double dashes (--) to chrome arguments (Critical for headless mode)
         # Use absolute path for output directory
         run: |
-          echo "module.exports = { reporters: ['default', 'jest-junit'] };" > jest.config.js
           mkdir -p ${{ github.workspace }}/.test-results
           npx selenium-side-runner \
             --base-url http://localhost:8080 \
             --output-directory "${{ github.workspace }}/.test-results" \
+            --reporters="default" --reporters="jest-junit" \
+            --detectOpenHandles --max-workers 1 \
             --force \
             -c "browserName=chrome goog:chromeOptions.args=[--headless,--no-sandbox,--disable-dev-shm-usage,--disable-gpu,--window-size=1920,1080]" \
             tests/e2e/test-suite.side
+          echo "=== Test Results Listing ==="
+          ls -la ${{ github.workspace }}/.test-results/
         env:
           JEST_JUNIT_OUTPUT_DIR: "${{ github.workspace }}/.test-results"
           JEST_JUNIT_OUTPUT_NAME: "junit-chrome.xml"
@@ -100,7 +103,7 @@ jobs:
         if: always()
         uses: mikepenz/action-junit-report@v4
         with:
-          report_paths: '${{ github.workspace }}/.test-results/*.xml'
+          report_paths: '${{ github.workspace }}/.test-results/**/*.xml'
           check_name: 'E2E Test Results (Chrome)'
           fail_on_failure: true
           detailed_summary: true
@@ -179,14 +182,17 @@ jobs:
         # Create jest.config.js to handle reporters
         # Added double dashes (--) to firefox arguments
         run: |
-          echo "module.exports = { reporters: ['default', 'jest-junit'] };" > jest.config.js
           mkdir -p ${{ github.workspace }}/.test-results
           npx selenium-side-runner \
             --base-url http://localhost:8080 \
             --output-directory "${{ github.workspace }}/.test-results" \
+            --reporters="default" --reporters="jest-junit" \
+            --detectOpenHandles --max-workers 1 \
             --force \
             -c "browserName=firefox moz:firefoxOptions.args=[--headless]" \
             tests/e2e/test-suite.side
+          echo "=== Test Results Listing ==="
+          ls -la ${{ github.workspace }}/.test-results/
         env:
           JEST_JUNIT_OUTPUT_DIR: "${{ github.workspace }}/.test-results"
           JEST_JUNIT_OUTPUT_NAME: "junit-firefox.xml"
@@ -205,7 +211,7 @@ jobs:
         if: always()
         uses: mikepenz/action-junit-report@v4
         with:
-          report_paths: '${{ github.workspace }}/.test-results/*.xml'
+          report_paths: '${{ github.workspace }}/.test-results/**/*.xml'
           check_name: 'E2E Test Results (Firefox)'
           fail_on_failure: true
           detailed_summary: true
