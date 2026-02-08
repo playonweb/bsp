@@ -120,8 +120,6 @@ jobs:
     name: E2E Tests (Firefox)
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    # Run Firefox tests only on main branch to save CI time
-    if: github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout code
@@ -159,16 +157,20 @@ jobs:
         with:
           node-version: '20'
 
-      # npm install -g geckodriver
-      - name: Install Selenium SIDE Runner
+      - name: Install Selenium SIDE Runner and geckodriver
         run: |
           npm install -g selenium-side-runner@4.0.0-alpha.38
-          npm install -g chromedriver
+          npm install -g geckodriver
 
-      - name: Run E2E Tests (Chrome)
+      - name: Verify geckodriver installation
+        run: |
+          geckodriver --version
+          which geckodriver
+
+      - name: Run E2E Tests (Firefox)
         run: |
           selenium-side-runner \
-            -c "browserName=chrome" \
+            -c "browserName=firefox" \
             --server http://localhost:8080 \
             --base-url http://localhost:8080 \
             --output-directory ./test-results \
@@ -183,7 +185,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: e2e-test-results-firefox
-          path: test-results/
+          path: |
+            test-results/
+            *.log
           retention-days: 30
 
       - name: Publish Test Report
@@ -191,8 +195,18 @@ jobs:
         uses: mikepenz/action-junit-report@v4
         with:
           report_paths: 'test-results/*.xml'
-          check_name: 'E2E Test Results'
+          check_name: 'E2E Test Results (Firefox)'
           fail_on_failure: true
+          detailed_summary: true
+          include_passed: true
+
+      - name: Capture application logs on failure
+        if: failure()
+        run: |
+          echo "=== Application Logs ==="
+          docker compose -f .setup/docker/docker-compose.yaml logs app
+          echo "=== Database Logs ==="
+          docker compose -f .setup/docker/docker-compose.yaml logs db
 
       - name: Cleanup
         if: always()
