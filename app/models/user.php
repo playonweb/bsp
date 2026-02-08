@@ -312,4 +312,27 @@ class User extends BaseModel
 			return $user->toJsonApi($reveal);
 		}, $users);
 	}
+
+	/**
+	 * Convert user to flat array for UI
+	 */
+	public function toFlatArray($reveal = false)
+	{
+		$email = $this->getEmail();
+		$phone = $this->getPhone();
+
+		if (!$reveal) {
+			$email = self::obfuscateEmail($email);
+			$phone = self::obfuscatePhone($phone);
+		}
+
+		return [
+			'id' => (string) $this->getId(),
+			'name' => htmlspecialchars($this->getName(), ENT_QUOTES, 'UTF-8'),
+			'email' => $email,
+			'city' => htmlspecialchars($this->getCity(), ENT_QUOTES, 'UTF-8'),
+			'phone' => $phone,
+			'created_at' => $this->getField('created_at')
+		];
+	}
 }

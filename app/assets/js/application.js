@@ -28,7 +28,12 @@ import { getUsers, createUser, getUser } from 'sdk';
  * @property {string} city
  * @property {string} [phone]
  * @property {string} [created_at]
+ * @property {boolean} [email_revealing]
+ * @property {boolean} [phone_revealing]
+ * @property {boolean} [email_revealed]
+ * @property {boolean} [phone_revealed]
  */
+
 
 /**
  * @typedef {Object} SDKResponse
@@ -64,7 +69,7 @@ window.initApp = function (initialData) {
 
         // Contact View State
         /** @type {AppUser|null} */
-        selectedContact: null,
+        selectedContact: initialData.users[0] || null,
         contactModalOpen: false,
 
         /**
@@ -113,26 +118,56 @@ window.initApp = function (initialData) {
          * @param {AppUser} user
          */
         async viewContact(user) {
-            this.selectedContact = user;
+            this.selectedContact = { ...user }; // Clone to avoid mutating list item directly if we want isolation
             this.contactModalOpen = true;
 
             // Generate share link
             const shareUrl = `${window.location.protocol}//${window.location.host}/${user.id}`;
             setTimeout(() => this.generateQRCode(shareUrl), 100);
+        },
+
+        /**
+         * @param {AppUser} user
+         * @param {'email'|'phone'} field
+         */
+        async revealField(user, field) {
+            if (!user) return;
+
+            // Mark as loading/revealing
+            if (field === 'email') user.email_revealing = true;
+            if (field === 'phone') user.phone_revealing = true;
 
             try {
                 /** @type {SDKResponse} */
                 // @ts-ignore
                 const res = await getUser(user.id, { reveal: true });
                 if (res.status === 200 && res.data && res.data.data) {
-                    const u = /** @type {UserResource} */ (res.data.data);
-                    this.selectedContact = {
-                        id: u.id,
-                        ...u.attributes
-                    };
+                    const u = res.data.data.attributes;
+                    // Update the specific field
+                    user[field] = u[field];
+
+                    if (field === 'email') user.email_revealed = true;
+                    if (field === 'phone') user.phone_revealed = true;
                 }
             } catch (err) {
-                console.error("Failed to reveal contact", err);
+                console.error(`Failed to reveal ${field}`, err);
+                this.globalError = 'Failed to reveal data. Please try again.';
+            } finally {
+                if (field === 'email') user.email_revealing = false;
+                if (field === 'phone') user.phone_revealing = false;
+            }
+        },
+
+        /**
+         * @param {string} value
+         */
+        async copyValue(value) {
+            if (!value) return;
+            try {
+                await navigator.clipboard.writeText(value);
+                // alert('Copied!'); // Or use a toast
+            } catch (err) {
+                console.error('Failed to copy', err);
             }
         },
 
@@ -362,9 +397,22 @@ window.initApp = function (initialData) {
     const app = createApp(appState);
     app.mount();
 
+    // Generate initial QR code if contact is pre-selected (standalone card view)
+    if (appState.selectedContact) {
+        const shareUrl = `${window.location.protocol}//${window.location.host}/${appState.selectedContact.id}`;
+        setTimeout(() => appState.generateQRCode(shareUrl), 100);
+    }
+
     window.addEventListener('resize', () => {
         appState.isMobile = window.innerWidth < 1024;
     });
 
     setTimeout(() => appState.initInfiniteScroll(), 100);
 };
+
+// Auto-initialize if data is pre-defined on window
+// @ts-ignore
+if (window.APP_INITIAL_DATA) {
+    // @ts-ignore
+    window.initApp(window.APP_INITIAL_DATA);
+}

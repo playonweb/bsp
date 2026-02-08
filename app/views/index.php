@@ -6,16 +6,12 @@ $initialUsers = $users ?? [];
 <!-- Initialize app with data -->
 <script>
 	// @ts-check
-	document.addEventListener('DOMContentLoaded', function () {
-		if (window.initApp) {
-			window.initApp({
-				users: <?= json_encode($initialUsers) ?>
-			});
-		}
-	});
+	window.APP_INITIAL_DATA = {
+		users: <?= json_encode($initialUsers) ?>
+	};
 </script>
 
-<div @click="closeDropdowns" v-cloak class="font-sans antialiased text-slate-200 selection:bg-blue-500/30">
+<div v-scope @click="closeDropdowns" v-cloak class="font-sans antialiased text-slate-200 selection:bg-blue-500/30">
 
 	<!-- Global Error Toast -->
 	<div v-if="globalError" data-testid="global-error-toast"
@@ -37,89 +33,9 @@ $initialUsers = $users ?? [];
 		<!-- Backdrop (Blur) -->
 		<div class="absolute inset-0 bg-black/80 backdrop-blur-xl"></div>
 
+
 		<!-- Card Container -->
-		<div class="relative glass-dark rounded-[2.5rem] p-6 sm:p-10 max-w-sm w-full shadow-2xl overflow-y-auto max-h-[90vh] animate-scale-in border border-white/10"
-			@click.stop> <!-- Prevents bubbling to backdrop and main div -->
-
-			<!-- Card Header Decoration -->
-			<div class="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">
-			</div>
-
-			<!-- Branding Watermark -->
-			<div class="absolute -right-8 -top-8 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl pointer-events-none">
-			</div>
-
-			<!-- Close Button -->
-			<button @click="closeContact()" data-testid="contact-modal-close"
-				class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-500 hover:text-white transition-all z-10">
-				<i class="pi pi-times"></i>
-			</button>
-
-			<div class="flex flex-col items-center text-center mt-2 sm:mt-4">
-				<!-- Avatar / Initials -->
-				<div
-					class="w-20 h-20 sm:w-24 sm:h-24 rounded-[2rem] bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10 flex items-center justify-center text-3xl font-black text-white shadow-2xl mb-4 sm:mb-6 transform hover:rotate-3 transition-transform">
-					{{ getInitials(selectedContact?.name ?? '') }}
-				</div>
-
-				<h3 class="text-2xl font-black text-white tracking-tight leading-tight">{{ selectedContact?.name ?? ''
-					}}</h3>
-				<div
-					class="flex items-center gap-2 text-blue-400 font-bold text-xs uppercase tracking-widest mt-2 bg-blue-400/10 px-3 py-1 rounded-full">
-					<i class="pi pi-map-marker text-[10px]"></i>
-					{{ selectedContact?.city ?? '' }}
-				</div>
-			</div>
-
-			<!-- QR Code Section -->
-			<div class="mt-6 sm:mt-10 flex justify-center">
-				<div id="qrcode" data-testid="qr-code-container"
-					class="p-4 bg-white/5 rounded-3xl border border-white/10 shadow-inner group relative">
-					<div
-						class="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl blur-xl">
-					</div>
-				</div>
-			</div>
-
-			<!-- Action Buttons -->
-			<div class="mt-6 sm:mt-10 space-y-3">
-				<div class="grid grid-cols-2 gap-3">
-					<a :href="'mailto:' + selectedContact?.email ?? ''"
-						class="flex flex-col items-center justify-center p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-blue-500/30 transition-all group">
-						<i class="pi pi-envelope text-lg text-blue-400 group-hover:scale-110 transition-transform"></i>
-						<span class="text-[10px] font-bold text-slate-400 mt-2 uppercase">Email</span>
-					</a>
-					<a v-if="selectedContact?.phone ?? ''" :href="'tel:' + selectedContact?.phone ?? ''"
-						class="flex flex-col items-center justify-center p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-emerald-500/30 transition-all group">
-						<i class="pi pi-phone text-lg text-emerald-400 group-hover:scale-110 transition-transform"></i>
-						<span class="text-[10px] font-bold text-slate-400 mt-2 uppercase">Call</span>
-					</a>
-					<div v-else
-						class="flex flex-col items-center justify-center p-4 rounded-2xl bg-white/5 border border-white/5 opacity-50">
-						<i class="pi pi-phone text-lg text-slate-600"></i>
-						<span class="text-[10px] font-bold text-slate-600 mt-2 uppercase">No Phone</span>
-					</div>
-				</div>
-
-				<button @click="shareContact(selectedContact)" data-testid="share-contact-btn"
-					class="w-full py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-xl shadow-blue-600/20 flex items-center justify-center gap-3 transition-all active:scale-[0.98]">
-					<i class="pi pi-share-alt"></i>
-					Share Digital Card
-				</button>
-			</div>
-
-			<!-- Branding Footer -->
-			<div class="mt-6 sm:mt-10 pt-4 sm:pt-6 border-t border-white/5 flex flex-col items-center gap-2">
-				<div class="flex items-center gap-2">
-					<div class="w-5 h-5 bg-blue-600 rounded-md flex items-center justify-center">
-						<img src="/favicon.ico" class="w-3 h-3 invert" />
-					</div>
-					<span class="text-[10px] font-black text-white uppercase tracking-tighter">Alink Digital</span>
-				</div>
-				<p class="text-[9px] text-slate-600 font-bold uppercase tracking-widest">Minimalist vCard • Fast &
-					Secure</p>
-			</div>
-		</div>
+		<?php include '_card.php'; ?>
 	</div>
 
 
