@@ -50,9 +50,9 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Selenium SIDE Runner
+      - name: Install Selenium SIDE Runner and Reporters
         run: |
-          npm install -g selenium-side-runner@4.0.0-alpha.38
+          npm install -g selenium-side-runner@4.0.0-alpha.38 jest-junit
 
       - name: Install ChromeDriver
         uses: nanasess/setup-chromedriver@v2
@@ -64,11 +64,17 @@ jobs:
 
       - name: Run E2E Tests
         run: |
+          mkdir -p .test-results
           selenium-side-runner \
-            --server http://localhost:8080 \
             --base-url http://localhost:8080 \
+            --output-directory ./.test-results \
+            --jest-options "--reporters=default --reporters=jest-junit" \
             --force \
-            tests/e2e/test-suite.side
+            -c "browserName=chrome goog:chromeOptions.args=[headless, no-sandbox, disable-dev-shm-usage, window-size=1920,1080]" \
+            tests/e2e/test-suite.side 2>&1 | tee e2e-chrome.log
+        env:
+          JEST_JUNIT_OUTPUT_DIR: "./.test-results"
+          JEST_JUNIT_OUTPUT_NAME: "junit-chrome.xml"
         continue-on-error: true
         id: e2e_tests
 
@@ -76,9 +82,9 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-test-results-chrome
+          name: e2e-.test-results-chrome
           path: |
-            test-results/
+            .test-results/
             *.log
           retention-days: 30
 
@@ -86,7 +92,7 @@ jobs:
         if: always()
         uses: mikepenz/action-junit-report@v4
         with:
-          report_paths: 'test-results/*.xml'
+          report_paths: '.test-results/*.xml'
           check_name: 'E2E Test Results (Chrome)'
           fail_on_failure: true
           detailed_summary: true
@@ -150,10 +156,9 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Selenium SIDE Runner and geckodriver
+      - name: Install Selenium SIDE Runner, Geckodriver and Reporters
         run: |
-          npm install -g selenium-side-runner@4.0.0-alpha.38
-          npm install -g geckodriver
+          npm install -g selenium-side-runner@4.0.0-alpha.38 geckodriver jest-junit
 
       - name: Verify geckodriver installation
         run: |
@@ -162,12 +167,17 @@ jobs:
 
       - name: Run E2E Tests (Firefox)
         run: |
+          mkdir -p .test-results
           selenium-side-runner \
-            -c "browserName=firefox" \
-            --server http://localhost:8080 \
             --base-url http://localhost:8080 \
+            --output-directory ./.test-results \
+            --jest-options "--reporters=default --reporters=jest-junit" \
             --force \
-            tests/e2e/test-suite.side
+            -c "browserName=firefox moz:firefoxOptions.args=[-headless]" \
+            tests/e2e/test-suite.side 2>&1 | tee e2e-firefox.log
+        env:
+          JEST_JUNIT_OUTPUT_DIR: "./.test-results"
+          JEST_JUNIT_OUTPUT_NAME: "junit-firefox.xml"
         continue-on-error: true
         id: e2e_tests
 
@@ -175,9 +185,9 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-test-results-firefox
+          name: e2e-.test-results-firefox
           path: |
-            test-results/
+            .test-results/
             *.log
           retention-days: 30
 
@@ -185,7 +195,7 @@ jobs:
         if: always()
         uses: mikepenz/action-junit-report@v4
         with:
-          report_paths: 'test-results/*.xml'
+          report_paths: '.test-results/*.xml'
           check_name: 'E2E Test Results (Firefox)'
           fail_on_failure: true
           detailed_summary: true
