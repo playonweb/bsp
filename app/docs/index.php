@@ -118,7 +118,7 @@ $render_page = $_GET["page"] ?? "";
 </head>
 
 <body>
-  <nav style="display: flex; justify-content: space-between; align-items: center; z-index: 0;">
+  <nav style="display: flex; justify-content: space-between; align-items: center; z-index: 10;">
     <a href="/" style="color: #c9d1d9; display: flex; align-items: center; gap: 0.5rem;">
       <img src=" /favicon.ico" alt="Logo" style="width: 20px; height: 20px; object-fit: contain; filter: invert(1);" />
       Alink
