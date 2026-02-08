@@ -20,15 +20,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up environment variables
-        run: |
-          cp env.example .env
-          echo "DB_HOST=db" >> .env
-          echo "DB_PORT=3306" >> .env
-          echo "DB_NAME=alink" >> .env
-          echo "DB_USER=alink_user" >> .env
-          echo "DB_PASS=secure_password_123" >> .env
-
       - name: Start application with Docker Compose
         run: |
           docker compose -f .setup/docker/docker-compose.yaml up -d --build
