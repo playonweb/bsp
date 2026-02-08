@@ -1,3 +1,5 @@
+# TODO: Fix workflow and 
+# WORKAROUND: Use Selenium IDE locally and import test-suit.side as a project to run them all.
 name: E2E Tests
 
 on:
@@ -158,24 +160,21 @@ jobs:
         with:
           node-version: '20'
 
+      # npm install -g geckodriver
       - name: Install Selenium SIDE Runner
         run: |
           npm install -g selenium-side-runner@4.0.0-alpha.38
+          npm install -g chromedriver
 
-      - name: Install GeckoDriver (Firefox)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y firefox-geckodriver
-
-      - name: Run E2E Tests (Firefox)
+      - name: Run E2E Tests (Chrome)
         run: |
           selenium-side-runner \
+            -c "browserName=chrome" \
             --server http://localhost:8080 \
             --base-url http://localhost:8080 \
             --output-directory ./test-results \
             --output-format junit \
             --force \
-            -c "goog:chromeOptions.binary=/usr/bin/firefox" \
             tests/e2e/test-suite.side
         continue-on-error: true
         id: e2e_tests
@@ -193,7 +192,7 @@ jobs:
         uses: mikepenz/action-junit-report@v4
         with:
           report_paths: 'test-results/*.xml'
-          check_name: 'E2E Test Results (Firefox)'
+          check_name: 'E2E Test Results'
           fail_on_failure: true
 
       - name: Cleanup
