@@ -3,6 +3,7 @@ version: '3'
 vars:
   COMPOSE_FILE: .setup/docker/docker-compose.yaml
   ENV_FILE: .env
+  TEST_SUITE: tests/e2e/test-suite.side
 
 tasks:
   sync:secrets:
@@ -57,19 +58,30 @@ tasks:
       - task: up
 
   test:
+    desc: Run E2E Tests on chrome & firefox
+    cmds:
+      - task: test:chrome:headless
+      - task: test:firefox:headless
+
+  test:chrome:
     desc: Run E2E tests locally (Chrome - requires matching ChromeDriver)
     cmds:
-      - selenium-side-runner --base-url http://localhost:8080 -c "browserName=chrome" tests/e2e/test-suite.side
+      - selenium-side-runner --base-url http://localhost:8080 -c "browserName=chrome" {{.TEST_SUITE}}
+
+  test:chrome:headless:
+    desc: Run E2E tests in headless mode (Chrome)
+    cmds:
+      - selenium-side-runner --base-url http://localhost:8080 -c "goog:chromeOptions.args=[disable-infobars, headless]" {{.TEST_SUITE}}
 
   test:firefox:
     desc: Run E2E tests locally (Firefox)
     cmds:
-      - selenium-side-runner --base-url http://localhost:8080 -c "browserName=firefox" tests/e2e/test-suite.side
+      - selenium-side-runner --base-url http://localhost:8080 -c "browserName=firefox" {{.TEST_SUITE}}
 
-  test:headless:
+  test:firefox:headless:
     desc: Run E2E tests in headless mode (Firefox)
     cmds:
-      - selenium-side-runner --base-url http://localhost:8080 -c "browserName=firefox moz:firefoxOptions.args=[-headless]" tests/e2e/test-suite.side
+      - selenium-side-runner --base-url http://localhost:8080 -c "browserName=firefox moz:firefoxOptions.args=[-headless]" {{.TEST_SUITE}}
 
   default:
     desc: Show available tasks
