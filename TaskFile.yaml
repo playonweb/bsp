@@ -83,6 +83,11 @@ tasks:
     cmds:
       - selenium-side-runner --base-url http://localhost:8080 -c "browserName=firefox moz:firefoxOptions.args=[-headless]" {{.TEST_SUITE}}
 
+  test:report:firefox:
+    desc: Generate test report
+    cmds:
+      - selenium-side-runner --base-url http://localhost:8080 -c "browserName=firefox moz:firefoxOptions.args=[-headless]" --output-directory=test-results {{.TEST_SUITE}}
+
   default:
     desc: Show available tasks
     cmds:
