@@ -1,5 +1,10 @@
 # PHP Test Application.
 
+![CI](https://github.com/rahuldole/bsp/actions/workflows/ci.yml/badge.svg)
+
+![CD](https://github.com/rahuldole/bsp/actions/workflows/cd.yml/badge.svg)
+
+
 👉 **[docs/system-design.md](app/docs/system-design.md)**
 
 👉 **[docs/problem.md](app/docs/problem.md)**
