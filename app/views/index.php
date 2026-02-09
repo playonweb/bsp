@@ -55,12 +55,12 @@ $initialUsers = $users ?? [];
 			class="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-slate-800/20 border border-white/5 p-4 rounded-3xl backdrop-blur-md">
 			<div class="flex items-center gap-4">
 				<div
-					class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/20">
+					class="w-12 h-12 bg-blue-800 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/20">
 					<i class="pi pi-users text-xl text-white"></i>
 				</div>
 				<div>
-					<h2 class="text-lg font-bold text-white leading-tight">Alink</h2>
-					<p class="text-xs text-slate-400 font-medium">Your Digital Contact, One Tap Away</p>
+					<h2 class="text-lg font-bold text-white leading-tight">Members</h2>
+					<p class="text-xs text-slate-400 font-medium">Digital Identity, Simplified</p>
 				</div>
 			</div>
 

@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  title: Alink User Management API
+  title: Card User Management API
   version: 1.0.0
   description: |
     API for managing users with name, city, email, and phone capabilities. 

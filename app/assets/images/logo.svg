@@ -1,0 +1,37 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cardGrad" x1="6" y1="16" x2="30" y2="32" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1E293B"/>
+      <stop offset="1" stop-color="#0F172A"/>
+    </linearGradient>
+    <filter id="glow" x="0" y="0" width="40" height="40" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="1"/>
+      <feGaussianBlur stdDeviation="1"/>
+      <feComposite in2="hardAlpha" operator="out"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.231373 0 0 0 0 0.509804 0 0 0 0 0.964706 0 0 0 0.3 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape"/>
+    </filter>
+  </defs>
+  
+  <!-- Background Card (Subtle Indigo) -->
+  <rect x="14" y="8" width="20" height="14" rx="3" fill="#6366F1" fill-opacity="0.15" stroke="#6366F1" stroke-width="1" stroke-dasharray="1 1"/>
+  
+  <!-- Foreground Card (Deep Slate Glass) -->
+  <rect x="6" y="16" width="24" height="16" rx="4" fill="url(#cardGrad)" stroke="#334155" stroke-width="1.2"/>
+  
+  <!-- Top Highlight -->
+  <path d="M7 17.2C7 16.5373 7.53726 16 8.2 16H27.8C28.4627 16 29 16.5373 29 17.2V18H7V17.2Z" fill="white" fill-opacity="0.08"/>
+
+  <!-- Identity Elements -->
+  <g filter="url(#glow)">
+    <circle cx="12" cy="22" r="2.2" fill="#3B82F6"/>
+  </g>
+  <rect x="16" y="21.4" width="10" height="1.2" rx="0.6" fill="white" fill-opacity="0.85"/>
+  <rect x="16" y="24.4" width="6" height="1.2" rx="0.6" fill="#64748B"/>
+  
+  <!-- Minimalist separator -->
+  <rect x="10" y="28.5" width="16" height="0.6" rx="0.3" fill="#1E293B" stroke="#334155" stroke-width="0.2"/>
+</svg>

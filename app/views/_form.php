@@ -8,10 +8,6 @@
     <div class="relative glass-dark rounded-[2.5rem] w-full max-w-[90vw] sm:max-w-2xl max-h-[85vh] shadow-2xl animate-scale-in flex flex-col"
         @click.stop>
 
-        <!-- Header Decoration -->
-        <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">
-        </div>
-
         <!-- Scrollable Content -->
         <div style="scrollbar-width: none; -ms-overflow-style: none;" class="overflow-y-auto flex-1 p-6 sm:p-12">
             <!-- Close Button -->
@@ -24,7 +20,7 @@
             <div class="mb-8 sm:mb-10">
                 <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-3">Join the Future</h2>
                 <p class="text-slate-400 text-sm font-medium leading-relaxed">
-                    Alink makes networking seamless, memorable, and eco-friendly. Create your one-tap
+                    Card makes networking seamless, memorable, and eco-friendly. Create your one-tap
                     digital card today.
                 </p>
             </div>

@@ -17,6 +17,7 @@ Usage:
     <meta charset="UTF-8" />
     <title>API Documentation</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="/assets/images/logo.svg" rel="icon" type="image/svg+xml" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css" />
     <style>
         body {
@@ -44,13 +45,13 @@ Usage:
                                     "a",
                                     { href: "/", style: { display: "flex", alignItems: "center", textDecoration: "none" } },
                                     React.createElement("img", {
-                                        src: "/favicon.ico",
-                                        style: { height: "36px", width: "36px", marginRight: "10px" },
+                                        src: "/assets/images/logo.svg",
+                                        style: { height: "36px", width: "36px", marginRight: "0px" },
                                         alt: "Logo"
                                     }),
                                     React.createElement("span", {
                                         style: { color: "#fff", fontSize: "18px", fontWeight: "600" }
-                                    }, "Link")
+                                    }, "Card")
                                 ),
                                 React.createElement(
                                     "div",

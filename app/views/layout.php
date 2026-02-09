@@ -8,8 +8,8 @@ require_once __DIR__ . '/../config/csp.php';
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Alink</title>
-  <link href="/favicon.ico" rel="icon" type="image/x-icon" />
+  <title>Card | Digital Identity Hub</title>
+  <link href="/assets/images/logo.svg" rel="icon" type="image/svg+xml" />
 
   <!-- Preload critical CSS resources to prevent FOUC -->
   <link rel="preload" href="https://cdn.jsdelivr.net/npm/primeicons@7.0.0/primeicons.min.css" as="style">
@@ -68,18 +68,26 @@ require_once __DIR__ . '/../config/csp.php';
   <nav data-testid="header-nav"
     class="top-0 z-30 bg-black/60 backdrop-blur-2xl border-b border-white/10 px-4 sm:px-8 py-4">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <div class="flex items-center gap-4 group cursor-pointer">
-        <a href="/" data-testid="logo-link">
+      <a href="/" data-testid="logo-link" class="flex items-center gap-3.5 group no-underline">
+        <div class="relative w-11 h-11 flex items-center justify-center">
           <div
-            class="w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform duration-300">
-            <img src="/favicon.ico" alt="Logo" class="w-6 h-6 object-contain invert">
+            class="absolute inset-0 bg-blue-600/20 rounded-[18px] blur-xl group-hover:bg-blue-500/40 transition-all duration-500 scale-125 opacity-0 group-hover:opacity-100">
           </div>
-        </a>
-        <div class="flex flex-col">
-          <span class="font-extrabold text-lg sm:text-xl tracking-tight text-white leading-none">link</span>
-          <span class="text-[10px] text-neutral-500 font-bold uppercase tracking-widest mt-1">Digital Contact</span>
+          <div
+            class="relative w-11 h-11 bg-slate-900 shadow-[0_10px_40px_rgba(0,0,0,0.6)] border border-white/10 rounded-[18px] flex items-center justify-center group-hover:scale-105 group-hover:-rotate-3 transition-all duration-500 overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-indigo-500/10"></div>
+            <img src="/assets/images/logo.svg" alt="Card" class="w-7 h-7 relative z-10">
+          </div>
         </div>
-      </div>
+        <div class="flex flex-col">
+          <div class="flex items-center">
+            <span class="font-black text-2xl tracking-tighter text-white">Card</span>
+          </div>
+          <span
+            class="text-[10px] text-neutral-500 font-bold uppercase tracking-[0.25em] -mt-1 scale-90 origin-left">Identity
+            Protocol</span>
+        </div>
+      </a>
 
       <div class="flex items-center gap-1 transition-all">
         <a href="https://github.com/rahuldhole" data-testid="github-link"
@@ -100,7 +108,7 @@ require_once __DIR__ . '/../config/csp.php';
 
   <footer data-testid="footer"
     class="mt-auto py-10 text-center text-neutral-600 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em]">
-    &copy; <?= date('Y') ?> Alink
+    &copy; <?= date('Y') ?> Card
   </footer>
 </body>
 

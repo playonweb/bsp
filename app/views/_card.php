@@ -121,7 +121,7 @@
                     <div class="w-5 h-5 bg-white rounded-md flex items-center justify-center">
                         <img src="/assets/images/logo.svg" class="w-4 h-4" />
                     </div>
-                    <span class="text-[10px] font-black text-white uppercase tracking-tighter">Cards Identity</span>
+                    <span class="text-[10px] font-black text-white uppercase tracking-tighter">Card Identity</span>
                 </div>
                 <span class="text-[9px] text-slate-600 font-bold uppercase tracking-widest">Minimalist vCard</span>
             </div>
@@ -131,10 +131,10 @@
     <!-- Branding Footer (Mobile only) -->
     <div class="sm:hidden mt-6 pt-4 border-t border-white/5 flex flex-col items-center gap-2">
         <div class="flex items-center gap-2">
-            <div class="w-5 h-5 bg-blue-600 rounded flex items-center justify-center">
-                <img src="/favicon.ico" class="w-3 h-3 invert" />
+            <div class="w-5 h-5 bg-white rounded-md flex items-center justify-center">
+                <img src="/assets/images/logo.svg" class="w-4 h-4" />
             </div>
-            <span class="text-[10px] font-black text-white uppercase tracking-tighter">Alink Digital</span>
+            <span class="text-[10px] font-black text-white uppercase tracking-tighter">Card Identity</span>
         </div>
     </div>
 </div>

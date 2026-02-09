@@ -17,6 +17,7 @@ $render_page = $_GET["page"] ?? "";
   <!-- Preload critical resources -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <link href="/assets/images/logo.svg" rel="icon" type="image/svg+xml" />
 
   <!-- Critical inline styles FIRST to prevent FOUC -->
   <style>
@@ -120,8 +121,8 @@ $render_page = $_GET["page"] ?? "";
 <body>
   <nav style="display: flex; justify-content: space-between; align-items: center; z-index: 10;">
     <a href="/" style="color: #c9d1d9; display: flex; align-items: center; gap: 0.5rem;">
-      <img src=" /favicon.ico" alt="Logo" style="width: 20px; height: 20px; object-fit: contain; filter: invert(1);" />
-      Alink
+      <img src="/assets/images/logo.svg" alt="Logo" style="width: 30px; height: 30px; object-fit: contain; filter: invert(1);" />
+      Card
     </a>
     <a href="/docs/openapi.php" style="color: #c9d1d9; display: flex; align-items: center; gap: 0.5rem;">
       <img src="https://www.svgrepo.com/show/354420/swagger.svg" height="20" alt="OpenAPI" /> OpenAPI
