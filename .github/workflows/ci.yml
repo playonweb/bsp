@@ -56,11 +56,11 @@ jobs:
 
       - name: Run Tests
         id: run_tests
+        continue-on-error: true
         env:
           BROWSER: ${{ matrix.browser }}
         run: |
           # Define capabilities for Headless execution
-          # --no-sandbox & --disable-dev-shm-usage are critical for Docker/CI stability
           if [ "$BROWSER" == "chrome" ]; then
             CAPS="browserName=chrome goog:chromeOptions.args=[--headless,--no-sandbox,--disable-dev-shm-usage,--disable-gpu,--window-size=1920,1080]"
           else
@@ -68,20 +68,48 @@ jobs:
           fi
 
           echo "Starting Selenium Side Runner..."
+          mkdir -p .test-results
           
-          # Run tests directly. 
-          # --timeout 15000: Increase step timeout to 15s to prevent flakes on slow CI runners
+          # Run tests with output directory
           npx selenium-side-runner \
             --base-url http://localhost:8080 \
             -c "$CAPS" \
             --timeout 15000 \
+            -o .test-results \
             tests/e2e/test-suite.side
 
-      - name: Dump Logs on Failure
-        if: failure()
+      - name: Dump Application Logs
+        if: always()
         run: |
-          echo "=== Application Logs ==="
-          docker compose -f .setup/docker/docker-compose.yaml logs --tail=100
+          docker compose -f .setup/docker/docker-compose.yaml logs --tail=200 > app-logs-${{ matrix.browser }}.log
+
+      - name: Generate and Post Report
+        if: always()
+        env:
+          BROWSER: ${{ matrix.browser }}
+        run: |
+          # Find the latest JSON file in .test-results
+          REPORT_FILE=$(ls -t .test-results/*.json 2>/dev/null | head -n 1)
+          if [ -f "$REPORT_FILE" ]; then
+            node .github/scripts/ci-report.js "$REPORT_FILE" "app-logs-${{ matrix.browser }}.log"
+          else
+            echo "::warning::No test results found to report."
+            # If no report but tests were supposed to run, this might be a runtime crash
+            if [ "${{ steps.run_tests.outcome }}" == "failure" ]; then
+              exit 1
+            fi
+          fi
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-results-${{ matrix.browser }}
+          path: |
+            .test-results/*.json
+            app-logs-${{ matrix.browser }}.log
+            report-${{ matrix.browser }}.md
+          retention-days: 7
 
       - name: Cleanup
         if: always()
