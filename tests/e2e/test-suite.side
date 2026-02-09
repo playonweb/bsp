@@ -478,7 +478,7 @@
     {
       "id": "full-suite",
       "name": "Full E2E Test Suite",
-      "persistSession": false,
+      "persistSession": true,
       "parallel": false,
       "timeout": 300,
       "tests": [
@@ -495,7 +495,7 @@
     {
       "id": "smoke-suite",
       "name": "Smoke Test Suite",
-      "persistSession": false,
+      "persistSession": true,
       "parallel": false,
       "timeout": 120,
       "tests": [
