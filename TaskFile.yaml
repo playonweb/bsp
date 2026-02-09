@@ -66,27 +66,27 @@ tasks:
   test:chrome:
     desc: Run E2E tests locally (Chrome - requires matching ChromeDriver binary (https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json) and `npm install -g chromedriver@<version>`)
     cmds:
-      - selenium-side-runner --base-url http://localhost:8080 -c "browserName=chrome" {{.TEST_SUITE}}
+      - selenium-side-runner -c "browserName=chrome" {{.TEST_SUITE}}
 
   test:chrome:headless:
     desc: Run E2E tests in headless mode (Chrome)
     cmds:
-      - selenium-side-runner --base-url http://localhost:8080 -c "browserName=chrome goog:chromeOptions.args=[disable-infobars, headless, window-size=1920,1080, no-sandbox, disable-dev-shm-usage, disable-gpu]" {{.TEST_SUITE}}
+      - selenium-side-runner -c "browserName=chrome goog:chromeOptions.args=[disable-infobars, headless, window-size=1920,1080, no-sandbox, disable-dev-shm-usage, disable-gpu]" {{.TEST_SUITE}}
 
   test:firefox:
     desc: Run E2E tests locally (Firefox)
     cmds:
-      - selenium-side-runner --base-url http://localhost:8080 -c "browserName=firefox" {{.TEST_SUITE}}
+      - selenium-side-runner -c "browserName=firefox" {{.TEST_SUITE}}
 
   test:firefox:headless:
     desc: Run E2E tests in headless mode (Firefox)
     cmds:
-      - selenium-side-runner --base-url http://localhost:8080 -c "browserName=firefox moz:firefoxOptions.args=[-headless]" {{.TEST_SUITE}}
+      - selenium-side-runner -c "browserName=firefox moz:firefoxOptions.args=[-headless]" {{.TEST_SUITE}}
 
   test:report:firefox:
     desc: Generate test report
     cmds:
-      - selenium-side-runner --base-url http://localhost:8080 -c "browserName=firefox moz:firefoxOptions.args=[-headless]" --output-directory=test-results {{.TEST_SUITE}}
+      - selenium-side-runner -c "browserName=firefox moz:firefoxOptions.args=[-headless]" --output-directory=./test-results {{.TEST_SUITE}}
 
   default:
     desc: Show available tasks

@@ -72,7 +72,6 @@ jobs:
           
           # Run tests with output directory
           npx selenium-side-runner \
-            --base-url http://localhost:8080 \
             -c "$CAPS" \
             --timeout 15000 \
             -o .test-results \
