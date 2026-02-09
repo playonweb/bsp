@@ -525,7 +525,7 @@ die("(" . $this->mysqli->errno . ") " . ... print_r(debug_backtrace(),true) ...)
 ## Future Scope
 
 1. Integrate all betterstack services: uptime, telemetry, warehouse & error tracking etc.
-2. Unit/integration tests, ci/cd, cdn, organizing code well, etc all common stuff.
+2. Unit/integration tests, ci/cd, cdn, organizing code well, analytics, seo, etc all common stuff.
 3. advanced search, sort & filter options
 4. Compile & tree shake tailwind, primeicons & use vuejs instead of petite-vue
 5. Captcha, better rate limiting for security. MyISAM engine was a bottleneck acting like a dirty rate limiter, now it's InnoDB. 
