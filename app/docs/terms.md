@@ -8,7 +8,7 @@ By accessing or using Alink (“the Service”), you agree to comply with these 
 
 ### 2. Description of Service
 
-Alink provides users with the ability to create and share digital visiting cards via link or QR code. The Service is intended for personal and professional networking purposes.
+Card provides users with the ability to create and share digital visiting cards via link or QR code. The Service is intended for personal and professional networking purposes.
 
 ### 3. User Responsibilities
 
@@ -18,13 +18,13 @@ Alink provides users with the ability to create and share digital visiting cards
 
 ### 4. Intellectual Property
 
-* All content provided by Alink, including branding, logos, and software, is owned by Alink and protected by copyright laws.
-* You retain ownership of the content you upload but grant Alink a license to display it within the Service.
+* All content provided by Card, including branding, logos, and software, is owned by Card and protected by copyright laws.
+* You retain ownership of the content you upload but grant Card a license to display it within the Service.
 
 ### 5. Privacy and Data
 
 * Your use of the Service is subject to our [Privacy Policy](/docs/index.php#privacy).
-* Alink collects and processes personal information to provide and improve the Service.
+* Card collects and processes personal information to provide and improve the Service.
 
 ### 6. Termination
 

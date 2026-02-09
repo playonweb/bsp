@@ -1,7 +1,7 @@
 {
-  "id": "alink-e2e-tests",
+  "id": "card-e2e-tests",
   "version": "2.0",
-  "name": "Alink E2E Test Suite",
+  "name": "Card E2E Test Suite",
   "url": "http://localhost:8080",
   "tests": [
     {
@@ -17,7 +17,7 @@
         {
           "id": "2",
           "command": "assertTitle",
-          "target": "Alink",
+          "target": "Card | Digital Identity Hub",
           "value": ""
         },
         {
@@ -402,7 +402,7 @@
         {
           "id": "4",
           "command": "assertTitle",
-          "target": "Alink",
+          "target": "Card | Digital Identity Hub",
           "value": ""
         },
         {

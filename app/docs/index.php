@@ -9,7 +9,7 @@ $render_page = $_GET["page"] ?? "";
 
 <head>
   <meta charset="UTF-8">
-  <title>Docs | Alink</title>
+  <title>Docs | Card</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="Documentation">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
@@ -121,7 +121,8 @@ $render_page = $_GET["page"] ?? "";
 <body>
   <nav style="display: flex; justify-content: space-between; align-items: center; z-index: 10;">
     <a href="/" style="color: #c9d1d9; display: flex; align-items: center; gap: 0.5rem;">
-      <img src="/assets/images/logo.svg" alt="Logo" style="width: 30px; height: 30px; object-fit: contain; filter: invert(1);" />
+      <img src="/assets/images/logo.svg" alt="Logo"
+        style="width: 30px; height: 30px; object-fit: contain; filter: invert(1);" />
       Card
     </a>
     <a href="/docs/openapi.php" style="color: #c9d1d9; display: flex; align-items: center; gap: 0.5rem;">
@@ -133,7 +134,7 @@ $render_page = $_GET["page"] ?? "";
   <script>
     window.$docsify = {
       name: 'Docs',
-      repo: 'https://github.com/rahuldhole/alink',
+      repo: 'https://github.com/rahuldhole/card',
       homepage: 'system-design.md',
       loadSidebar: true,
       subMaxLevel: 3,

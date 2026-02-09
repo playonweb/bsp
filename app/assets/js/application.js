@@ -195,7 +195,7 @@ window.initApp = function (initialData) {
             if (!user) return;
             const shareUrl = `${window.location.protocol}//${window.location.host}/${user.id}`;
             const shareData = {
-                title: user.name + ' - Alink',
+                title: user.name + ' - Card Identity',
                 url: shareUrl
             };
 

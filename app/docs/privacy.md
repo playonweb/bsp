@@ -30,9 +30,8 @@ We implement reasonable security measures to protect your data but cannot guaran
 
 ### 6. Children’s Privacy
 
-Alink is not intended for children under 13. We do not knowingly collect information from children.
+Card is not intended for children under 13. We do not knowingly collect information from children.
 
 ### 7. Changes to Privacy Policy
 
 We may update this Policy. Continued use of the Service constitutes acceptance of the updated Policy.
-
