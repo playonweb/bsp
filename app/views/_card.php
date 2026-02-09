@@ -1,10 +1,6 @@
 <div style="scrollbar-width: none; -ms-overflow-style: none;" class="relative glass-dark rounded-[2rem] p-5 sm:p-10 max-w-sm sm:max-w-2xl w-full shadow-2xl overflow-y-auto sm:overflow-visible max-h-[85vh] sm:max-h-none animate-scale-in border border-white/10"
     @click.stop> <!-- Prevents bubbling to backdrop and main div -->
 
-    <!-- Card Header Decoration -->
-    <div class="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">
-    </div>
-
     <!-- Branding Watermark -->
     <div class="absolute -right-8 -top-8 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl pointer-events-none">
     </div>
@@ -122,10 +118,10 @@
             <!-- Branding Footer (Desktop only) -->
             <div class="hidden sm:flex mt-4 pt-4 border-t border-white/5 flex-row items-center justify-between">
                 <div class="flex items-center gap-2">
-                    <div class="w-5 h-5 bg-blue-600 rounded flex items-center justify-center">
-                        <img src="/favicon.ico" class="w-3 h-3 invert" />
+                    <div class="w-5 h-5 bg-white rounded-md flex items-center justify-center">
+                        <img src="/assets/images/logo.svg" class="w-4 h-4" />
                     </div>
-                    <span class="text-[10px] font-black text-white uppercase tracking-tighter">Alink Digital</span>
+                    <span class="text-[10px] font-black text-white uppercase tracking-tighter">Cards Identity</span>
                 </div>
                 <span class="text-[9px] text-slate-600 font-bold uppercase tracking-widest">Minimalist vCard</span>
             </div>
